@@ -1,0 +1,10 @@
+{
+  "project": "智能排课系统",
+  "schemaVersion": "ddd-annotation-v2.0",
+  "inputSource": "08-V1.0用户故事.md",
+  "sopVersion": "v2.3",
+  "sourceStoryBundle": "../01-story-modeling/",
+  "annotator": "agent",
+  "date": "2026-09-18",
+  "method": "agent"
+}

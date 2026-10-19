@@ -1,0 +1,65 @@
+[
+  {
+    "upstream": "bc-registry",
+    "downstream": "bc-timetable",
+    "pattern": "CustomerSupplier",
+    "dataFlow": "排课读取学期/作息模板/班级/科目作为时间与课程维度",
+    "contractOwner": "bc-registry"
+  },
+  {
+    "upstream": "bc-resource",
+    "downstream": "bc-timetable",
+    "pattern": "CustomerSupplier",
+    "dataFlow": "排课读取教师/场地/任课约束/合班课作为资源与约束",
+    "contractOwner": "bc-resource"
+  },
+  {
+    "upstream": "bc-resource",
+    "downstream": "bc-identity",
+    "pattern": "Conformist",
+    "dataFlow": "教师账号与教师主数据关联",
+    "contractOwner": "bc-resource"
+  },
+  {
+    "upstream": "bc-identity",
+    "downstream": "bc-governance",
+    "pattern": "Conformist",
+    "dataFlow": "操作日志记录操作人账号",
+    "contractOwner": "bc-identity"
+  },
+  {
+    "upstream": "bc-registry",
+    "downstream": "bc-governance",
+    "pattern": "CustomerSupplier",
+    "dataFlow": "治理覆盖学期与主数据的删除保护与留痕",
+    "contractOwner": "bc-registry"
+  },
+  {
+    "upstream": "bc-registry",
+    "downstream": "bc-resource",
+    "pattern": "CustomerSupplier",
+    "dataFlow": "排课读取教师/场地/任课约束作为资源与约束",
+    "contractOwner": "bc-registry"
+  },
+  {
+    "upstream": "bc-resource",
+    "downstream": "bc-governance",
+    "pattern": "Conformist",
+    "dataFlow": "治理覆盖资源主数据的删除保护与留痕",
+    "contractOwner": "bc-resource"
+  },
+  {
+    "upstream": "bc-timetable",
+    "downstream": "bc-governance",
+    "pattern": "Conformist",
+    "dataFlow": "治理覆盖课表状态流转的留痕",
+    "contractOwner": "bc-timetable"
+  },
+  {
+    "upstream": "bc-timetable",
+    "downstream": "bc-registry",
+    "pattern": "CustomerSupplier",
+    "dataFlow": "学期归档前校验正式课表已发布（只读校验，非写依赖）",
+    "contractOwner": "bc-timetable"
+  }
+]

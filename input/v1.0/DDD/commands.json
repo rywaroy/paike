@@ -1,0 +1,567 @@
+[
+  {
+    "name": "CreateSemester",
+    "bcId": "bc-registry",
+    "targetAggregate": "Semester",
+    "actor": "教务管理员",
+    "raises": [
+      "SemesterCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002"
+    ],
+    "preconditions": [
+      "已存在至少一个作息模板"
+    ],
+    "inputFields": [
+      "name",
+      "academicYear",
+      "startDate",
+      "endDate",
+      "scheduleTemplateId"
+    ]
+  },
+  {
+    "name": "UpdateSemester",
+    "bcId": "bc-registry",
+    "targetAggregate": "Semester",
+    "actor": "教务管理员",
+    "raises": [
+      "SemesterUpdated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002"
+    ],
+    "preconditions": [
+      "学期未存档"
+    ],
+    "inputFields": [
+      "name",
+      "academicYear",
+      "startDate",
+      "endDate"
+    ]
+  },
+  {
+    "name": "DeleteSemester",
+    "bcId": "bc-registry",
+    "targetAggregate": "Semester",
+    "actor": "教务管理员",
+    "raises": [
+      "SemesterDeleted"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002",
+      "US-CM-001"
+    ],
+    "preconditions": [
+      "学期未被引用"
+    ],
+    "inputFields": [
+      "semesterId"
+    ]
+  },
+  {
+    "name": "ArchiveSemester",
+    "bcId": "bc-registry",
+    "targetAggregate": "Semester",
+    "actor": "教务管理员",
+    "raises": [
+      "SemesterArchived"
+    ],
+    "sourceUserStoryIds": [
+      "US-LG-002"
+    ],
+    "preconditions": [
+      "正式课表已发布"
+    ],
+    "inputFields": [
+      "semesterId"
+    ]
+  },
+  {
+    "name": "CreateScheduleTemplate",
+    "bcId": "bc-registry",
+    "targetAggregate": "ScheduleTemplate",
+    "actor": "教务管理员",
+    "raises": [
+      "ScheduleTemplateCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-003"
+    ],
+    "inputFields": [
+      "name",
+      "openWeekdays",
+      "periodSchedule"
+    ]
+  },
+  {
+    "name": "UpdateScheduleTemplate",
+    "bcId": "bc-registry",
+    "targetAggregate": "ScheduleTemplate",
+    "actor": "教务管理员",
+    "raises": [
+      "ScheduleTemplateVersioned"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-003"
+    ],
+    "inputFields": [
+      "name",
+      "openWeekdays",
+      "periodSchedule"
+    ]
+  },
+  {
+    "name": "CreateGrade",
+    "bcId": "bc-registry",
+    "targetAggregate": "Grade",
+    "actor": "教务管理员",
+    "raises": [
+      "GradeCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-004"
+    ],
+    "inputFields": [
+      "name"
+    ]
+  },
+  {
+    "name": "DeleteGrade",
+    "bcId": "bc-registry",
+    "targetAggregate": "Grade",
+    "actor": "教务管理员",
+    "raises": [
+      "GradeDeleted"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-004",
+      "US-CM-001"
+    ],
+    "preconditions": [
+      "年级未被班级引用"
+    ],
+    "inputFields": [
+      "gradeId"
+    ]
+  },
+  {
+    "name": "CreateClass",
+    "bcId": "bc-registry",
+    "targetAggregate": "Class",
+    "actor": "教务管理员",
+    "raises": [
+      "ClassCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-005"
+    ],
+    "inputFields": [
+      "gradeId",
+      "serialNo",
+      "headTeacher",
+      "studentCount"
+    ]
+  },
+  {
+    "name": "UpdateClass",
+    "bcId": "bc-registry",
+    "targetAggregate": "Class",
+    "actor": "教务管理员",
+    "raises": [
+      "ClassUpdated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-005"
+    ],
+    "inputFields": [
+      "headTeacher",
+      "studentCount"
+    ]
+  },
+  {
+    "name": "CreateSubject",
+    "bcId": "bc-registry",
+    "targetAggregate": "Subject",
+    "actor": "教务管理员",
+    "raises": [
+      "SubjectCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-006"
+    ],
+    "inputFields": [
+      "name"
+    ]
+  },
+  {
+    "name": "ConfigureSubjectPeriodRule",
+    "bcId": "bc-registry",
+    "targetAggregate": "Subject",
+    "actor": "教务管理员",
+    "raises": [
+      "SubjectPeriodRuleConfigured"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-007"
+    ],
+    "inputFields": [
+      "weeklyPeriods",
+      "consecutivePreference",
+      "forbiddenSlots",
+      "timeSlotPreference"
+    ]
+  },
+  {
+    "name": "CreateTeacher",
+    "bcId": "bc-resource",
+    "targetAggregate": "Teacher",
+    "actor": "教务管理员",
+    "raises": [
+      "TeacherCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "inputFields": [
+      "employeeNo",
+      "name",
+      "gender",
+      "phone"
+    ]
+  },
+  {
+    "name": "UpdateTeacher",
+    "bcId": "bc-resource",
+    "targetAggregate": "Teacher",
+    "actor": "教务管理员",
+    "raises": [
+      "TeacherUpdated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "inputFields": [
+      "name",
+      "gender",
+      "phone"
+    ]
+  },
+  {
+    "name": "DeactivateTeacher",
+    "bcId": "bc-resource",
+    "targetAggregate": "Teacher",
+    "actor": "教务管理员",
+    "raises": [
+      "TeacherDeactivated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "inputFields": [
+      "teacherId"
+    ]
+  },
+  {
+    "name": "DeleteTeacher",
+    "bcId": "bc-resource",
+    "targetAggregate": "Teacher",
+    "actor": "教务管理员",
+    "raises": [
+      "TeacherDeleted"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-008",
+      "US-CM-001"
+    ],
+    "preconditions": [
+      "教师无任课记录"
+    ],
+    "inputFields": [
+      "teacherId"
+    ]
+  },
+  {
+    "name": "CreateTeachingAssignment",
+    "bcId": "bc-resource",
+    "targetAggregate": "TeachingAssignment",
+    "actor": "教务管理员",
+    "raises": [
+      "TeachingAssignmentConfigured"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-010"
+    ],
+    "inputFields": [
+      "teacherId",
+      "subjectId",
+      "classId",
+      "venueId",
+      "weeklyPeriods",
+      "forbiddenSlots",
+      "consecutivePreference"
+    ]
+  },
+  {
+    "name": "CreateVenue",
+    "bcId": "bc-resource",
+    "targetAggregate": "Venue",
+    "actor": "教务管理员",
+    "raises": [
+      "VenueCreated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-011"
+    ],
+    "inputFields": [
+      "name",
+      "type",
+      "capacity",
+      "status"
+    ]
+  },
+  {
+    "name": "CreateCombinedClass",
+    "bcId": "bc-resource",
+    "targetAggregate": "CombinedClass",
+    "actor": "教务管理员",
+    "raises": [
+      "CombinedClassConfigured"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-012"
+    ],
+    "inputFields": [
+      "name",
+      "classIds",
+      "teacherId",
+      "venueId",
+      "periodConstraint"
+    ]
+  },
+  {
+    "name": "RegeneratePlan",
+    "bcId": "bc-timetable",
+    "targetAggregate": "TimetablePlan",
+    "actor": "教务管理员",
+    "raises": [
+      "TimetablePlanGenerated"
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-002",
+      "US-AP-004",
+      "US-AP-005",
+      "US-AP-006"
+    ],
+    "inputFields": [
+      "semesterId",
+      "scheduleTemplateId"
+    ],
+    "stateGuards": [
+      {
+        "stateMachineRef": "LessonLockState",
+        "allowedStates": [
+          "Locked",
+          "Unlocked"
+        ],
+        "condition": "自动排课保留已锁定课程的锁定状态，未锁定课程保持未锁定"
+      }
+    ]
+  },
+  {
+    "name": "PublishPlan",
+    "bcId": "bc-timetable",
+    "targetAggregate": "TimetablePlan",
+    "actor": "教务管理员",
+    "raises": [
+      "TimetablePlanPublished"
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-003"
+    ],
+    "inputFields": [
+      "planId"
+    ],
+    "stateGuards": [
+      {
+        "stateMachineRef": "TimetablePlanLifecycle",
+        "allowedStates": [
+          "Draft"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ArchivePlan",
+    "bcId": "bc-timetable",
+    "targetAggregate": "TimetablePlan",
+    "actor": "教务管理员",
+    "raises": [
+      "TimetablePlanArchived"
+    ],
+    "sourceUserStoryIds": [
+      "US-LG-002"
+    ],
+    "inputFields": [
+      "planId"
+    ],
+    "stateGuards": [
+      {
+        "stateMachineRef": "TimetablePlanLifecycle",
+        "allowedStates": [
+          "Published"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "LockLesson",
+    "bcId": "bc-timetable",
+    "targetAggregate": "TimetablePlan",
+    "actor": "教务管理员",
+    "raises": [
+      "LessonLocked"
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-004"
+    ],
+    "inputFields": [
+      "lessonId"
+    ],
+    "stateGuards": [
+      {
+        "stateMachineRef": "LessonLockState",
+        "allowedStates": [
+          "Unlocked"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "UnlockLesson",
+    "bcId": "bc-timetable",
+    "targetAggregate": "TimetablePlan",
+    "actor": "教务管理员",
+    "raises": [
+      "LessonUnlocked"
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-004"
+    ],
+    "inputFields": [
+      "lessonId"
+    ],
+    "stateGuards": [
+      {
+        "stateMachineRef": "LessonLockState",
+        "allowedStates": [
+          "Locked"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "MoveLesson",
+    "bcId": "bc-timetable",
+    "targetAggregate": "TimetablePlan",
+    "actor": "教务管理员",
+    "raises": [
+      "LessonMoved"
+    ],
+    "sourceUserStoryIds": [
+      "US-AT-003",
+      "US-AP-003"
+    ],
+    "inputFields": [
+      "lessonId",
+      "weekday",
+      "period",
+      "venueId"
+    ],
+    "stateGuards": [
+      {
+        "stateMachineRef": "LessonLockState",
+        "allowedStates": [
+          "Unlocked"
+        ],
+        "condition": "仅未锁定课程可被拖拽移动"
+      }
+    ]
+  },
+  {
+    "name": "RecordOperationLog",
+    "bcId": "bc-governance",
+    "targetAggregate": "OperationLog",
+    "actor": "系统",
+    "raises": [
+      "OperationLogged"
+    ],
+    "sourceUserStoryIds": [
+      "US-LG-001"
+    ],
+    "inputFields": [
+      "operatorId",
+      "module",
+      "content"
+    ]
+  },
+  {
+    "name": "ProvisionTeacherAccount",
+    "bcId": "bc-identity",
+    "targetAggregate": "Account",
+    "actor": "教务管理员",
+    "raises": [
+      "TeacherAccountProvisioned"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-009"
+    ],
+    "inputFields": [
+      "teacherId",
+      "username"
+    ]
+  },
+  {
+    "name": "AssignRole",
+    "bcId": "bc-identity",
+    "targetAggregate": "Account",
+    "actor": "教务管理员",
+    "raises": [
+      "RoleAssigned"
+    ],
+    "sourceUserStoryIds": [
+      "US-AU-002",
+      "US-AU-003"
+    ],
+    "inputFields": [
+      "accountId",
+      "role"
+    ]
+  },
+  {
+    "name": "UpdateSubject",
+    "bcId": "bc-registry",
+    "targetAggregate": "Subject",
+    "actor": "教务管理员",
+    "raises": [
+      "SubjectUpdated"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-006"
+    ],
+    "preconditions": [
+      "科目名称经受控校验"
+    ],
+    "inputFields": [
+      "subjectId",
+      "name"
+    ]
+  }
+]

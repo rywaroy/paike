@@ -1,0 +1,207 @@
+[
+  {
+    "name": "SemesterService",
+    "bcId": "bc-registry",
+    "responsibility": "协调学期增删改查、当前学期切换与学期存档",
+    "commandNames": [
+      "CreateSemester",
+      "UpdateSemester",
+      "DeleteSemester",
+      "ArchiveSemester"
+    ],
+    "queries": [
+      {
+        "name": "ViewSemester",
+        "mutatesDomainState": false,
+        "raisesDomainEvents": []
+      }
+    ],
+    "interactions": [
+      {
+        "name": "SwitchCurrentSemester",
+        "responsibility": "切换当前学期上下文并使引用作息模板随之生效"
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002",
+      "US-LG-002"
+    ]
+  },
+  {
+    "name": "CurriculumService",
+    "bcId": "bc-registry",
+    "responsibility": "协调作息模板、年级、班级、科目及其课时规则等主数据维护",
+    "commandNames": [
+      "CreateScheduleTemplate",
+      "UpdateScheduleTemplate",
+      "CreateGrade",
+      "DeleteGrade",
+      "CreateClass",
+      "UpdateClass",
+      "CreateSubject",
+      "ConfigureSubjectPeriodRule",
+      "UpdateSubject"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-003",
+      "US-BD-004",
+      "US-BD-005",
+      "US-BD-006",
+      "US-BD-007"
+    ]
+  },
+  {
+    "name": "ResourceService",
+    "bcId": "bc-resource",
+    "responsibility": "协调教师、场地、合班课与任课约束等资源主数据维护",
+    "commandNames": [
+      "CreateTeacher",
+      "UpdateTeacher",
+      "DeactivateTeacher",
+      "DeleteTeacher",
+      "CreateTeachingAssignment",
+      "CreateVenue",
+      "CreateCombinedClass"
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-008",
+      "US-BD-010",
+      "US-BD-011",
+      "US-BD-012"
+    ]
+  },
+  {
+    "name": "TimetableService",
+    "bcId": "bc-timetable",
+    "responsibility": "协调一键排课、发布存档、锁定解锁与拖拽调课，并提供课表视图/空闲/统计查询与导出打印",
+    "commandNames": [
+      "RegeneratePlan",
+      "PublishPlan",
+      "ArchivePlan",
+      "LockLesson",
+      "UnlockLesson",
+      "MoveLesson"
+    ],
+    "queries": [
+      {
+        "name": "ViewTimetable",
+        "mutatesDomainState": false,
+        "raisesDomainEvents": []
+      },
+      {
+        "name": "QueryIdleSlots",
+        "mutatesDomainState": false,
+        "raisesDomainEvents": []
+      },
+      {
+        "name": "QueryWorkloadStatistics",
+        "mutatesDomainState": false,
+        "raisesDomainEvents": []
+      },
+      {
+        "name": "QueryConflictDetails",
+        "mutatesDomainState": false,
+        "raisesDomainEvents": []
+      }
+    ],
+    "interactions": [
+      {
+        "name": "IgnoreConflictOnce",
+        "responsibility": "仅本次排课放行冲突、不改系统配置"
+      },
+      {
+        "name": "NavigateToConfig",
+        "responsibility": "跳转对应配置维护入口以修改约束"
+      },
+      {
+        "name": "UndoAdjustment",
+        "responsibility": "撤销上一步（或成组）调课操作"
+      },
+      {
+        "name": "RedoAdjustment",
+        "responsibility": "重放已撤销的调课操作"
+      },
+      {
+        "name": "ExportExcel",
+        "responsibility": "按维度与学期导出Excel文件"
+      },
+      {
+        "name": "PrintTimetable",
+        "responsibility": "按自定义模板打印班级/教师课表"
+      }
+    ],
+    "domainServiceNames": [
+      "ConflictValidationService",
+      "TimetableEngineService",
+      "WorkloadStatisticsService"
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-002",
+      "US-AP-004",
+      "US-AP-005",
+      "US-AP-006",
+      "US-AT-001",
+      "US-AT-003",
+      "US-AT-004",
+      "US-AP-003",
+      "US-AT-005",
+      "US-AS-001",
+      "US-EX-001",
+      "US-EX-002",
+      "US-CE-001"
+    ]
+  },
+  {
+    "name": "GovernanceService",
+    "bcId": "bc-governance",
+    "responsibility": "协调关键操作二次确认、批量导入导出与操作日志记录",
+    "commandNames": [
+      "RecordOperationLog"
+    ],
+    "queries": [
+      {
+        "name": "QueryOperationLog",
+        "mutatesDomainState": false,
+        "raisesDomainEvents": []
+      }
+    ],
+    "interactions": [
+      {
+        "name": "ConfirmCriticalOperation",
+        "responsibility": "对删除/发布/覆盖/切换学期等关键操作二次确认"
+      },
+      {
+        "name": "BatchImport",
+        "responsibility": "按统一模板与校验批量导入主数据，超限拒绝"
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-CM-001",
+      "US-CM-002",
+      "US-LG-001"
+    ]
+  },
+  {
+    "name": "IdentityService",
+    "bcId": "bc-identity",
+    "responsibility": "协调登录认证、角色权限判定与教师账号开通",
+    "commandNames": [
+      "ProvisionTeacherAccount",
+      "AssignRole"
+    ],
+    "interactions": [
+      {
+        "name": "Login",
+        "responsibility": "建立登录会话并校验账号角色"
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-AU-001",
+      "US-AU-002",
+      "US-AU-003",
+      "US-BD-009"
+    ]
+  }
+]

@@ -1,0 +1,687 @@
+[
+  {
+    "name": "Semester",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Semester",
+    "responsibility": "学期主数据及其作息模板引用关系，是排课与数据归集的时间基线",
+    "attributes": [
+      "semesterId",
+      "name",
+      "academicYear",
+      "startDate",
+      "endDate",
+      "status",
+      "scheduleTemplateId"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "DateRange",
+        "attributes": [
+          "startDate",
+          "endDate"
+        ]
+      }
+    ],
+    "references": [
+      {
+        "class": "ScheduleTemplate",
+        "domain": "bc-registry",
+        "fields": [
+          "scheduleTemplateId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002",
+      "US-LG-002"
+    ],
+    "invariants": [
+      {
+        "description": "每个学期仅引用一个作息模板，新增学期必须绑定现有作息模板",
+        "triggerCommandRefs": [
+          "CreateSemester",
+          "UpdateSemester"
+        ],
+        "violationBehavior": "拒绝保存并提示，未绑定模板的学期不可进入一键排课"
+      },
+      {
+        "description": "已存档学期只读可导出，不可编辑",
+        "triggerCommandRefs": [
+          "UpdateSemester"
+        ],
+        "violationBehavior": "拒绝编辑并提示只读"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "学期状态四值中，未开始/进行中/已结束为日期派生态（由起止日期相对当前日实时计算），仅已存档为命令驱动只读存储态；故不建状态机，状态字段只存三个存储态，已结束为展示派生。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "ScheduleTemplate",
+    "bcId": "bc-registry",
+    "aggregateRoot": "ScheduleTemplate",
+    "responsibility": "作息模板主数据及其版本快照，为排课提供时间框架且不回改历史课表",
+    "attributes": [
+      "templateId",
+      "name",
+      "basedOnVersion",
+      "version",
+      "openWeekdays",
+      "status"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "PeriodSchedule",
+        "attributes": [
+          "periodNo",
+          "startTime",
+          "endTime"
+        ]
+      }
+    ],
+    "references": [],
+    "sourceUserStoryIds": [
+      "US-BD-003"
+    ],
+    "invariants": [
+      {
+        "description": "编辑保存模板生成新版本快照，历史版本保持原样，不回改历史学期已生成课表",
+        "triggerCommandRefs": [
+          "UpdateScheduleTemplate"
+        ],
+        "violationBehavior": "生成新版本而非原地覆盖历史配置"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "模板以版本号做不可变快照，无生命周期状态迁移，编辑即生成新版本；无需状态机。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "Grade",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Grade",
+    "responsibility": "年级组织实体，名称从受控列表选择，支撑班级归属与统计口径",
+    "attributes": [
+      "gradeId",
+      "name",
+      "sortOrder"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "GradeName",
+        "attributes": [
+          "name"
+        ]
+      }
+    ],
+    "references": [],
+    "sourceUserStoryIds": [
+      "US-BD-004"
+    ],
+    "invariants": [
+      {
+        "description": "年级名称从受控名称列表选择，禁止自由文本",
+        "triggerCommandRefs": [
+          "CreateGrade"
+        ],
+        "violationBehavior": "拒绝录入并提示从受控列表选择"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "年级为静态受控主数据，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "Class",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Class",
+    "responsibility": "班级主数据，归属年级并自动生成「年级（序号）班」规范名称",
+    "attributes": [
+      "classId",
+      "name",
+      "gradeId",
+      "headTeacher",
+      "studentCount",
+      "serialNo"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "ClassName",
+        "attributes": [
+          "name",
+          "serialNo"
+        ]
+      }
+    ],
+    "references": [
+      {
+        "class": "Grade",
+        "domain": "bc-registry",
+        "fields": [
+          "gradeId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-005"
+    ],
+    "invariants": [
+      {
+        "description": "班级名称格式受控为「年级（序号）班」，序号为1-99整数",
+        "triggerCommandRefs": [
+          "CreateClass",
+          "UpdateClass"
+        ],
+        "violationBehavior": "拒绝保存并提示格式非法"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "班级为静态主数据，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "Subject",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Subject",
+    "responsibility": "科目主数据及其课时规则，名称受控且口径唯一",
+    "attributes": [
+      "subjectId",
+      "name"
+    ],
+    "entities": [
+      {
+        "name": "SubjectPeriodRule",
+        "identityStrategy": "value-of subjectId",
+        "attributes": [
+          "weeklyPeriods",
+          "consecutivePreference",
+          "forbiddenSlots",
+          "timeSlotPreference",
+          "balancingEnabled"
+        ]
+      }
+    ],
+    "valueObjects": [],
+    "references": [],
+    "sourceUserStoryIds": [
+      "US-BD-006",
+      "US-BD-007"
+    ],
+    "invariants": [
+      {
+        "description": "科目名称受控，禁止同义不同名并存",
+        "triggerCommandRefs": [
+          "CreateSubject",
+          "UpdateSubject"
+        ],
+        "violationBehavior": "拒绝录入并提示口径唯一"
+      },
+      {
+        "description": "科目课时规则冲突时明确提示而非静默忽略",
+        "triggerCommandRefs": [
+          "ConfigureSubjectPeriodRule"
+        ],
+        "violationBehavior": "拒绝保存并提示冲突"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "科目为静态主数据，课时规则为配置数据，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "Teacher",
+    "bcId": "bc-resource",
+    "aggregateRoot": "Teacher",
+    "responsibility": "教师主数据，工号受控唯一，删除与停用语义区分",
+    "attributes": [
+      "teacherId",
+      "employeeNo",
+      "name",
+      "gender",
+      "phone",
+      "status"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "EmployeeNo",
+        "attributes": [
+          "employeeNo"
+        ]
+      }
+    ],
+    "references": [],
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "invariants": [
+      {
+        "description": "教师工号格式受控为「T+数字」且唯一",
+        "triggerCommandRefs": [
+          "CreateTeacher",
+          "UpdateTeacher"
+        ],
+        "violationBehavior": "拒绝保存并提示"
+      },
+      {
+        "description": "删除有任课/关联记录的教师受引用保护",
+        "triggerCommandRefs": [
+          "DeleteTeacher"
+        ],
+        "violationBehavior": "拒绝删除并提示引用关系"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "教师在职/停用为状态字段（删除与停用语义区分），无复杂生命周期迁移，作为数据维护。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "Venue",
+    "bcId": "bc-resource",
+    "aggregateRoot": "Venue",
+    "responsibility": "场地/功能室主数据，名称受控唯一，容量参与排课硬约束校验",
+    "attributes": [
+      "venueId",
+      "name",
+      "type",
+      "capacity",
+      "status"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "VenueName",
+        "attributes": [
+          "name"
+        ]
+      }
+    ],
+    "references": [],
+    "sourceUserStoryIds": [
+      "US-BD-011"
+    ],
+    "invariants": [
+      {
+        "description": "场地名称受控且唯一，违反格式或重名拒绝",
+        "triggerCommandRefs": [
+          "CreateVenue"
+        ],
+        "violationBehavior": "拒绝保存并提示"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "场地为静态资源主数据，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "CombinedClass",
+    "bcId": "bc-resource",
+    "aggregateRoot": "CombinedClass",
+    "responsibility": "合班课配置，多班静态合并为一个排课单元",
+    "attributes": [
+      "combinedClassId",
+      "name",
+      "teacherId",
+      "venueId",
+      "periodConstraint",
+      "classIds"
+    ],
+    "entities": [],
+    "valueObjects": [],
+    "references": [
+      {
+        "class": "Class",
+        "domain": "bc-registry",
+        "fields": [
+          "classIds"
+        ]
+      },
+      {
+        "class": "Teacher",
+        "domain": "bc-resource",
+        "fields": [
+          "teacherId"
+        ]
+      },
+      {
+        "class": "Venue",
+        "domain": "bc-resource",
+        "fields": [
+          "venueId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-012"
+    ],
+    "invariants": [
+      {
+        "description": "合班课配置字段（名称/班级/教师/场地/节次）受控校验，任一非法拒绝",
+        "triggerCommandRefs": [
+          "CreateCombinedClass"
+        ],
+        "violationBehavior": "拒绝保存并提示非法字段"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "合班课为静态配置数据，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "TeachingAssignment",
+    "bcId": "bc-resource",
+    "aggregateRoot": "TeachingAssignment",
+    "responsibility": "教师任课约束，作为基础数据参与排课计算，免排与禁排语义区分",
+    "attributes": [
+      "assignmentId",
+      "teacherId",
+      "subjectId",
+      "classId",
+      "venueId",
+      "weeklyPeriods",
+      "forbiddenSlots",
+      "consecutivePreference",
+      "exemptedSlots"
+    ],
+    "entities": [],
+    "valueObjects": [],
+    "references": [
+      {
+        "class": "Teacher",
+        "domain": "bc-resource",
+        "fields": [
+          "teacherId"
+        ]
+      },
+      {
+        "class": "Subject",
+        "domain": "bc-registry",
+        "fields": [
+          "subjectId"
+        ]
+      },
+      {
+        "class": "Class",
+        "domain": "bc-registry",
+        "fields": [
+          "classId"
+        ]
+      },
+      {
+        "class": "Venue",
+        "domain": "bc-resource",
+        "fields": [
+          "venueId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-BD-010"
+    ],
+    "invariants": [
+      {
+        "description": "任课约束为基础数据而非排课结果",
+        "triggerCommandRefs": [
+          "CreateTeachingAssignment"
+        ],
+        "violationBehavior": "约束作为独立基础数据保存，不随排课结果改写"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "任课约束为静态配置数据，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "TimetablePlan",
+    "bcId": "bc-timetable",
+    "aggregateRoot": "TimetablePlan",
+    "responsibility": "排课方案聚合，管理全校课表、课程课次锁定与草稿/发布/存档生命周期",
+    "attributes": [
+      "planId",
+      "name",
+      "status",
+      "semesterId",
+      "scheduleTemplateId",
+      "generatedAt",
+      "conflictCount"
+    ],
+    "entities": [
+      {
+        "name": "LessonOccurrence",
+        "identityStrategy": "value-of lessonId",
+        "attributes": [
+          "lessonId",
+          "subjectId",
+          "teacherId",
+          "classId",
+          "venueId",
+          "weekday",
+          "period",
+          "locked"
+        ]
+      }
+    ],
+    "valueObjects": [
+      {
+        "name": "TimetableSlot",
+        "attributes": [
+          "weekday",
+          "period"
+        ]
+      }
+    ],
+    "references": [
+      {
+        "class": "Semester",
+        "domain": "bc-registry",
+        "fields": [
+          "semesterId"
+        ]
+      },
+      {
+        "class": "ScheduleTemplate",
+        "domain": "bc-registry",
+        "fields": [
+          "scheduleTemplateId"
+        ]
+      },
+      {
+        "class": "Subject",
+        "domain": "bc-registry",
+        "fields": [
+          "subjectId"
+        ]
+      },
+      {
+        "class": "Teacher",
+        "domain": "bc-resource",
+        "fields": [
+          "teacherId"
+        ]
+      },
+      {
+        "class": "Class",
+        "domain": "bc-registry",
+        "fields": [
+          "classId"
+        ]
+      },
+      {
+        "class": "Venue",
+        "domain": "bc-resource",
+        "fields": [
+          "venueId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-002",
+      "US-AP-004",
+      "US-AP-005",
+      "US-AP-006",
+      "US-AT-003",
+      "US-AT-004",
+      "US-AP-003",
+      "US-CE-001",
+      "US-LG-002"
+    ],
+    "invariants": [
+      {
+        "description": "三类核心冲突（教师时间/班级同节多课/场地占用）为零",
+        "triggerCommandRefs": [
+          "RegeneratePlan",
+          "MoveLesson"
+        ],
+        "violationBehavior": "拒绝保存，冲突槽位高亮并提示"
+      },
+      {
+        "description": "已锁定课程不被自动排课覆盖或移动",
+        "triggerCommandRefs": [
+          "RegeneratePlan",
+          "MoveLesson"
+        ],
+        "violationBehavior": "锁定课程保持原地，非法移动被拒绝"
+      }
+    ],
+    "stateModeling": {
+      "decision": "StateMachine",
+      "reason": "排课方案有草稿→发布→存档生命周期（TimetablePlanLifecycle），课程课次有未锁定/已锁定二态（LessonLockState），均有命令触发的真实迁移。",
+      "stateMachineRefs": [
+        "TimetablePlanLifecycle",
+        "LessonLockState"
+      ],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "OperationLog",
+    "bcId": "bc-governance",
+    "aggregateRoot": "OperationLog",
+    "responsibility": "关键操作日志全量留痕，永久留存可追溯",
+    "attributes": [
+      "logId",
+      "operatorId",
+      "module",
+      "content",
+      "occurredAt"
+    ],
+    "entities": [],
+    "valueObjects": [
+      {
+        "name": "Operator",
+        "attributes": [
+          "operatorId",
+          "operatorName"
+        ]
+      }
+    ],
+    "references": [
+      {
+        "class": "Account",
+        "domain": "bc-identity",
+        "fields": [
+          "operatorId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-CM-001",
+      "US-LG-001"
+    ],
+    "invariants": [
+      {
+        "description": "关键操作100%留痕且永久留存，不被清理",
+        "triggerCommandRefs": [
+          "RecordOperationLog"
+        ],
+        "violationBehavior": "关键操作必须写日志，日志不可清理"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "日志为不可变追加记录，无生命周期状态迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  },
+  {
+    "name": "Account",
+    "bcId": "bc-identity",
+    "aggregateRoot": "Account",
+    "responsibility": "本地账号及角色权限，与教师主数据关联",
+    "attributes": [
+      "accountId",
+      "username",
+      "passwordHash",
+      "role",
+      "status",
+      "teacherId"
+    ],
+    "entities": [],
+    "valueObjects": [],
+    "references": [
+      {
+        "class": "Teacher",
+        "domain": "bc-resource",
+        "fields": [
+          "teacherId"
+        ]
+      }
+    ],
+    "sourceUserStoryIds": [
+      "US-AU-001",
+      "US-AU-002",
+      "US-AU-003",
+      "US-BD-009"
+    ],
+    "invariants": [
+      {
+        "description": "账号角色限定 Admin/Teacher 双角色，系统内置默认管理员初始化",
+        "triggerCommandRefs": [
+          "AssignRole",
+          "ProvisionTeacherAccount"
+        ],
+        "violationBehavior": "非法角色被拒绝"
+      }
+    ],
+    "stateModeling": {
+      "decision": "DataOnly",
+      "reason": "账号启用/停用为状态字段，无复杂生命周期迁移。",
+      "stateMachineRefs": [],
+      "openQuestions": []
+    }
+  }
+]

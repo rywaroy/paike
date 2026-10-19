@@ -1,0 +1,5519 @@
+[
+  {
+    "storyId": "US-BD-001",
+    "sourceFile": "../01-story-modeling/stories/US-BD-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Query",
+        "name": "ViewSemester"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 已存在多个学期数据，When 我在学期管理页查看列表，Then 列表逐条展示「学期 / 学年 / 起止日期 / 引用作息模板 / 状态」五类字段且与数据一致。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "已存在多个学期数据",
+              "statePredicates": [
+                "已存在多个学期数据"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我在学期管理页查看列表",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewSemester"
+                }
+              ],
+              "rationale": "被测动作为“我在学期管理页查看列表”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "列表逐条展示「学期 / 学年 / 起止日期 / 引用作息模板 / 状态」五类字段且与数据一致。",
+              "assertions": [
+                {
+                  "id": "US-BD-001-AC-01-S1-A1",
+                  "kind": "Information",
+                  "description": "学期列表逐条展示五类字段且与数据一致",
+                  "ruleRefs": []
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "SemesterService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未取得学期列表",
+                "after": "获得学期列表且五类字段一致",
+                "onFailure": "返回查询错误，不改动学期数据",
+                "reason": "读侧信息变化，不虚构领域写命令"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 学期处于不同生命周期，When 查看状态列，Then 状态取值仅为「未开始 / 进行中 / 已结束 / 已存档」四值之一（D12 枚举）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "学期处于不同生命周期",
+              "statePredicates": [
+                "学期处于不同生命周期"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "查看状态列",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewSemester"
+                }
+              ],
+              "rationale": "被测动作为“查看状态列”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "状态取值仅为「未开始 / 进行中 / 已结束 / 已存档」四值之一（D12 枚举）。",
+              "assertions": [
+                {
+                  "id": "US-BD-001-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "状态取值仅为未开始/进行中/已结束/已存档四值之一",
+                  "ruleRefs": [
+                    "R-002",
+                    "R-046"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "SemesterService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未查看状态列",
+                "after": "状态列取四值之一",
+                "onFailure": "返回错误不改数据",
+                "reason": "状态枚举由数据校验规则约束"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-002",
+    "sourceFile": "../01-story-modeling/stories/US-BD-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateSemester"
+      },
+      {
+        "kind": "Command",
+        "name": "UpdateSemester"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 存在至少一个作息模板，When 我新增学期，Then 选择作息模板为必选项，未选择无法保存（D8 强制必选）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "存在至少一个作息模板",
+              "statePredicates": [
+                "存在至少一个作息模板"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我新增学期",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateSemester"
+                }
+              ],
+              "rationale": "被测动作为“我新增学期”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "选择作息模板为必选项，未选择无法保存（D8 强制必选）。",
+              "assertions": [
+                {
+                  "id": "US-BD-002-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "未选择作息模板时保存被拒绝",
+                  "ruleRefs": [
+                    "R-001"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Semester",
+                "fields": [
+                  "scheduleTemplateId"
+                ],
+                "before": "学期未绑定作息模板",
+                "after": "保存被拒绝，仍未绑定",
+                "onFailure": "不创建学期记录",
+                "reason": "强制绑定为创建前提，未满足即拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-002-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 某学期未绑定作息模板，When 我尝试对该学期触发一键排课，Then 操作被拦截并提示「未绑定作息模板」。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-002-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "某学期未绑定作息模板",
+              "statePredicates": [
+                "某学期未绑定作息模板"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我尝试对该学期触发一键排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“我尝试对该学期触发一键排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "操作被拦截并提示「未绑定作息模板」。",
+              "assertions": [
+                {
+                  "id": "US-BD-002-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "未绑定作息模板的学期触发排课被拦截并提示",
+                  "ruleRefs": [
+                    "R-001"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "无排课方案",
+                "after": "排课被拦截，仍未生成方案",
+                "onFailure": "不生成排课方案",
+                "reason": "排课前置条件不满足，拒绝而非静默"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-002-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 某学期状态为「已存档」，When 我尝试编辑该学期，Then 编辑被拒绝（只读）；可查看与导出（D12）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-002-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "某学期状态为「已存档」",
+              "statePredicates": [
+                "某学期状态为「已存档」"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我尝试编辑该学期",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "UpdateSemester"
+                }
+              ],
+              "rationale": "被测动作为“我尝试编辑该学期”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "编辑被拒绝（只读）；可查看与导出（D12）。",
+              "assertions": [
+                {
+                  "id": "US-BD-002-AC-03-S1-A1",
+                  "kind": "Rejection",
+                  "description": "已存档学期编辑被拒绝（只读），可查看与导出",
+                  "ruleRefs": [
+                    "R-041"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Semester",
+                "fields": [
+                  "status"
+                ],
+                "before": "学期已存档",
+                "after": "编辑被拒绝，保持已存档",
+                "onFailure": "不修改学期数据",
+                "reason": "已存档只读，拒绝修改"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-003",
+    "sourceFile": "../01-story-modeling/stories/US-BD-003.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateScheduleTemplate"
+      },
+      {
+        "kind": "Command",
+        "name": "UpdateScheduleTemplate"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-003-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 已存在模板 v1，When 我在其基础上编辑并保存，Then 生成新版本 v2，v1 保持原样（版本快照）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-003-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "已存在模板 v1",
+              "statePredicates": [
+                "已存在模板 v1"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我在其基础上编辑并保存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "UpdateScheduleTemplate"
+                }
+              ],
+              "rationale": "被测动作为“我在其基础上编辑并保存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "生成新版本 v2，v1 保持原样（版本快照）。",
+              "assertions": [
+                {
+                  "id": "US-BD-003-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "编辑保存生成新版本 v2，v1 保持原样",
+                  "ruleRefs": [
+                    "R-003"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "ScheduleTemplate",
+                "fields": [
+                  "version"
+                ],
+                "before": "版本为 v1",
+                "after": "新增版本 v2，v1 保持不变",
+                "onFailure": "不覆盖历史版本",
+                "reason": "版本快照用属性变化表达，非生命周期"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-003-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 同一模板被多个学期引用，When 模板出新版本，Then 历史学期引用关系与已生成课表数据不变（D4 解耦）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-003-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "同一模板被多个学期引用",
+              "statePredicates": [
+                "同一模板被多个学期引用"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "模板出新版本",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "UpdateScheduleTemplate"
+                }
+              ],
+              "rationale": "被测动作为“模板出新版本”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "历史学期引用关系与已生成课表数据不变（D4 解耦）。",
+              "assertions": [
+                {
+                  "id": "US-BD-003-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "历史学期引用关系与已生成课表数据不变",
+                  "ruleRefs": [
+                    "R-003"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "ScheduleTemplate",
+                "fields": [
+                  "version"
+                ],
+                "before": "模板被多学期引用",
+                "after": "出新版本后历史引用与课表不变",
+                "onFailure": "不改变历史学期引用",
+                "reason": "模板版本与学期引用解耦，历史数据不可变"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-003-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 模板编辑表单提交，When 节次时间或开放星期非法（如节次重叠 / 时段超界），Then 保存被拒绝并给出明确提示。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-003-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "模板编辑表单提交",
+              "statePredicates": [
+                "模板编辑表单提交"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "节次时间或开放星期非法（如节次重叠 / 时段超界）",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "UpdateScheduleTemplate"
+                }
+              ],
+              "rationale": "被测动作为“节次时间或开放星期非法（如节次重叠 / 时段超界）”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "保存被拒绝并给出明确提示。",
+              "assertions": [
+                {
+                  "id": "US-BD-003-AC-03-S1-A1",
+                  "kind": "Rejection",
+                  "description": "节次时间或开放星期非法时保存被拒绝",
+                  "ruleRefs": [
+                    "R-003"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "ScheduleTemplate",
+                "fields": [
+                  "openWeekdays"
+                ],
+                "before": "当前模板版本",
+                "after": "非法提交被拒绝，版本不变",
+                "onFailure": "不生成非法新版本",
+                "reason": "校验失败拒绝，不产生版本"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-004",
+    "sourceFile": "../01-story-modeling/stories/US-BD-004.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateGrade"
+      },
+      {
+        "kind": "Command",
+        "name": "DeleteGrade"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-004-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 年级管理区，When 我新增 / 编辑 / 删除年级，Then 操作成功并即时更新受控名称列表（如 高一/高二/高三 或 七年级…九年级）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-004-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "年级管理区",
+              "statePredicates": [
+                "年级管理区"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我新增 / 编辑 / 删除年级",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateGrade"
+                }
+              ],
+              "rationale": "被测动作为“我新增 / 编辑 / 删除年级”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "操作成功并即时更新受控名称列表（如 高一/高二/高三 或 七年级…九年级）。",
+              "assertions": [
+                {
+                  "id": "US-BD-004-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "新增/编辑/删除年级成功并即时更新受控名称列表",
+                  "ruleRefs": [
+                    "R-004"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "Grade",
+                "fields": [
+                  "gradeId",
+                  "name"
+                ],
+                "before": "无该年级",
+                "after": "年级记录创建并进入受控列表",
+                "onFailure": "记录未保存",
+                "reason": "受控主数据增删改用存在性变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-004-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 某年级仍被班级引用，When 我尝试删除该年级，Then 删除被拦截并提示引用关系（D16 引用保护）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-004-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "某年级仍被班级引用",
+              "statePredicates": [
+                "某年级仍被班级引用"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我尝试删除该年级",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "DeleteGrade"
+                }
+              ],
+              "rationale": "被测动作为“我尝试删除该年级”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "删除被拦截并提示引用关系（D16 引用保护）。",
+              "assertions": [
+                {
+                  "id": "US-BD-004-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "被班级引用的年级删除被拦截并提示引用关系",
+                  "ruleRefs": [
+                    "R-005"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Grade",
+                "fields": [
+                  "gradeId"
+                ],
+                "before": "年级仍被班级引用",
+                "after": "删除被拦截，年级保留",
+                "onFailure": "不删除年级",
+                "reason": "引用删除保护拒绝"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-005",
+    "sourceFile": "../01-story-modeling/stories/US-BD-005.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateClass"
+      },
+      {
+        "kind": "Command",
+        "name": "UpdateClass"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-005-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 我选择年级并输入受控序号，When 我保存新增班级，Then 系统自动生成「年级（序号）班」规范名称（如「高一（1）班」），禁止自由文本直接输入班级名（D20）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-005-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "我选择年级并输入受控序号",
+              "statePredicates": [
+                "我选择年级并输入受控序号"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我保存新增班级",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateClass"
+                }
+              ],
+              "rationale": "被测动作为“我保存新增班级”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "系统自动生成「年级（序号）班」规范名称（如「高一（1）班」），禁止自由文本直接输入班级名（D20）。",
+              "assertions": [
+                {
+                  "id": "US-BD-005-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "系统自动生成「年级（序号）班」规范名称，禁止自由文本",
+                  "ruleRefs": [
+                    "R-006"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Class",
+                "fields": [
+                  "name",
+                  "serialNo"
+                ],
+                "before": "无班级名称",
+                "after": "生成受控规范名称",
+                "onFailure": "不保存非法名称",
+                "reason": "名称由受控规则自动生成"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-005-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 序号输入超出 1-99 范围或非整数，When 保存，Then 被拒绝并提示校验原因。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-005-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "序号输入超出 1-99 范围或非整数",
+              "statePredicates": [
+                "序号输入超出 1-99 范围或非整数"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "保存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateClass"
+                }
+              ],
+              "rationale": "被测动作为“保存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "被拒绝并提示校验原因。",
+              "assertions": [
+                {
+                  "id": "US-BD-005-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "序号超出 1-99 或非整数被拒绝并提示",
+                  "ruleRefs": [
+                    "R-006"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Class",
+                "fields": [
+                  "serialNo",
+                  "name"
+                ],
+                "before": "序号非法",
+                "after": "保存被拒绝",
+                "onFailure": "不创建班级",
+                "reason": "序号校验失败拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-005-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 批量导入文件含非法行，When 提交导入，Then 异常行给出行号级提示，合法行仍可导入（导入上限见 US-CM-002）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-005-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "批量导入文件含非法行",
+              "statePredicates": [
+                "批量导入文件含非法行"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "提交导入",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "BatchImport"
+                }
+              ],
+              "rationale": "被测动作为“提交导入”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "异常行给出行号级提示，合法行仍可导入（导入上限见 US-CM-002）。",
+              "assertions": [
+                {
+                  "id": "US-BD-005-AC-03-S1-A1",
+                  "kind": "Information",
+                  "description": "异常行行级提示，合法行仍可导入",
+                  "ruleRefs": [
+                    "R-038"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "Class",
+                "fields": [
+                  "name"
+                ],
+                "before": "导入前无新班级",
+                "after": "合法行导入、异常行行级报错",
+                "onFailure": "异常行不影响合法行",
+                "reason": "批量导入是过程性动作"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-006",
+    "sourceFile": "../01-story-modeling/stories/US-BD-006.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateSubject"
+      },
+      {
+        "kind": "Command",
+        "name": "UpdateSubject"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-006-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 我新增科目，When 名称不符合受控规范或与已有科目语义重复（如同义不同名），Then 录入被拒绝并提示。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-006-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "我新增科目",
+              "statePredicates": [
+                "我新增科目"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "名称不符合受控规范或与已有科目语义重复（如同义不同名）",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateSubject"
+                }
+              ],
+              "rationale": "被测动作为“名称不符合受控规范或与已有科目语义重复（如同义不同名）”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "录入被拒绝并提示。",
+              "assertions": [
+                {
+                  "id": "US-BD-006-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "名称不符合受控或同义不同名被拒绝并提示",
+                  "ruleRefs": [
+                    "R-007"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Subject",
+                "fields": [
+                  "name"
+                ],
+                "before": "无该科目",
+                "after": "录入被拒绝",
+                "onFailure": "不创建科目",
+                "reason": "受控名称校验拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-006-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 科目数据存在，When 我编辑科目名称，Then 同样经受控校验，通过后生效。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-006-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "科目数据存在",
+              "statePredicates": [
+                "科目数据存在"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我编辑科目名称",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "UpdateSubject"
+                }
+              ],
+              "rationale": "被测动作为“我编辑科目名称”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "同样经受控校验，通过后生效。",
+              "assertions": [
+                {
+                  "id": "US-BD-006-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "编辑科目名称经受控校验，通过后生效",
+                  "ruleRefs": [
+                    "R-007"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Subject",
+                "fields": [
+                  "name"
+                ],
+                "before": "科目原名称",
+                "after": "校验通过后名称更新",
+                "onFailure": "校验失败不更新",
+                "reason": "名称编辑与新增同受控校验"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-007",
+    "sourceFile": "../01-story-modeling/stories/US-BD-007.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "ConfigureSubjectPeriodRule"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-007-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 科目课时编辑表单，When 我配置周课时 / 连堂 / 禁排 / 时段优先并保存，Then 配置生效且成为排课引擎约束输入。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-007-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "科目课时编辑表单",
+              "statePredicates": [
+                "科目课时编辑表单"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我配置周课时 / 连堂 / 禁排 / 时段优先并保存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "ConfigureSubjectPeriodRule"
+                }
+              ],
+              "rationale": "被测动作为“我配置周课时 / 连堂 / 禁排 / 时段优先并保存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "配置生效且成为排课引擎约束输入。",
+              "assertions": [
+                {
+                  "id": "US-BD-007-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "周课时/连堂/禁排/时段优先配置生效并成为排课引擎约束输入",
+                  "ruleRefs": [
+                    "R-008"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Subject",
+                "fields": [
+                  "weeklyPeriods"
+                ],
+                "before": "科目课时规则缺省",
+                "after": "配置保存并成为约束输入",
+                "onFailure": "配置未保存",
+                "reason": "课时规则作为配置数据写入"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-007-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 三类可配约束，When 未启用，Then 默认关闭不参与排课；启用后作为软约束参与排课（D17）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-007-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "三类可配约束",
+              "statePredicates": [
+                "三类可配约束"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "未启用",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "ConfigureSubjectPeriodRule"
+                }
+              ],
+              "rationale": "被测动作为“未启用”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "默认关闭不参与排课；启用后作为软约束参与排课（D17）。",
+              "assertions": [
+                {
+                  "id": "US-BD-007-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "三类约束默认关闭不参与排课，启用后作为软约束参与排课",
+                  "ruleRefs": [
+                    "R-008"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Subject",
+                "fields": [
+                  "balancingEnabled"
+                ],
+                "before": "三类约束默认关闭",
+                "after": "启用后作为软约束参与排课",
+                "onFailure": "配置不生效",
+                "reason": "软约束开关为配置数据"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-007-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 配置产生规则冲突，When 触发排课，Then 系统明确提示而非静默忽略。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-007-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "配置产生规则冲突",
+              "statePredicates": [
+                "配置产生规则冲突"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "触发排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“触发排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "系统明确提示而非静默忽略。",
+              "assertions": [
+                {
+                  "id": "US-BD-007-AC-03-S1-A1",
+                  "kind": "Rejection",
+                  "description": "配置规则冲突时排课明确提示而非静默忽略",
+                  "ruleRefs": [
+                    "R-009"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Subject",
+                "fields": [
+                  "weeklyPeriods"
+                ],
+                "before": "配置存在规则冲突",
+                "after": "排课提示冲突而非静默忽略",
+                "onFailure": "不静默忽略冲突",
+                "reason": "冲突显式提示"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-008",
+    "sourceFile": "../01-story-modeling/stories/US-BD-008.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateTeacher"
+      },
+      {
+        "kind": "Command",
+        "name": "UpdateTeacher"
+      },
+      {
+        "kind": "Command",
+        "name": "DeactivateTeacher"
+      },
+      {
+        "kind": "Command",
+        "name": "DeleteTeacher"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-008-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 教师新增 / 编辑表单，When 提交工号，Then 工号必须符合 `T`+数字 格式；重复或格式不合规时拒绝保存并提示（D20）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-008-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师新增 / 编辑表单",
+              "statePredicates": [
+                "教师新增 / 编辑表单"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "提交工号",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateTeacher"
+                },
+                {
+                  "kind": "Command",
+                  "name": "UpdateTeacher"
+                }
+              ],
+              "rationale": "被测动作为“提交工号”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "工号必须符合 `T`+数字 格式；重复或格式不合规时拒绝保存并提示（D20）。",
+              "assertions": [
+                {
+                  "id": "US-BD-008-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "工号不符合 T+数字 格式或重复时拒绝保存并提示",
+                  "ruleRefs": [
+                    "R-010"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Teacher",
+                "fields": [
+                  "employeeNo"
+                ],
+                "before": "工号非法或重复",
+                "after": "保存被拒绝",
+                "onFailure": "不保存教师",
+                "reason": "工号受控唯一校验拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-008-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 教师有任课 / 关联记录，When 我尝试删除该教师，Then 删除被拦截并提示引用关系（D16 引用保护）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-008-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师有任课 / 关联记录",
+              "statePredicates": [
+                "教师有任课 / 关联记录"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我尝试删除该教师",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "DeleteTeacher"
+                }
+              ],
+              "rationale": "被测动作为“我尝试删除该教师”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "删除被拦截并提示引用关系（D16 引用保护）。",
+              "assertions": [
+                {
+                  "id": "US-BD-008-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "有任课/关联记录的教师删除被拦截",
+                  "ruleRefs": [
+                    "R-012"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Teacher",
+                "fields": [
+                  "teacherId"
+                ],
+                "before": "教师有任课记录",
+                "after": "删除被拦截",
+                "onFailure": "不删除教师",
+                "reason": "引用删除保护拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-008-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 教师为退校状态，「删除」与「停用」操作，Then 语义区分：删除被引用保护，停用保留主数据。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-008-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师为退校状态，「删除」与「停用」操作",
+              "statePredicates": [
+                "教师为退校状态，「删除」与「停用」操作"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "「删除」与「停用」操作",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "DeleteTeacher"
+                },
+                {
+                  "kind": "Command",
+                  "name": "DeactivateTeacher"
+                }
+              ],
+              "rationale": "被测动作为“「删除」与「停用」操作”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "语义区分：删除被引用保护，停用保留主数据。",
+              "assertions": [
+                {
+                  "id": "US-BD-008-AC-03-S1-A1",
+                  "kind": "Rejection",
+                  "description": "退校教师删除被引用保护",
+                  "ruleRefs": [
+                    "R-011"
+                  ]
+                },
+                {
+                  "id": "US-BD-008-AC-03-S1-A2",
+                  "kind": "Data",
+                  "description": "退校教师停用保留主数据",
+                  "ruleRefs": [
+                    "R-011"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Teacher",
+                "fields": [
+                  "teacherId"
+                ],
+                "before": "教师为退校状态",
+                "after": "删除被引用保护拒绝",
+                "onFailure": "不删除教师",
+                "reason": "删除与停用语义区分"
+              },
+              {
+                "kind": "Attribute",
+                "subject": "Teacher",
+                "fields": [
+                  "status"
+                ],
+                "before": "教师为退校状态",
+                "after": "停用保留主数据",
+                "onFailure": "停用操作失败时状态不变",
+                "reason": "停用仅改变状态字段"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-009",
+    "sourceFile": "../01-story-modeling/stories/US-BD-009.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "ProvisionTeacherAccount"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-009-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 新增 / 编辑教师表单，When 勾选「一键开通登录账号」并保存，Then 生成对应 Teacher 账号，可在「用户与角色」页（P21）查到该账号，教师可用其登录（联动 US-AU-001）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-009-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "新增 / 编辑教师表单",
+              "statePredicates": [
+                "新增 / 编辑教师表单"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "勾选「一键开通登录账号」并保存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "ProvisionTeacherAccount"
+                }
+              ],
+              "rationale": "被测动作为“勾选「一键开通登录账号」并保存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "生成对应 Teacher 账号，可在「用户与角色」页（P21）查到该账号，教师可用其登录（联动 US-AU-001）。",
+              "assertions": [
+                {
+                  "id": "US-BD-009-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "生成对应 Teacher 账号，可在用户与角色页查到并可用其登录",
+                  "ruleRefs": [
+                    "R-045"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "Account",
+                "fields": [
+                  "accountId",
+                  "teacherId"
+                ],
+                "before": "无该教师账号",
+                "after": "生成 Teacher 账号并关联教师",
+                "onFailure": "不生成账号",
+                "reason": "账号开通生成新记录"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-009-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 教师账号已开通，When 重复为同一手机号 / 工号开通，Then 不产生重复账号（唯一性校验）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-009-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师账号已开通",
+              "statePredicates": [
+                "教师账号已开通"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "重复为同一手机号 / 工号开通",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "ProvisionTeacherAccount"
+                }
+              ],
+              "rationale": "被测动作为“重复为同一手机号 / 工号开通”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "不产生重复账号（唯一性校验）。",
+              "assertions": [
+                {
+                  "id": "US-BD-009-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "重复为同一手机号/工号开通不产生重复账号",
+                  "ruleRefs": [
+                    "R-045"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Account",
+                "fields": [
+                  "accountId"
+                ],
+                "before": "教师账号已开通",
+                "after": "重复开通被拒绝",
+                "onFailure": "不产生重复账号",
+                "reason": "账号唯一性校验拒绝"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-010",
+    "sourceFile": "../01-story-modeling/stories/US-BD-010.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateTeachingAssignment"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-010-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 任课配置表单，When 我为教师绑定科目 + 班级 + 场地 + 每周课时 + 免排时段，Then 保存成功且参与排课计算（免排 / 禁排语义区分，见名词统一）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-010-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "任课配置表单",
+              "statePredicates": [
+                "任课配置表单"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我为教师绑定科目 + 班级 + 场地 + 每周课时 + 免排时段",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateTeachingAssignment"
+                }
+              ],
+              "rationale": "被测动作为“我为教师绑定科目 + 班级 + 场地 + 每周课时 + 免排时段”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "保存成功且参与排课计算（免排 / 禁排语义区分，见名词统一）。",
+              "assertions": [
+                {
+                  "id": "US-BD-010-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "任课约束保存成功且参与排课计算（免排/禁排语义区分）",
+                  "ruleRefs": [
+                    "R-013"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "TeachingAssignment",
+                "fields": [
+                  "assignmentId"
+                ],
+                "before": "无该任课约束",
+                "after": "任课约束保存并参与排课",
+                "onFailure": "约束未保存",
+                "reason": "任课约束作为基础数据写入"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-010-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 批量导入任课数据，When 含工号不存在或属性非法，Then 异常行行级提示；工号唯一性校验生效。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-010-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "批量导入任课数据",
+              "statePredicates": [
+                "批量导入任课数据"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "含工号不存在或属性非法",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "BatchImport"
+                }
+              ],
+              "rationale": "被测动作为“含工号不存在或属性非法”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "异常行行级提示；工号唯一性校验生效。",
+              "assertions": [
+                {
+                  "id": "US-BD-010-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "含工号不存在或属性非法的异常行行级提示，工号唯一性校验生效",
+                  "ruleRefs": [
+                    "R-013"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TeachingAssignment",
+                "fields": [
+                  "assignmentId"
+                ],
+                "before": "导入前无新约束",
+                "after": "合法行导入、异常行行级报错",
+                "onFailure": "异常行不影响合法行",
+                "reason": "批量导入是过程性动作"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-010-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 课时均衡类约束已启用，Then 任课配置与该约束联动参与排课（D17）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-010-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "课时均衡类约束已启用",
+              "statePredicates": [
+                "课时均衡类约束已启用"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "参与排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“参与排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "任课配置与该约束联动参与排课（D17）。",
+              "assertions": [
+                {
+                  "id": "US-BD-010-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "均衡类约束启用后任课配置与该约束联动参与排课",
+                  "ruleRefs": [
+                    "R-008"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "均衡类约束已启用",
+                "after": "排课计算应用均衡约束",
+                "onFailure": "约束未参与排课",
+                "reason": "软约束联动为排课过程变化"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-011",
+    "sourceFile": "../01-story-modeling/stories/US-BD-011.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateVenue"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-011-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 场地新增 / 编辑表单，When 名称违反受控格式或与已有场地重名，Then 拒绝并提示（D20）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-011-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "场地新增 / 编辑表单",
+              "statePredicates": [
+                "场地新增 / 编辑表单"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "名称违反受控格式或与已有场地重名",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateVenue"
+                }
+              ],
+              "rationale": "被测动作为“名称违反受控格式或与已有场地重名”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "拒绝并提示（D20）。",
+              "assertions": [
+                {
+                  "id": "US-BD-011-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "名称违反受控格式或重名时拒绝并提示",
+                  "ruleRefs": [
+                    "R-014"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Venue",
+                "fields": [
+                  "name"
+                ],
+                "before": "名称非法或重名",
+                "after": "保存被拒绝",
+                "onFailure": "不保存场地",
+                "reason": "场地名称受控唯一校验拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-011-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 某班级人数 > 目标场地容量，When 排课引擎试图占用该场地，Then 硬约束禁排并提示更换场地（D19）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-011-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "某班级人数 > 目标场地容量",
+              "statePredicates": [
+                "某班级人数 > 目标场地容量"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "排课引擎试图占用该场地",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“排课引擎试图占用该场地”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "硬约束禁排并提示更换场地（D19）。",
+              "assertions": [
+                {
+                  "id": "US-BD-011-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "班级人数大于场地容量时硬约束禁排并提示更换场地",
+                  "ruleRefs": [
+                    "R-015"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Venue",
+                "fields": [
+                  "capacity"
+                ],
+                "before": "班级人数超场地容量",
+                "after": "占用被硬约束拒绝",
+                "onFailure": "不占用该场地",
+                "reason": "容量硬约束拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-011-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 类型字段，When 维护场地，Then 类型仅为「教室 / 功能室」二值（D6 合并口径）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-011-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "类型字段",
+              "statePredicates": [
+                "类型字段"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "维护场地",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateVenue"
+                }
+              ],
+              "rationale": "被测动作为“维护场地”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "类型仅为「教室 / 功能室」二值（D6 合并口径）。",
+              "assertions": [
+                {
+                  "id": "US-BD-011-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "类型字段仅为教室/功能室二值",
+                  "ruleRefs": [
+                    "R-014"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Venue",
+                "fields": [
+                  "type"
+                ],
+                "before": "类型字段待维护",
+                "after": "类型取教室/功能室二值",
+                "onFailure": "非法类型被拒绝",
+                "reason": "类型合并口径为数据约束"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-BD-012",
+    "sourceFile": "../01-story-modeling/stories/US-BD-012.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "CreateCombinedClass"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-BD-012-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 合班课配置表单，When 名称 / 参与班级 / 教师 / 场地 / 节次任一非法，Then 配置被拒绝并提示（D20 受控）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-012-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "合班课配置表单",
+              "statePredicates": [
+                "合班课配置表单"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "名称 / 参与班级 / 教师 / 场地 / 节次任一非法",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "CreateCombinedClass"
+                }
+              ],
+              "rationale": "被测动作为“名称 / 参与班级 / 教师 / 场地 / 节次任一非法”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "配置被拒绝并提示（D20 受控）。",
+              "assertions": [
+                {
+                  "id": "US-BD-012-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "名称/参与班级/教师/场地/节次任一非法时配置被拒绝",
+                  "ruleRefs": [
+                    "R-017"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "CombinedClass",
+                "fields": [
+                  "name"
+                ],
+                "before": "合班课字段非法",
+                "after": "配置被拒绝",
+                "onFailure": "不保存合班课",
+                "reason": "合班课配置受控校验拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-BD-012-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 合班课配置成功，When 参与排课，Then 作为一个排课单元占用时间与场地，不产生班级 / 场地冲突（不限科目，D10）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-BD-012-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "合班课配置成功",
+              "statePredicates": [
+                "合班课配置成功"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "参与排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“参与排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "作为一个排课单元占用时间与场地，不产生班级 / 场地冲突（不限科目，D10）。",
+              "assertions": [
+                {
+                  "id": "US-BD-012-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "合班课作为一个排课单元占用时间与场地，不产生冲突",
+                  "ruleRefs": [
+                    "R-017"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "合班课配置成功",
+                "after": "合班课作为单排课单元占用",
+                "onFailure": "占用产生冲突则不排",
+                "reason": "合班作为整体排课单元"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AP-001",
+    "sourceFile": "../01-story-modeling/stories/US-AP-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "RegeneratePlan"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AP-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 已就绪的基础数据与约束，When 我触发一键排课，Then 生成方案，三类核心冲突为 0，50 班规模 ≤5 秒完成（D3 验收边界）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "已就绪的基础数据与约束",
+              "statePredicates": [
+                "已就绪的基础数据与约束"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我触发一键排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“我触发一键排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "生成方案，三类核心冲突为 0，50 班规模 ≤5 秒完成（D3 验收边界）。",
+              "assertions": [
+                {
+                  "id": "US-AP-001-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "生成方案且三类核心冲突为 0，50 班规模 ≤5 秒完成",
+                  "ruleRefs": [
+                    "R-018",
+                    "R-020"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "planId",
+                  "status"
+                ],
+                "before": "无排课方案",
+                "after": "生成草稿方案且三类冲突为 0",
+                "onFailure": "不生成方案",
+                "reason": "一键排课产出新方案"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 方案生成成功，When 我查看结果，Then 展示冲突数（0）与完成时长。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "方案生成成功",
+              "statePredicates": [
+                "方案生成成功"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我查看结果",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewTimetable"
+                }
+              ],
+              "rationale": "被测动作为“我查看结果”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "展示冲突数（0）与完成时长。",
+              "assertions": [
+                {
+                  "id": "US-AP-001-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "展示冲突数（0）与完成时长",
+                  "ruleRefs": []
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未查看结果",
+                "after": "获得冲突数与完成时长",
+                "onFailure": "返回错误不改方案",
+                "reason": "读侧信息变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-001-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 按最小确定性验收样例构造输入（2 班 + 2 教师 + 2 科目 + 1 功能室，含连堂 / 禁排 / 免排约束），When 我触发一键排课，Then 期望课表逐项满足各项约束且三类核心冲突为 0，作为排课引擎正确性的公共断言基准（D15）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-001-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "按最小确定性验收样例构造输入（2 班 + 2 教师 + 2 科目 + 1 功能室，含连堂 / 禁排 / 免排约束）",
+              "statePredicates": [
+                "按最小确定性验收样例构造输入（2 班 + 2 教师 + 2 科目 + 1 功能室，含连堂 / 禁排 / 免排约束）"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我触发一键排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“我触发一键排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "期望课表逐项满足各项约束且三类核心冲突为 0，作为排课引擎正确性的公共断言基准（D15）。",
+              "assertions": [
+                {
+                  "id": "US-AP-001-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "最小确定性样例逐项满足约束且三类核心冲突为 0",
+                  "ruleRefs": [
+                    "R-018"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "planId"
+                ],
+                "before": "样例输入已构造",
+                "after": "生成样例方案且约束全满足",
+                "onFailure": "样例不通过则不生成",
+                "reason": "公共断言基准验证引擎正确性"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AP-002",
+    "sourceFile": "../01-story-modeling/stories/US-AP-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "RegeneratePlan"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AP-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 硬约束无法全部满足，When 触发一键排课，Then 产出冲突数 > 0 的方案并列出未排课时清单（含课次 / 教师 / 班级 / 原因），可点击定位到对应可调对象。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "硬约束无法全部满足",
+              "statePredicates": [
+                "硬约束无法全部满足"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "触发一键排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“触发一键排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "产出冲突数 > 0 的方案并列出未排课时清单（含课次 / 教师 / 班级 / 原因），可点击定位到对应可调对象。",
+              "assertions": [
+                {
+                  "id": "US-AP-002-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "产出冲突数>0 方案并列出未排课时清单，可点击定位",
+                  "ruleRefs": [
+                    "R-018"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "conflictCount"
+                ],
+                "before": "硬约束无法全部满足",
+                "after": "产出冲突方案与未排课时清单",
+                "onFailure": "清单缺失则不通过",
+                "reason": "无解场景产出清单为过程结果"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-002-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 该场景，When 我保存方案，Then 允许保存继续手工调整（D14）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-002-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "该场景",
+              "statePredicates": [
+                "该场景"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我保存方案",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“我保存方案”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "允许保存继续手工调整（D14）。",
+              "assertions": [
+                {
+                  "id": "US-AP-002-AC-02-S1-A1",
+                  "kind": "State",
+                  "description": "冲突方案允许保存以便继续手工调整",
+                  "ruleRefs": [
+                    "R-018"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "冲突方案待保存",
+                "after": "方案保存为草稿供手工调整",
+                "onFailure": "不保存则丢弃",
+                "reason": "冲突方案可保存继续调整"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AP-003",
+    "sourceFile": "../01-story-modeling/stories/US-AP-003.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "PublishPlan"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AP-003-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 排课方案处于草稿，When 我另存，Then 生成多个草稿方案并存（方案列表各自独立）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-003-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "排课方案处于草稿",
+              "statePredicates": [
+                "排课方案处于草稿"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我另存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“我另存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "生成多个草稿方案并存（方案列表各自独立）。",
+              "assertions": [
+                {
+                  "id": "US-AP-003-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "另存生成多个草稿方案并存，方案列表各自独立",
+                  "ruleRefs": [
+                    "R-019"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "planId"
+                ],
+                "before": "已有草稿方案",
+                "after": "另存生成多个独立草稿",
+                "onFailure": "另存失败不生成",
+                "reason": "另存为存在性变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-003-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 每学期已存在一份正式课表，When 我再次发布新方案，Then 覆盖旧正式课表前弹出二次确认（D12 / D16）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-003-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "每学期已存在一份正式课表",
+              "statePredicates": [
+                "每学期已存在一份正式课表"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我再次发布新方案",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "PublishPlan"
+                }
+              ],
+              "rationale": "被测动作为“我再次发布新方案”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "覆盖旧正式课表前弹出二次确认（D12 / D16）。",
+              "assertions": [
+                {
+                  "id": "US-AP-003-AC-02-S1-A1",
+                  "kind": "SideEffect",
+                  "description": "覆盖旧正式课表前弹出二次确认",
+                  "ruleRefs": [
+                    "R-035"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Lifecycle",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "方案为草稿",
+                "after": "发布为正式课表（覆盖前二次确认）",
+                "onFailure": "未确认不覆盖正式课表",
+                "reason": "发布为生命周期迁移，覆盖前二次确认",
+                "stateMachineRef": "TimetablePlanLifecycle",
+                "fromStates": [
+                  "Draft"
+                ],
+                "toStates": [
+                  "Published"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-003-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 未发布草稿，When 我直接切换学期，Then 提示保存 / 放弃该草稿（D12）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-003-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "未发布草稿",
+              "statePredicates": [
+                "未发布草稿"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我直接切换学期",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "SwitchCurrentSemester"
+                }
+              ],
+              "rationale": "被测动作为“我直接切换学期”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "提示保存 / 放弃该草稿（D12）。",
+              "assertions": [
+                {
+                  "id": "US-AP-003-AC-03-S1-A1",
+                  "kind": "Information",
+                  "description": "切换学期时提示保存/放弃未发布草稿",
+                  "ruleRefs": [
+                    "R-019"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "SemesterService",
+                "fields": [
+                  "currentTermId"
+                ],
+                "before": "存在未发布草稿",
+                "after": "切换学期前提示保存或放弃",
+                "onFailure": "不切换则保持原上下文",
+                "reason": "切换学期为应用上下文变化"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AP-004",
+    "sourceFile": "../01-story-modeling/stories/US-AP-004.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "LockLesson"
+      },
+      {
+        "kind": "Command",
+        "name": "UnlockLesson"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AP-004-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 某课程已锁定，When 我触发自动排课，Then 锁定课程原地保留、不被覆盖。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-004-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "某课程已锁定",
+              "statePredicates": [
+                "某课程已锁定"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我触发自动排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“我触发自动排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "锁定课程原地保留、不被覆盖。",
+              "assertions": [
+                {
+                  "id": "US-AP-004-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "锁定课程原地保留、不被自动排课覆盖",
+                  "ruleRefs": [
+                    "R-021"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Lifecycle",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "locked"
+                ],
+                "before": "课程已锁定",
+                "after": "自动排课后仍保持锁定",
+                "onFailure": "不覆盖锁定课程",
+                "reason": "锁定课程自迁移保持状态，位置由数据不变量保证",
+                "stateMachineRef": "LessonLockState",
+                "fromStates": [
+                  "Locked"
+                ],
+                "toStates": [
+                  "Locked"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-004-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 锁定课程在微调 / 拖拽调课中被尝试移动，When 操作，Then 不可移动并提示（D13）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-004-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "锁定课程在微调 / 拖拽调课中被尝试移动",
+              "statePredicates": [
+                "锁定课程在微调 / 拖拽调课中被尝试移动"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "操作",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“操作”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "不可移动并提示（D13）。",
+              "assertions": [
+                {
+                  "id": "US-AP-004-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "锁定课程在拖拽调课中不可移动并提示",
+                  "ruleRefs": [
+                    "R-021"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "locked"
+                ],
+                "before": "课程已锁定",
+                "after": "移动被拒绝，位置不变",
+                "onFailure": "不移动锁定课程",
+                "reason": "锁定课程不可移动拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-004-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 课程解除锁定，When 再次排课 / 调整，Then 恢复可自动调整。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-004-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "课程解除锁定",
+              "statePredicates": [
+                "课程解除锁定"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "再次排课 / 调整",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“再次排课 / 调整”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "恢复可自动调整。",
+              "assertions": [
+                {
+                  "id": "US-AP-004-AC-03-S1-A1",
+                  "kind": "State",
+                  "description": "解除锁定后课程恢复可自动调整",
+                  "ruleRefs": [
+                    "R-021"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Lifecycle",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "locked"
+                ],
+                "before": "课程已解锁",
+                "after": "再次调整后仍未锁定且可自动调整",
+                "onFailure": "调整失败保持原状",
+                "reason": "未锁定课程调整自迁移",
+                "stateMachineRef": "LessonLockState",
+                "fromStates": [
+                  "Unlocked"
+                ],
+                "toStates": [
+                  "Unlocked"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AP-005",
+    "sourceFile": "../01-story-modeling/stories/US-AP-005.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "RegeneratePlan"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AP-005-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 单双周开关已启用，When 生成排课方案，Then 产出单周课表与双周课表两套结构并正确轮换。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-005-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "单双周开关已启用",
+              "statePredicates": [
+                "单双周开关已启用"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "生成排课方案",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“生成排课方案”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "产出单周课表与双周课表两套结构并正确轮换。",
+              "assertions": [
+                {
+                  "id": "US-AP-005-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "单双周开关启用后产出单周/双周两套结构并正确轮换",
+                  "ruleRefs": [
+                    "R-022"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "单双周开关启用",
+                "after": "产出单周与双周两套结构",
+                "onFailure": "轮换不正确则不通过",
+                "reason": "单双周结构为方案属性变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-005-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 学期含节假日停课周，When 统计课表周次，Then 停课周不顺延单双周节奏（D18）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-005-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "学期含节假日停课周",
+              "statePredicates": [
+                "学期含节假日停课周"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "统计课表周次",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryWorkloadStatistics"
+                }
+              ],
+              "rationale": "被测动作为“统计课表周次”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "停课周不顺延单双周节奏（D18）。",
+              "assertions": [
+                {
+                  "id": "US-AP-005-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "节假日停课周不顺延单双周节奏",
+                  "ruleRefs": [
+                    "R-022"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "学期含停课周",
+                "after": "统计周次不顺延单双周",
+                "onFailure": "返回错误不改数据",
+                "reason": "周次统计读侧校验"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-005-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 学期第 1 周，When 确认起始周次，Then 第 1 周按单周启动（D18）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-005-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "学期第 1 周",
+              "statePredicates": [
+                "学期第 1 周"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "确认起始周次",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“确认起始周次”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "第 1 周按单周启动（D18）。",
+              "assertions": [
+                {
+                  "id": "US-AP-005-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "第 1 周按单周启动",
+                  "ruleRefs": [
+                    "R-022"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "学期第 1 周",
+                "after": "第 1 周按单周启动",
+                "onFailure": "起始周错误则不通过",
+                "reason": "起始周为排课配置"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AP-006",
+    "sourceFile": "../01-story-modeling/stories/US-AP-006.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "RegeneratePlan"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AP-006-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 走班科目已配置目标场地，When 排课，Then 走班课程占用目标场地且不与其他占用冲突。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-006-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "走班科目已配置目标场地",
+              "statePredicates": [
+                "走班科目已配置目标场地"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "走班课程占用目标场地且不与其他占用冲突。",
+              "assertions": [
+                {
+                  "id": "US-AP-006-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "走班课程占用目标场地且不与其他占用冲突",
+                  "ruleRefs": [
+                    "R-023"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "走班科目已配置目标场地",
+                "after": "走班课程占用目标场地",
+                "onFailure": "占用冲突则不排",
+                "reason": "走班目标场地为排课过程"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-006-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 跨年级任课标记已配置，When 排课与统计，Then 该教师课时统计正确、跨年级班级不冲突。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-006-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "跨年级任课标记已配置",
+              "statePredicates": [
+                "跨年级任课标记已配置"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "排课与统计",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“排课与统计”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "该教师课时统计正确、跨年级班级不冲突。",
+              "assertions": [
+                {
+                  "id": "US-AP-006-AC-02-S1-A1",
+                  "kind": "Data",
+                  "description": "跨年级任课教师课时统计正确、跨年级班级不冲突",
+                  "ruleRefs": [
+                    "R-024"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "跨年级标记已配置",
+                "after": "跨年级排课与统计正确",
+                "onFailure": "冲突或统计错误则不通过",
+                "reason": "跨年级放开教师限制"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AP-006-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 走班配置基线实现，When 深化能力（动态走班编排）出现，Then V2.0 承接（D9）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AP-006-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "走班配置基线实现",
+              "statePredicates": [
+                "走班配置基线实现"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "深化能力（动态走班编排）出现",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“深化能力（动态走班编排）出现”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "V2.0 承接（D9）。",
+              "assertions": [
+                {
+                  "id": "US-AP-006-AC-03-S1-A1",
+                  "kind": "Information",
+                  "description": "走班配置基线在 V1.0 落地，动态走班编排留 V2.0",
+                  "ruleRefs": [
+                    "R-023"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "走班配置基线实现",
+                "after": "深化能力由 V2.0 承接",
+                "onFailure": "基线能力不影响",
+                "reason": "走班深化为版本范围说明"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AT-001",
+    "sourceFile": "../01-story-modeling/stories/US-AT-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Query",
+        "name": "ViewTimetable"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AT-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 课表视图页，When 我依次切换到五个维度 Tab，Then 各视图内容与该维度一致（班级视图按班聚合、教师视图按师聚合等）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "课表视图页",
+              "statePredicates": [
+                "课表视图页"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "我依次切换到五个维度 Tab",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewTimetable"
+                }
+              ],
+              "rationale": "被测动作为“我依次切换到五个维度 Tab”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "各视图内容与该维度一致（班级视图按班聚合、教师视图按师聚合等）。",
+              "assertions": [
+                {
+                  "id": "US-AT-001-AC-01-S1-A1",
+                  "kind": "Information",
+                  "description": "五个维度 Tab 视图内容与该维度一致",
+                  "ruleRefs": [
+                    "R-026"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未切换维度",
+                "after": "各维度视图按对应聚合展示",
+                "onFailure": "返回错误不改数据",
+                "reason": "多维度视图为读侧信息变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AT-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 学期切换器，When 切换学期，Then 展示对应学期课表，不发生跨学期数据串扰。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "学期切换器",
+              "statePredicates": [
+                "学期切换器"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "切换学期",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "SwitchCurrentSemester"
+                }
+              ],
+              "rationale": "被测动作为“切换学期”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "展示对应学期课表，不发生跨学期数据串扰。",
+              "assertions": [
+                {
+                  "id": "US-AT-001-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "切换学期展示对应学期课表，不跨学期串扰",
+                  "ruleRefs": [
+                    "R-026"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "TimetableService",
+                "fields": [
+                  "currentTermId"
+                ],
+                "before": "使用原学期",
+                "after": "切换到目标学期课表",
+                "onFailure": "不切换则保持原上下文",
+                "reason": "切换学期为应用上下文变化"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AT-002",
+    "sourceFile": "../01-story-modeling/stories/US-AT-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Query",
+        "name": "ViewTimetable"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AT-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 我已登录 Teacher 账号，When 打开课表视图，Then 仅可见本人课表与本人关联班级课表，看不到非本人维度视图。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "我已登录 Teacher 账号",
+              "statePredicates": [
+                "我已登录 Teacher 账号"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "打开课表视图",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewTimetable"
+                }
+              ],
+              "rationale": "被测动作为“打开课表视图”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "仅可见本人课表与本人关联班级课表，看不到非本人维度视图。",
+              "assertions": [
+                {
+                  "id": "US-AT-002-AC-01-S1-A1",
+                  "kind": "Information",
+                  "description": "Teacher 仅可见本人及关联班级课表，看不到非本人视图",
+                  "ruleRefs": [
+                    "R-025"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "Teacher 已登录",
+                "after": "仅返回本人相关课表",
+                "onFailure": "越权请求被拒绝",
+                "reason": "角色权限边界约束读侧"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AT-002-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 教师视角，When 浏览导航，Then 管理入口（学期 / 模板 / 排课 / 调课等）不可见（D11 角色权限边界）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-002-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师视角",
+              "statePredicates": [
+                "教师视角"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "浏览导航",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewTimetable"
+                }
+              ],
+              "rationale": "被测动作为“浏览导航”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "管理入口（学期 / 模板 / 排课 / 调课等）不可见（D11 角色权限边界）。",
+              "assertions": [
+                {
+                  "id": "US-AT-002-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "教师视角下管理入口不可见",
+                  "ruleRefs": [
+                    "R-025"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "教师视角浏览导航",
+                "after": "管理入口不展示",
+                "onFailure": "越权访问被拦截",
+                "reason": "权限边界约束导航展示"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AT-003",
+    "sourceFile": "../01-story-modeling/stories/US-AT-003.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "MoveLesson"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AT-003-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 合法调课目标槽位，When 落位并保存，Then 调课成功、视图即时更新。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-003-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "合法调课目标槽位",
+              "statePredicates": [
+                "合法调课目标槽位"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "落位并保存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“落位并保存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "调课成功、视图即时更新。",
+              "assertions": [
+                {
+                  "id": "US-AT-003-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "合法槽位落位保存后调课成功、视图即时更新",
+                  "ruleRefs": [
+                    "R-029"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "weekday",
+                  "period",
+                  "venueId"
+                ],
+                "before": "课程在原槽位",
+                "after": "课程移动到新槽位并保存",
+                "onFailure": "移动失败保持原位",
+                "reason": "拖拽调课为位置属性变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AT-003-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 冲突目标槽位（教师 / 班级 / 场地任一占用），When 企图落位，Then 禁止放置、红色高亮 + Toast 提示，不产生冲突数据（D13 / CE-001 联动）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-003-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "冲突目标槽位（教师 / 班级 / 场地任一占用）",
+              "statePredicates": [
+                "冲突目标槽位（教师 / 班级 / 场地任一占用）"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "企图落位",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“企图落位”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "禁止放置、红色高亮 + Toast 提示，不产生冲突数据（D13 / CE-001 联动）。",
+              "assertions": [
+                {
+                  "id": "US-AT-003-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "冲突槽位禁止放置、红色高亮+Toast 提示，不产生冲突数据",
+                  "ruleRefs": [
+                    "R-018"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "weekday",
+                  "period"
+                ],
+                "before": "课程在合法槽位",
+                "after": "冲突落位被拒绝，位置不变",
+                "onFailure": "不产生冲突数据",
+                "reason": "实时冲突校验拒绝"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AT-004",
+    "sourceFile": "../01-story-modeling/stories/US-AT-004.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "UndoAdjustment"
+      },
+      {
+        "kind": "Interaction",
+        "name": "RedoAdjustment"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AT-004-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 我执行了若干调课步骤，When 点击撤销 / 重做，Then 操作序列正确回退 / 重放，可成组批量生效。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-004-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "我执行了若干调课步骤",
+              "statePredicates": [
+                "我执行了若干调课步骤"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "点击撤销 / 重做",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "UndoAdjustment"
+                },
+                {
+                  "kind": "Interaction",
+                  "name": "RedoAdjustment"
+                }
+              ],
+              "rationale": "被测动作为“点击撤销 / 重做”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "操作序列正确回退 / 重放，可成组批量生效。",
+              "assertions": [
+                {
+                  "id": "US-AT-004-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "撤销/重做正确回退/重放，可成组批量生效",
+                  "ruleRefs": [
+                    "R-028"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "已执行若干调课步骤",
+                "after": "撤销/重做按序回退或重放",
+                "onFailure": "操作失败保持当前课表",
+                "reason": "撤销/重做为调课过程操作"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AT-004-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 调课保存，When 触发保存，Then 弹出二次确认，确认后写入并记日志（D16）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-004-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "调课保存",
+              "statePredicates": [
+                "调课保存"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "触发保存",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“触发保存”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "弹出二次确认，确认后写入并记日志（D16）。",
+              "assertions": [
+                {
+                  "id": "US-AT-004-AC-02-S1-A1",
+                  "kind": "SideEffect",
+                  "description": "调课保存触发二次确认，确认后写入并记日志",
+                  "ruleRefs": [
+                    "R-027"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "weekday",
+                  "period"
+                ],
+                "before": "调课待保存",
+                "after": "二次确认后写入并记日志",
+                "onFailure": "未确认不写入",
+                "reason": "调课保存需二次确认"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AT-005",
+    "sourceFile": "../01-story-modeling/stories/US-AT-005.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Query",
+        "name": "QueryIdleSlots"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AT-005-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 普通教师登录，When 发起空闲时段查询，Then 查询对象锁定为本人，无法指定其他教师 / 班级（D11）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-005-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "普通教师登录",
+              "statePredicates": [
+                "普通教师登录"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "发起空闲时段查询",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryIdleSlots"
+                }
+              ],
+              "rationale": "被测动作为“发起空闲时段查询”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "查询对象锁定为本人，无法指定其他教师 / 班级（D11）。",
+              "assertions": [
+                {
+                  "id": "US-AT-005-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "普通教师空闲查询对象锁定为本人，无法指定其他教师/班级",
+                  "ruleRefs": [
+                    "R-030"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "普通教师登录",
+                "after": "查询对象锁定为本人",
+                "onFailure": "越权查询被拒绝",
+                "reason": "教师仅查本人为权限约束"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AT-005-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 管理员登录，When 查询任意教师 / 班级空闲时段，Then 可自由选择对象并返回结果。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-005-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "管理员登录",
+              "statePredicates": [
+                "管理员登录"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "查询任意教师 / 班级空闲时段",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryIdleSlots"
+                }
+              ],
+              "rationale": "被测动作为“查询任意教师 / 班级空闲时段”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "可自由选择对象并返回结果。",
+              "assertions": [
+                {
+                  "id": "US-AT-005-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "管理员可查询任意教师/班级空闲时段并返回结果",
+                  "ruleRefs": [
+                    "R-030"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "管理员登录",
+                "after": "自由选择对象并返回结果",
+                "onFailure": "返回错误不改数据",
+                "reason": "管理员全权限查询"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AT-005-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 查询结果，Then 空闲槽位展示与当前课表数据一致。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AT-005-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "查询结果",
+              "statePredicates": [
+                "查询结果"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "空闲槽位展示",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryIdleSlots"
+                }
+              ],
+              "rationale": "被测动作为“空闲槽位展示”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "空闲槽位展示与当前课表数据一致。",
+              "assertions": [
+                {
+                  "id": "US-AT-005-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "空闲槽位展示与当前课表数据一致",
+                  "ruleRefs": []
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未取得空闲槽位",
+                "after": "空闲槽位与课表数据一致",
+                "onFailure": "返回错误不改数据",
+                "reason": "读侧一致性校验"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AS-001",
+    "sourceFile": "../01-story-modeling/stories/US-AS-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Query",
+        "name": "QueryWorkloadStatistics"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AS-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 已发布课表，When 查看工作量统计表，Then 常规 / 连堂 / 合班 / 加班四类字段与系统课表数据一致，加计不重复（连堂按节次、合班按 1 节）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AS-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "已发布课表",
+              "statePredicates": [
+                "已发布课表"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "查看工作量统计表",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryWorkloadStatistics"
+                }
+              ],
+              "rationale": "被测动作为“查看工作量统计表”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "常规 / 连堂 / 合班 / 加班四类字段与系统课表数据一致，加计不重复（连堂按节次、合班按 1 节）。",
+              "assertions": [
+                {
+                  "id": "US-AS-001-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "四类课时字段与课表数据一致，加计不重复",
+                  "ruleRefs": [
+                    "R-031"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "已发布课表",
+                "after": "四类课时统计与课表一致",
+                "onFailure": "统计错误不改课表",
+                "reason": "统计为读侧计算"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AS-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 加班判定细则未在 V1.0 落地，Then 加班列展示字段与基础口径、规则后置 V1.1，V1.0 为占位展示（D7）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AS-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "加班判定细则未在 V1.0 落地",
+              "statePredicates": [
+                "加班判定细则未在 V1.0 落地"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "加班列展示字段与基础口径",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryWorkloadStatistics"
+                }
+              ],
+              "rationale": "被测动作为“加班列展示字段与基础口径”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "加班列展示字段与基础口径、规则后置 V1.1，V1.0 为占位展示（D7）。",
+              "assertions": [
+                {
+                  "id": "US-AS-001-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "V1.0 加班列占位展示，规则后置 V1.1",
+                  "ruleRefs": [
+                    "R-031"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "加班细则未在 V1.0 落地",
+                "after": "加班列按基础口径占位展示",
+                "onFailure": "不实算加班值",
+                "reason": "加班细则后置 V1.1，V1.0 占位"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AS-001-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 周期切换，When 周 ↔ 学期口径切换，Then 汇总数值与当前口径一致；支持导出（联动 US-EX-001）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AS-001-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "周期切换",
+              "statePredicates": [
+                "周期切换"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "周 ↔ 学期口径切换",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryWorkloadStatistics"
+                }
+              ],
+              "rationale": "被测动作为“周 ↔ 学期口径切换”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "汇总数值与当前口径一致；支持导出（联动 US-EX-001）。",
+              "assertions": [
+                {
+                  "id": "US-AS-001-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "周/学期口径切换汇总数值与当前口径一致，支持导出",
+                  "ruleRefs": [
+                    "R-031"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "当前口径",
+                "after": "切换口径后汇总数值一致",
+                "onFailure": "返回错误不改数据",
+                "reason": "周期口径切换为读侧"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-EX-001",
+    "sourceFile": "../01-story-modeling/stories/US-EX-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "ExportExcel"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-EX-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 导出面板，When 选择维度 + 学期导出，Then 文件按维度命名、字段与系统展示口径一致、数值与系统一致。",
+        "scenarios": [
+          {
+            "scenarioId": "US-EX-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "导出面板",
+              "statePredicates": [
+                "导出面板"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "选择维度 + 学期导出",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "ExportExcel"
+                }
+              ],
+              "rationale": "被测动作为“选择维度 + 学期导出”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "文件按维度命名、字段与系统展示口径一致、数值与系统一致。",
+              "assertions": [
+                {
+                  "id": "US-EX-001-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "导出文件按维度命名、字段与数值与系统一致",
+                  "ruleRefs": [
+                    "R-032"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未导出",
+                "after": "按维度+学期导出并字段一致",
+                "onFailure": "导出失败不改数据",
+                "reason": "导出为过程性动作"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-EX-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 批量数据导出，Then 1000 条 ≤3 秒完成（D3 验收边界）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-EX-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "批量数据导出",
+              "statePredicates": [
+                "批量数据导出"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "批量数据导出",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "ExportExcel"
+                }
+              ],
+              "rationale": "被测动作为“批量数据导出”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "1000 条 ≤3 秒完成（D3 验收边界）。",
+              "assertions": [
+                {
+                  "id": "US-EX-001-AC-02-S1-A1",
+                  "kind": "Performance",
+                  "description": "1000 条导出 ≤3 秒完成",
+                  "ruleRefs": []
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "批量数据待导出",
+                "after": "1000 条 ≤3 秒完成",
+                "onFailure": "超时则不达验收边界",
+                "reason": "性能为非功能验收"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-EX-002",
+    "sourceFile": "../01-story-modeling/stories/US-EX-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "PrintTimetable"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-EX-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 模板管理页，When 新建 / 套用模板并选择课表对象，Then 打印预览与最终打印结果一致（纸张 / 版式 / 校徽生效）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-EX-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "模板管理页",
+              "statePredicates": [
+                "模板管理页"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "新建 / 套用模板并选择课表对象",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "PrintTimetable"
+                }
+              ],
+              "rationale": "被测动作为“新建 / 套用模板并选择课表对象”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "打印预览与最终打印结果一致（纸张 / 版式 / 校徽生效）。",
+              "assertions": [
+                {
+                  "id": "US-EX-002-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "打印预览与最终打印结果一致（纸张/版式/校徽生效）",
+                  "ruleRefs": [
+                    "R-033"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetableService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未打印",
+                "after": "预览与打印结果一致",
+                "onFailure": "不一致则不通过",
+                "reason": "打印为过程性动作"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-CE-001",
+    "sourceFile": "../01-story-modeling/stories/US-CE-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "RegeneratePlan"
+      },
+      {
+        "kind": "Command",
+        "name": "MoveLesson"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-CE-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 场景含教师时间冲突，When 自动排课 / 手动调课，Then 冲突被拦截并提示定位（类型 / 涉及对象 / 节次）与修改建议。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CE-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "场景含教师时间冲突",
+              "statePredicates": [
+                "场景含教师时间冲突"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "自动排课 / 手动调课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                },
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“自动排课 / 手动调课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "冲突被拦截并提示定位（类型 / 涉及对象 / 节次）与修改建议。",
+              "assertions": [
+                {
+                  "id": "US-CE-001-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "教师时间冲突被拦截并提示定位与修改建议",
+                  "ruleRefs": [
+                    "R-018"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "场景含教师时间冲突",
+                "after": "冲突被拦截并定位提示",
+                "onFailure": "不保存冲突方案",
+                "reason": "三类冲突实时拦截"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CE-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 场景含班级同节多课或场地占用，When 操作，Then 同样被拦截，展示冲突明细清单与红色高亮。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CE-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "场景含班级同节多课或场地占用",
+              "statePredicates": [
+                "场景含班级同节多课或场地占用"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "操作",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“操作”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "同样被拦截，展示冲突明细清单与红色高亮。",
+              "assertions": [
+                {
+                  "id": "US-CE-001-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "班级同节多课或场地占用被拦截，展示冲突明细与红色高亮",
+                  "ruleRefs": [
+                    "R-018",
+                    "R-016"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "LessonOccurrence",
+                "fields": [
+                  "weekday",
+                  "period"
+                ],
+                "before": "场景含班级/场地冲突",
+                "after": "落位被拦截并展示明细",
+                "onFailure": "不产生冲突数据",
+                "reason": "冲突明细与高亮为拦截呈现"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CE-001-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 冲突由前面的排课限制（约束 / 配置）引发，When 选择「只本次忽略」，Then 本次排课放行通过、系统配置不变、后续排课仍按系统设置的规则执行（豁免仅本次生效、不落库为全局规则）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CE-001-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "冲突由前面的排课限制（约束 / 配置）引发",
+              "statePredicates": [
+                "冲突由前面的排课限制（约束 / 配置）引发"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "选择「只本次忽略」",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "IgnoreConflictOnce"
+                }
+              ],
+              "rationale": "被测动作为“选择「只本次忽略」”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "本次排课放行通过、系统配置不变、后续排课仍按系统设置的规则执行（豁免仅本次生效、不落库为全局规则）。",
+              "assertions": [
+                {
+                  "id": "US-CE-001-AC-03-S1-A1",
+                  "kind": "State",
+                  "description": "「只本次忽略」仅本次放行、不改系统配置、后续仍按规则执行",
+                  "ruleRefs": [
+                    "R-034"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "冲突由排课限制引发",
+                "after": "本次排课放行、系统配置不变",
+                "onFailure": "豁免不落库为全局规则",
+                "reason": "只本次忽略为本次过程放行"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CE-001-AC-04",
+        "sourceOrdinal": 4,
+        "sourceCriterion": "Given 冲突由前面的排课限制（约束 / 配置）引发，When 选择「去修改配置」，Then 跳转对应配置维护入口，修改约束后重新排课。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CE-001-AC-04-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "冲突由前面的排课限制（约束 / 配置）引发",
+              "statePredicates": [
+                "冲突由前面的排课限制（约束 / 配置）引发"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "选择「去修改配置」",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "NavigateToConfig"
+                }
+              ],
+              "rationale": "被测动作为“选择「去修改配置」”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "跳转对应配置维护入口，修改约束后重新排课。",
+              "assertions": [
+                {
+                  "id": "US-CE-001-AC-04-S1-A1",
+                  "kind": "SideEffect",
+                  "description": "「去修改配置」跳转对应配置维护入口",
+                  "ruleRefs": [
+                    "R-034"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "TimetableService",
+                "fields": [
+                  "currentTermId"
+                ],
+                "before": "冲突由排课限制引发",
+                "after": "跳转配置维护入口后重新排课",
+                "onFailure": "不跳转则不改配置",
+                "reason": "跳转配置为应用交互"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CE-001-AC-05",
+        "sourceOrdinal": 5,
+        "sourceCriterion": "Given 任意合法输入（或用户未选择豁免），When 完成排课，Then 三类核心冲突全为 0。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CE-001-AC-05-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "任意合法输入（或用户未选择豁免）",
+              "statePredicates": [
+                "任意合法输入（或用户未选择豁免）"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "完成排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                },
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“完成排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "三类核心冲突全为 0。",
+              "assertions": [
+                {
+                  "id": "US-CE-001-AC-05-S1-A1",
+                  "kind": "State",
+                  "description": "任意合法输入完成后三类核心冲突全为 0",
+                  "ruleRefs": [
+                    "R-018"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "conflictCount"
+                ],
+                "before": "输入合法或未选择豁免",
+                "after": "完成排课后三类冲突为 0",
+                "onFailure": "冲突未清零则不通过",
+                "reason": "冲突为零为排课验收"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-CM-001",
+    "sourceFile": "../01-story-modeling/stories/US-CM-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "ConfirmCriticalOperation"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-CM-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 任一关键操作，When 触发，Then 弹出二次确认，未确认不执行。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CM-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "任一关键操作",
+              "statePredicates": [
+                "任一关键操作"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "触发",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "ConfirmCriticalOperation"
+                }
+              ],
+              "rationale": "被测动作为“触发”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "弹出二次确认，未确认不执行。",
+              "assertions": [
+                {
+                  "id": "US-CM-001-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "关键操作触发二次确认，未确认不执行",
+                  "ruleRefs": [
+                    "R-035"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "关键操作待确认",
+                "after": "未确认不执行",
+                "onFailure": "确认前不执行关键操作",
+                "reason": "二次确认为前置守卫"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CM-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 删除被引用数据（被学期引用的模板 / 有任课记录的教师科目 / 被占用场地），When 尝试删除，Then 禁止删除并提示引用关系（D16）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CM-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "删除被引用数据（被学期引用的模板 / 有任课记录的教师科目 / 被占用场地）",
+              "statePredicates": [
+                "删除被引用数据（被学期引用的模板 / 有任课记录的教师科目 / 被占用场地）"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "尝试删除",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "DeleteGrade"
+                },
+                {
+                  "kind": "Command",
+                  "name": "DeleteTeacher"
+                },
+                {
+                  "kind": "Command",
+                  "name": "DeleteSemester"
+                }
+              ],
+              "rationale": "被测动作为“尝试删除”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "禁止删除并提示引用关系（D16）。",
+              "assertions": [
+                {
+                  "id": "US-CM-001-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "被引用数据删除被禁止并提示引用关系",
+                  "ruleRefs": [
+                    "R-036"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Grade",
+                "fields": [
+                  "gradeId"
+                ],
+                "before": "数据被引用",
+                "after": "删除被禁止并提示引用",
+                "onFailure": "不删除被引用数据",
+                "reason": "引用删除保护拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CM-001-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 删除学期 / 模板，When 删除，Then 不影响历史存档（D16）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CM-001-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "删除学期 / 模板",
+              "statePredicates": [
+                "删除学期 / 模板"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "删除",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "DeleteSemester"
+                },
+                {
+                  "kind": "Command",
+                  "name": "UpdateScheduleTemplate"
+                }
+              ],
+              "rationale": "被测动作为“删除”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "不影响历史存档（D16）。",
+              "assertions": [
+                {
+                  "id": "US-CM-001-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "删除学期/模板不影响历史存档",
+                  "ruleRefs": [
+                    "R-037"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Semester",
+                "fields": [
+                  "status"
+                ],
+                "before": "历史存档存在",
+                "after": "删除后历史存档不受影响",
+                "onFailure": "不破坏历史存档",
+                "reason": "历史存档与删除解耦"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-CM-002",
+    "sourceFile": "../01-story-modeling/stories/US-CM-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "BatchImport"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-CM-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 导入文件超过 5000 行，When 提交，Then 拒绝并提示超限（D19）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CM-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "导入文件超过 5000 行",
+              "statePredicates": [
+                "导入文件超过 5000 行"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "提交",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "BatchImport"
+                }
+              ],
+              "rationale": "被测动作为“提交”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "拒绝并提示超限（D19）。",
+              "assertions": [
+                {
+                  "id": "US-CM-002-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "导入文件超过 5000 行被拒绝并提示超限",
+                  "ruleRefs": [
+                    "R-038"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "TeachingAssignment",
+                "fields": [
+                  "assignmentId"
+                ],
+                "before": "导入文件超 5000 行",
+                "after": "提交被拒绝并提示",
+                "onFailure": "不导入超限文件",
+                "reason": "导入上限拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CM-002-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 导入文件含非法行，When 提交，Then 异常行行级提示，不中断合法行处理。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CM-002-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "导入文件含非法行",
+              "statePredicates": [
+                "导入文件含非法行"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "提交",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "BatchImport"
+                }
+              ],
+              "rationale": "被测动作为“提交”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "异常行行级提示，不中断合法行处理。",
+              "assertions": [
+                {
+                  "id": "US-CM-002-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "含非法行的导入异常行行级提示，不中断合法行",
+                  "ruleRefs": [
+                    "R-038"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TeachingAssignment",
+                "fields": [
+                  "assignmentId"
+                ],
+                "before": "导入文件含非法行",
+                "after": "异常行行级提示、合法行导入",
+                "onFailure": "异常行不影响合法行",
+                "reason": "批量导入过程性处理"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-CM-002-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 并发调课 / 排课场景，When 多端操作同一课表，Then 采用提示刷新 / 行级锁的弱并发控制，课表最终呈现与预期一致（D19）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-CM-002-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "并发调课 / 排课场景",
+              "statePredicates": [
+                "并发调课 / 排课场景"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "多端操作同一课表",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "MoveLesson"
+                }
+              ],
+              "rationale": "被测动作为“多端操作同一课表”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "采用提示刷新 / 行级锁的弱并发控制，课表最终呈现与预期一致（D19）。",
+              "assertions": [
+                {
+                  "id": "US-CM-002-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "并发调课/排课采用提示刷新或行级锁，最终课表一致",
+                  "ruleRefs": [
+                    "R-047"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Process",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "多端操作同一课表",
+                "after": "弱并发控制保证最终一致",
+                "onFailure": "并发冲突提示刷新",
+                "reason": "弱并发控制为过程约束"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-LG-001",
+    "sourceFile": "../01-story-modeling/stories/US-LG-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "RecordOperationLog"
+      },
+      {
+        "kind": "Query",
+        "name": "QueryOperationLog"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-LG-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 任一关键操作发生（D16 枚举），When 查看日志，Then 100% 记录（操作人 / 时间 / 模块 / 内容），且日志永久留存（D3）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-LG-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "任一关键操作发生（D16 枚举）",
+              "statePredicates": [
+                "任一关键操作发生（D16 枚举）"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "查看日志",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryOperationLog"
+                }
+              ],
+              "rationale": "被测动作为“查看日志”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "100% 记录（操作人 / 时间 / 模块 / 内容），且日志永久留存（D3）。",
+              "assertions": [
+                {
+                  "id": "US-LG-001-AC-01-S1-A1",
+                  "kind": "Data",
+                  "description": "关键操作 100% 留痕（操作人/时间/模块/内容），日志永久留存",
+                  "ruleRefs": [
+                    "R-039",
+                    "R-040"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "OperationLog",
+                "fields": [
+                  "logId"
+                ],
+                "before": "关键操作已发生",
+                "after": "日志记录存在且永久留存",
+                "onFailure": "关键操作未留痕则不通过",
+                "reason": "日志为不可变追加记录"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-LG-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 日志查询页，When 按操作人 / 时间筛选，Then 返回匹配结果。",
+        "scenarios": [
+          {
+            "scenarioId": "US-LG-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "日志查询页",
+              "statePredicates": [
+                "日志查询页"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "按操作人 / 时间筛选",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "QueryOperationLog"
+                }
+              ],
+              "rationale": "被测动作为“按操作人 / 时间筛选”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "返回匹配结果。",
+              "assertions": [
+                {
+                  "id": "US-LG-001-AC-02-S1-A1",
+                  "kind": "Information",
+                  "description": "按操作人/时间筛选返回匹配结果",
+                  "ruleRefs": []
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "GovernanceService",
+                "fields": [
+                  "result"
+                ],
+                "before": "尚未查询日志",
+                "after": "按筛选返回匹配日志",
+                "onFailure": "返回错误不改数据",
+                "reason": "日志查询为读侧"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-LG-002",
+    "sourceFile": "../01-story-modeling/stories/US-LG-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "ArchiveSemester"
+      },
+      {
+        "kind": "Command",
+        "name": "ArchivePlan"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-LG-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 学期已发布正式课表，When 发起存档，Then 存档成功、进入「已存档」状态（D12）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-LG-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "学期已发布正式课表",
+              "statePredicates": [
+                "学期已发布正式课表"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "发起存档",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "ArchiveSemester"
+                },
+                {
+                  "kind": "Command",
+                  "name": "ArchivePlan"
+                }
+              ],
+              "rationale": "被测动作为“发起存档”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "存档成功、进入「已存档」状态（D12）。",
+              "assertions": [
+                {
+                  "id": "US-LG-002-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "存档成功、进入已存档状态",
+                  "ruleRefs": [
+                    "R-041"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Semester",
+                "fields": [
+                  "status"
+                ],
+                "before": "学期已发布正式课表",
+                "after": "存档后学期进入已存档",
+                "onFailure": "未发布则不可存档",
+                "reason": "学期存档为状态属性变化"
+              },
+              {
+                "kind": "Lifecycle",
+                "subject": "TimetablePlan",
+                "fields": [
+                  "status"
+                ],
+                "before": "正式课表已发布",
+                "after": "随学期存档进入已存档",
+                "onFailure": "未发布不可存档",
+                "reason": "方案随学期存档进入终态",
+                "stateMachineRef": "TimetablePlanLifecycle",
+                "fromStates": [
+                  "Published"
+                ],
+                "toStates": [
+                  "Archived"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-LG-002-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 学期状态为已存档，When 尝试编辑 / 排课，Then 只读拦截；可查看与导出。",
+        "scenarios": [
+          {
+            "scenarioId": "US-LG-002-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "学期状态为已存档",
+              "statePredicates": [
+                "学期状态为已存档"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "尝试编辑 / 排课",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "UpdateSemester"
+                },
+                {
+                  "kind": "Command",
+                  "name": "RegeneratePlan"
+                }
+              ],
+              "rationale": "被测动作为“尝试编辑 / 排课”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "只读拦截；可查看与导出。",
+              "assertions": [
+                {
+                  "id": "US-LG-002-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "已存档学期编辑/排课只读拦截，可查看与导出",
+                  "ruleRefs": [
+                    "R-041"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Semester",
+                "fields": [
+                  "status"
+                ],
+                "before": "学期已存档",
+                "after": "编辑/排课被只读拦截",
+                "onFailure": "不修改已存档数据",
+                "reason": "已存档只读拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-LG-002-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 切换学期，When 查看数据，Then 各学期数据独立隔离、无串扰（D12 / D16）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-LG-002-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "切换学期",
+              "statePredicates": [
+                "切换学期"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "查看数据",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "SwitchCurrentSemester"
+                }
+              ],
+              "rationale": "被测动作为“查看数据”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "各学期数据独立隔离、无串扰（D12 / D16）。",
+              "assertions": [
+                {
+                  "id": "US-LG-002-AC-03-S1-A1",
+                  "kind": "Data",
+                  "description": "切换学期各学期数据独立隔离、无串扰",
+                  "ruleRefs": [
+                    "R-041"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "TimetableService",
+                "fields": [
+                  "currentTermId"
+                ],
+                "before": "当前学期数据",
+                "after": "切换后各学期数据隔离",
+                "onFailure": "串扰则不通过",
+                "reason": "切换学期为应用上下文变化"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AU-001",
+    "sourceFile": "../01-story-modeling/stories/US-AU-001.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "Login"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AU-001-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 系统已初始化默认管理员，When 使用 Admin 账号正确登录，Then 登录成功、进入管理端首页并显示角色上下文。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-001-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "系统已初始化默认管理员",
+              "statePredicates": [
+                "系统已初始化默认管理员"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "使用 Admin 账号正确登录",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "Login"
+                }
+              ],
+              "rationale": "被测动作为“使用 Admin 账号正确登录”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "登录成功、进入管理端首页并显示角色上下文。",
+              "assertions": [
+                {
+                  "id": "US-AU-001-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "Admin 账号正确登录进入管理端首页并显示角色上下文",
+                  "ruleRefs": [
+                    "R-042"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "IdentityService",
+                "fields": [
+                  "accountId"
+                ],
+                "before": "未登录",
+                "after": "登录成功并建立角色上下文",
+                "onFailure": "登录失败不建立会话",
+                "reason": "登录为应用交互"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AU-001-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 教师账号密码错误或账号被停用，When 尝试登录，Then 登录失败并给出明确提示。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-001-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师账号密码错误或账号被停用",
+              "statePredicates": [
+                "教师账号密码错误或账号被停用"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "尝试登录",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "Login"
+                }
+              ],
+              "rationale": "被测动作为“尝试登录”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "登录失败并给出明确提示。",
+              "assertions": [
+                {
+                  "id": "US-AU-001-AC-02-S1-A1",
+                  "kind": "Rejection",
+                  "description": "密码错误或账号停用登录失败并提示",
+                  "ruleRefs": [
+                    "R-042"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Account",
+                "fields": [
+                  "status"
+                ],
+                "before": "账号密码错误或停用",
+                "after": "登录失败并提示",
+                "onFailure": "不建立会话",
+                "reason": "认证失败拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AU-001-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 登录成功后，When 刷新 / 访问受限页面，Then 登录态校验生效；退出后无法访问受保护页面（D11）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-001-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "登录成功后",
+              "statePredicates": [
+                "登录成功后"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "刷新 / 访问受限页面",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "Login"
+                }
+              ],
+              "rationale": "被测动作为“刷新 / 访问受限页面”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "登录态校验生效；退出后无法访问受保护页面（D11）。",
+              "assertions": [
+                {
+                  "id": "US-AU-001-AC-03-S1-A1",
+                  "kind": "State",
+                  "description": "登录态校验生效，退出后无法访问受保护页面",
+                  "ruleRefs": [
+                    "R-043"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "IdentityService",
+                "fields": [
+                  "accountId"
+                ],
+                "before": "登录成功",
+                "after": "登录态校验生效，退出后失效",
+                "onFailure": "退出后仍可访问则不通过",
+                "reason": "登录态为会话上下文"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AU-002",
+    "sourceFile": "../01-story-modeling/stories/US-AU-002.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Command",
+        "name": "AssignRole"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AU-002-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 用户管理页，When 新增 / 编辑 / 停用用户并分配角色（Admin / Teacher），Then 操作成功且即时生效（本地账号，无外部对接，D5）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-002-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "用户管理页",
+              "statePredicates": [
+                "用户管理页"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "新增 / 编辑 / 停用用户并分配角色（Admin / Teacher）",
+              "operationRefs": [
+                {
+                  "kind": "Command",
+                  "name": "AssignRole"
+                }
+              ],
+              "rationale": "被测动作为“新增 / 编辑 / 停用用户并分配角色（Admin / Teacher）”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "操作成功且即时生效（本地账号，无外部对接，D5）。",
+              "assertions": [
+                {
+                  "id": "US-AU-002-AC-01-S1-A1",
+                  "kind": "State",
+                  "description": "新增/编辑/停用用户并分配角色后即时生效",
+                  "ruleRefs": [
+                    "R-044"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Attribute",
+                "subject": "Account",
+                "fields": [
+                  "role",
+                  "status"
+                ],
+                "before": "账号原角色",
+                "after": "分配角色/停用后即时生效",
+                "onFailure": "非法角色被拒绝",
+                "reason": "角色分配为账号属性变化"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AU-002-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given 角色分配发生变更，When 被变更用户重新登录 / 会话内刷新，Then 权限即时生效（D11）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-002-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "角色分配发生变更",
+              "statePredicates": [
+                "角色分配发生变更"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "被变更用户重新登录 / 会话内刷新",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "Login"
+                }
+              ],
+              "rationale": "被测动作为“被变更用户重新登录 / 会话内刷新”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "权限即时生效（D11）。",
+              "assertions": [
+                {
+                  "id": "US-AU-002-AC-02-S1-A1",
+                  "kind": "State",
+                  "description": "角色变更后重新登录/刷新权限即时生效",
+                  "ruleRefs": [
+                    "R-044"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "IdentityService",
+                "fields": [
+                  "accountId"
+                ],
+                "before": "角色已变更",
+                "after": "重新登录后权限即时生效",
+                "onFailure": "权限未生效则不通过",
+                "reason": "权限即时生效为会话上下文"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AU-002-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 首次初始化，Then 存在默认管理员账号可登录（D11 / D5）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-002-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "首次初始化",
+              "statePredicates": [
+                "首次初始化"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "存在默认管理员账号可登录",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "Login"
+                }
+              ],
+              "rationale": "被测动作为“存在默认管理员账号可登录”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "存在默认管理员账号可登录（D11 / D5）。",
+              "assertions": [
+                {
+                  "id": "US-AU-002-AC-03-S1-A1",
+                  "kind": "State",
+                  "description": "首次初始化存在默认管理员账号可登录",
+                  "ruleRefs": [
+                    "R-042"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Existence",
+                "subject": "Account",
+                "fields": [
+                  "accountId"
+                ],
+                "before": "系统首次初始化",
+                "after": "默认管理员账号存在并可登录",
+                "onFailure": "无默认管理员则不通过",
+                "reason": "默认管理员为初始化产物"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "storyId": "US-AU-003",
+    "sourceFile": "../01-story-modeling/stories/US-AU-003.json",
+    "primaryOperationRefs": [
+      {
+        "kind": "Interaction",
+        "name": "Login"
+      }
+    ],
+    "acceptanceCriteriaCoverage": [
+      {
+        "criterionId": "US-AU-003-AC-01",
+        "sourceOrdinal": 1,
+        "sourceCriterion": "Given 教师登录态，When 直接访问非本人课表 / 非本人空闲查询 / 管理页面入口，Then 访问被拒绝并提示无权限（D11）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-003-AC-01-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师登录态",
+              "statePredicates": [
+                "教师登录态"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "直接访问非本人课表 / 非本人空闲查询 / 管理页面入口",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewTimetable"
+                },
+                {
+                  "kind": "Query",
+                  "name": "QueryIdleSlots"
+                }
+              ],
+              "rationale": "被测动作为“直接访问非本人课表 / 非本人空闲查询 / 管理页面入口”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "访问被拒绝并提示无权限（D11）。",
+              "assertions": [
+                {
+                  "id": "US-AU-003-AC-01-S1-A1",
+                  "kind": "Rejection",
+                  "description": "教师访问非本人课表/空闲查询/管理入口被拒绝并提示无权限",
+                  "ruleRefs": [
+                    "R-043"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "NoChange",
+                "subject": "Account",
+                "fields": [
+                  "role"
+                ],
+                "before": "教师登录态",
+                "after": "越权访问被拒绝",
+                "onFailure": "不返回越权数据",
+                "reason": "角色权限边界拒绝"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AU-003-AC-02",
+        "sourceOrdinal": 2,
+        "sourceCriterion": "Given Admin 登录态，When 访问系统任意功能，Then 不产生越权拦截（管理员全权限）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-003-AC-02-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "Admin 登录态",
+              "statePredicates": [
+                "Admin 登录态"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "访问系统任意功能",
+              "operationRefs": [
+                {
+                  "kind": "Query",
+                  "name": "ViewTimetable"
+                }
+              ],
+              "rationale": "被测动作为“访问系统任意功能”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "不产生越权拦截（管理员全权限）。",
+              "assertions": [
+                {
+                  "id": "US-AU-003-AC-02-S1-A1",
+                  "kind": "State",
+                  "description": "Admin 访问系统任意功能不产生越权拦截",
+                  "ruleRefs": [
+                    "R-043"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Information",
+                "subject": "IdentityService",
+                "fields": [
+                  "result"
+                ],
+                "before": "Admin 登录态",
+                "after": "全功能访问不被拦截",
+                "onFailure": "异常拦截则不通过",
+                "reason": "管理员全权限"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "criterionId": "US-AU-003-AC-03",
+        "sourceOrdinal": 3,
+        "sourceCriterion": "Given 教师账号由新增教师一键开通（US-BD-009），When 教师首次登录，Then 权限边界自动生效（仅本人视图）。",
+        "scenarios": [
+          {
+            "scenarioId": "US-AU-003-AC-03-S1",
+            "status": "mapped",
+            "openQuestions": [],
+            "given": {
+              "sourceText": "教师账号由新增教师一键开通（US-BD-009）",
+              "statePredicates": [
+                "教师账号由新增教师一键开通（US-BD-009）"
+              ],
+              "optionalSetupOperationRefs": []
+            },
+            "when": {
+              "sourceText": "教师首次登录",
+              "operationRefs": [
+                {
+                  "kind": "Interaction",
+                  "name": "Login"
+                }
+              ],
+              "rationale": "被测动作为“教师首次登录”，映射到对应领域操作。"
+            },
+            "then": {
+              "sourceText": "权限边界自动生效（仅本人视图）。",
+              "assertions": [
+                {
+                  "id": "US-AU-003-AC-03-S1-A1",
+                  "kind": "State",
+                  "description": "一键开通的教师首次登录权限边界自动生效",
+                  "ruleRefs": [
+                    "R-043"
+                  ]
+                }
+              ]
+            },
+            "stateChanges": [
+              {
+                "kind": "Context",
+                "subject": "IdentityService",
+                "fields": [
+                  "accountId"
+                ],
+                "before": "教师账号已开通",
+                "after": "首次登录权限边界生效",
+                "onFailure": "边界未生效则不通过",
+                "reason": "权限边界随登录生效"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

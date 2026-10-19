@@ -1,0 +1,69 @@
+[
+  {
+    "name": "ConflictValidationService",
+    "bcId": "bc-timetable",
+    "responsibility": "对教师/班级/场地三维度实时冲突校验，产出冲突明细与修改建议",
+    "usesAggregates": [
+      "TimetablePlan"
+    ],
+    "ruleIds": [
+      "R-018",
+      "R-015",
+      "R-016"
+    ],
+    "sourceUserStoryIds": [
+      "US-CE-001",
+      "US-AP-001",
+      "US-AT-003"
+    ]
+  },
+  {
+    "name": "TimetableEngineService",
+    "bcId": "bc-timetable",
+    "responsibility": "基于学期、作息模板与基础约束生成全校课表，处理单双周/走班/跨年级",
+    "usesAggregates": [
+      "TimetablePlan",
+      "TeachingAssignment",
+      "Venue",
+      "Teacher",
+      "CombinedClass",
+      "Subject",
+      "Class",
+      "Semester",
+      "ScheduleTemplate"
+    ],
+    "ruleIds": [
+      "R-018",
+      "R-008",
+      "R-013",
+      "R-015",
+      "R-016",
+      "R-021",
+      "R-022",
+      "R-023",
+      "R-024",
+      "R-020"
+    ],
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-002",
+      "US-AP-005",
+      "US-AP-006"
+    ]
+  },
+  {
+    "name": "WorkloadStatisticsService",
+    "bcId": "bc-timetable",
+    "responsibility": "统计教师常规/连堂/合班/加班四类课时，保证加计类型不重复统计",
+    "usesAggregates": [
+      "TimetablePlan",
+      "Teacher"
+    ],
+    "ruleIds": [
+      "R-031"
+    ],
+    "sourceUserStoryIds": [
+      "US-AS-001"
+    ]
+  }
+]

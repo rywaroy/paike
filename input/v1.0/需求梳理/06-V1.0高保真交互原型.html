@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能排课系统 V1.0 · 高保真交互原型</title>
+<style>
+/* ================= 设计令牌（浅色背景 · 简约清爽科技风） ================= */
+:root{
+  --color-primary:#2563EB; --color-primary-hover:#1D4ED8; --color-primary-light:#EFF6FF;
+  --color-accent:#0891B2; --color-success:#059669; --color-success-light:#ECFDF5;
+  --color-warning:#F59E0B; --color-warning-light:#FEF3C7;
+  --color-danger:#EF4444; --color-danger-light:#FEE2E2;
+  --bg-page:#F8FAFC; --bg-card:#FFFFFF; --bg-panel:#F1F5F9;
+  --text-strong:#0F172A; --text:#334155; --text-mute:#64748B; --text-faint:#94A3B8;
+  --line:#E2E8F0; --line-strong:#CBD5E1;
+  --radius-sm:6px; --radius:10px; --radius-lg:14px;
+  --shadow-xs:0 1px 2px rgba(15,23,42,.06); --shadow-sm:0 1px 3px rgba(15,23,42,.08),0 1px 2px rgba(15,23,42,.05);
+  --shadow-md:0 6px 16px rgba(15,23,42,.10),0 2px 6px rgba(15,23,42,.06);
+  --shadow-lg:0 12px 28px rgba(15,23,42,.14),0 4px 10px rgba(15,23,42,.08);
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+  --trans:.2s ease;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:var(--bg-page);color:var(--text);font-size:14px;line-height:1.55}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:13px;color:var(--text);background:#fff;border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:7px 10px;outline:none;transition:border-color var(--trans)}
+input:focus,select:focus,textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+a{color:var(--color-primary);text-decoration:none;cursor:pointer}
+
+/* ================= 按钮 ================= */
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;border-radius:var(--radius-sm);padding:8px 16px;font-size:13px;font-weight:600;transition:var(--trans);white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--color-primary);color:#fff;box-shadow:0 1px 2px rgba(37,99,235,.4)}
+.btn-primary:hover{background:var(--color-primary-hover)}
+.btn-ghost{background:#fff;color:var(--text);border-color:var(--line-strong)}
+.btn-ghost:hover{border-color:var(--color-primary);color:var(--color-primary);background:var(--color-primary-light)}
+.btn-danger{background:#fff;color:var(--color-danger);border-color:#FCA5A5}
+.btn-danger:hover{background:var(--color-danger-light)}
+.btn-sm{padding:4px 10px;font-size:12px;border-radius:var(--radius-sm)}
+.btn-success{background:var(--color-success);color:#fff}
+.btn-success:hover{background:#047857}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.btn-soft{background:var(--color-primary-light);color:var(--color-primary)}
+.btn-soft:hover{background:#DBEAFE}
+.btn-block{width:100%;justify-content:center}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:var(--radius-sm);border:1px solid var(--line);background:#fff;color:var(--text-mute);transition:var(--trans)}
+.icon-btn:hover{color:var(--color-primary);border-color:var(--color-primary);background:var(--color-primary-light)}
+
+/* ================= 布局 ================= */
+.layout{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:212px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;transition:width var(--trans);overflow:hidden}
+.sidebar.mini{width:62px}
+.brand{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#2563EB,#0891B2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+.brand .txt{white-space:nowrap;overflow:hidden}
+.brand .txt b{display:block;font-size:15px;color:var(--text-strong);line-height:1.2}
+.brand .txt span{font-size:11px;color:var(--text-mute)}
+.sidebar.mini .brand .txt,.sidebar.mini .sid-item .lbl,.sidebar.mini .sid-sep{display:none}
+.sid-scroll{flex:1;overflow-y:auto;padding:10px 8px 20px}
+.sid-sep{font-size:11px;color:var(--text-faint);padding:10px 12px 4px;letter-spacing:.5px;white-space:nowrap}
+.sid-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);color:var(--text);cursor:pointer;transition:var(--trans);white-space:nowrap;font-size:13px}
+.sid-item:hover{background:var(--bg-panel);color:var(--text-strong)}
+.sid-item.active{background:var(--color-primary-light);color:var(--color-primary);font-weight:600}
+.sid-item .ic{width:18px;text-align:center;flex-shrink:0;font-size:15px}
+.sid-item .lbl{flex:1;overflow:hidden;text-overflow:ellipsis}
+.sid-item .dot{width:6px;height:6px;border-radius:50%;background:var(--color-warning);flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg-page)}
+
+/* 顶栏 */
+.topbar{height:60px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 20px;position:relative;z-index:20}
+.crumb{font-size:14px;color:var(--text-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.crumb b{color:var(--text-strong);font-weight:600}
+.role-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--color-primary-light);color:var(--color-primary);white-space:nowrap}
+.role-tag.teacher{background:#F0FDF4;color:var(--color-success)}
+.sem-switch{position:relative}
+.sem-box{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:7px 12px;background:#fff;font-size:13px;color:var(--text-strong);white-space:nowrap}
+.sem-menu{position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-md);min-width:280px;padding:6px;z-index:30;display:none}
+.sem-menu.open{display:block}
+.sem-opt{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer}
+.sem-opt:hover{background:var(--bg-panel)}
+.sem-opt.cur{background:var(--color-primary-light)}
+.sem-opt .t{font-size:13px;color:var(--text-strong)}
+.sem-opt .d{font-size:11px;color:var(--text-mute)}
+.sem-opt .st{font-size:11px}
+.user-plate{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:var(--radius-sm);cursor:pointer}
+.user-plate:hover{background:var(--bg-panel)}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366F1,#2563EB);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+
+.content{flex:1;overflow-y:auto;padding:20px 22px 40px;position:relative}
+.page{display:none;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ================= 卡片 / 区块 ================= */
+.card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-xs);padding:20px;margin-bottom:16px}
+.card.slim{padding:14px 18px}
+.card-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.card-title{font-size:15px;font-weight:700;color:var(--text-strong);display:flex;align-items:center;gap:8px}
+.card-sub{font-size:12px;color:var(--text-mute)}
+.sec-note{font-size:12px;color:var(--text-mute);background:var(--bg-panel);border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:8px 12px;margin:8px 0 14px;display:flex;gap:6px;align-items:flex-start}
+.sec-note b{color:var(--text-strong)}
+
+/* 统计卡 */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin-bottom:16px}
+.stat-card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow-xs);position:relative;overflow:hidden}
+.stat-card .v{font-size:26px;font-weight:800;color:var(--text-strong);line-height:1.2}
+.stat-card .l{font-size:12px;color:var(--text-mute);margin-top:2px}
+.stat-card .ico{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.stat-icon-blue{background:var(--color-primary-light)}
+.stat-icon-green{background:var(--color-success-light)}
+.stat-icon-orange{background:var(--color-warning-light)}
+.stat-icon-red{background:var(--color-danger-light)}
+
+/* 表格 */
+tbl-wrap, .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+.tbl th{background:var(--bg-panel);color:var(--text-mute);font-weight:600;text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:12px}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#FAFBFC}
+.tbl .actions{white-space:nowrap}
+.tbl .num{font-variant-numeric:tabular-nums;color:var(--text-strong);font-weight:600}
+.rank{display:inline-flex;align-items:center;gap:6px}
+
+/* 标签 */
+.tag{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.tag-blue{background:var(--color-primary-light);color:var(--color-primary)}
+.tag-green{background:var(--color-success-light);color:var(--color-success)}
+.tag-orange{background:var(--color-warning-light);color:#B45309}
+.tag-red{background:var(--color-danger-light);color:var(--color-danger)}
+.tag-gray{background:var(--bg-panel);color:var(--text-mute)}
+.tag-accent{background:#CFFAFE;color:#0E7490}
+.lock-ic{color:#B45309;font-size:12px}
+
+/* 表单 */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.field label{display:block;font-size:12px;color:var(--text-mute);margin-bottom:5px;font-weight:600}
+.field select,input{width:100%}
+.field .hint{font-size:11px;color:var(--text-faint);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;border:1px solid var(--line-strong);background:#fff;font-size:12px;color:var(--text);cursor:pointer;transition:var(--trans)}
+.chip.on{background:var(--color-primary-light);border-color:var(--color-primary);color:var(--color-primary);font-weight:600}
+.chip.off{opacity:.7}
+.chip .sw{width:26px;height:15px;border-radius:99px;background:var(--line-strong);position:relative;transition:var(--trans);flex-shrink:0}
+.chip .sw::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:#fff;transition:var(--trans)}
+.chip.on .sw{background:var(--color-primary)}
+.chip.on .sw::after{left:13px}
+
+/* Tab */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow-x:auto}
+.tab{padding:9px 16px;font-size:13px;color:var(--text-mute);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:var(--trans)}
+.tab:hover{color:var(--text-strong)}
+.tab.active{color:var(--color-primary);border-bottom-color:var(--color-primary);font-weight:600}
+
+/* 课表网格 */
+.tt-head{display:grid;grid-template-columns:72px repeat(5,1fr);gap:6px;margin-bottom:6px}
+.tt-head .th{text-align:center;font-size:12px;font-weight:600;color:var(--text-mute);padding:6px}
+.tt-row{display:grid;grid-template-columns:72px repeat(5,1fr);gap:6px;margin-bottom:6px}
+.tt-time{display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-panel);border-radius:var(--radius-sm);font-size:11px;color:var(--text-mute);line-height:1.3;cursor:pointer}
+.drop-cell{min-height:74px;background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);position:relative;transition:var(--trans);padding:4px}
+.drop-cell:hover{border-color:var(--color-primary);background:var(--color-primary-light)}
+.drop-cell.armed{border:2px solid var(--color-primary);background:var(--color-primary-light);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.drop-cell.conflict{background:var(--color-danger-light);border-color:var(--color-danger)}
+.course{background:var(--color-primary-light);border:1px solid #BFDBFE;border-left:3px solid var(--color-primary);border-radius:var(--radius-sm);padding:4px 6px;font-size:11px;cursor:grab;height:100%;display:flex;flex-direction:column;justify-content:center;transition:var(--trans)}
+.course:hover{box-shadow:var(--shadow-sm)}
+.course .t{font-weight:700;color:var(--color-primary);font-size:12px}
+.course .m{color:var(--text-mute);font-size:11px;line-height:1.35}
+.course.locked{background:var(--color-warning-light);border-color:#FCD34D;border-left-color:#B45309}
+.course.locked .t{color:#B45309}
+.course.selected{outline:2px solid var(--color-primary);outline-offset:1px}
+.course.flash-conflict{animation:flashRed .5s ease}
+@keyframes flashRed{0%,100%{background:var(--color-warning-light)}50%{background:var(--color-danger-light)}}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--text-mute);flex-wrap:wrap}
+.legend .it{display:flex;align-items:center;gap:5px}
+.legend .sw{margin-right:4px}
+
+/* 模态框 */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:480px;max-width:100%;max-height:88vh;overflow-y:auto;animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-size:15px;color:var(--text-strong)}
+.modal-body{padding:18px 20px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--line)}
+.modal-body .warn-box{background:var(--color-warning-light);border:1px solid #FCD34D;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:#92400E;display:flex;gap:8px;align-items:flex-start;margin-bottom:12px}
+.modal-body .danger-box{background:var(--color-danger-light);border:1px solid #FCA5A5;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:#991B1B;display:flex;gap:8px;align-items:flex-start;margin-bottom:12px}
+
+/* Toast */
+.toast-wrap{position:fixed;top:70px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:#0F172A;color:#fff;padding:11px 16px;border-radius:var(--radius);font-size:13px;box-shadow:var(--shadow-md);display:flex;gap:8px;align-items:center;animation:slideIn .25s ease;max-width:420px;pointer-events:auto}
+.toast.ok{background:var(--color-success)}
+.toast.err{background:var(--color-danger)}
+.toast.warn{background:#B45309}
+.toast.blue{background:var(--color-primary)}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.toast.out{animation:slideOut .25s ease forwards}
+@keyframes slideOut{to{opacity:0;transform:translateX(30px)}}
+
+/* 进度 */
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;display:inline-block}
+@keyframes rot{to{transform:rotate(360deg)}}
+.loading-mask{position:relative;display:flex;align-items:center;gap:10px;padding:22px;justify-content:center;color:var(--text-mute);font-size:14px;background:var(--bg-panel);border-radius:var(--radius);border:1px dashed var(--line-strong)}
+.progress{height:6px;background:var(--bg-panel);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--color-primary);border-radius:99px;transition:width .4s ease}
+
+/* 走查面板 */
+.walk-fab{position:fixed;right:20px;bottom:24px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.walk-fab .fab{width:52px;height:52px;border-radius:50%;background:var(--color-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:var(--shadow-lg);border:none;transition:var(--trans)}
+.walk-fab .fab:hover{transform:scale(1.06)}
+.walk-panel{position:fixed;right:20px;bottom:88px;width:340px;max-height:68vh;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--line);z-index:95;display:none;flex-direction:column;overflow:hidden}
+.walk-panel.open{display:flex}
+.walk-head{background:linear-gradient(135deg,#2563EB,#0891B2);color:#fff;padding:14px 16px}
+.walk-head h4{font-size:14px}
+.walk-head p{font-size:11px;opacity:.85;margin-top:2px}
+.walk-body{flex:1;overflow-y:auto;padding:12px 16px}
+.walk-step{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:12px;cursor:pointer;border-radius:4px}
+.walk-step:hover{background:var(--bg-panel)}
+.walk-step .n{width:20px;height:20px;border-radius:50%;background:var(--color-primary-light);color:var(--color-primary);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.walk-step .txt b{display:block;color:var(--text-strong);font-size:12px}
+.walk-step .txt span{color:var(--text-mute);font-size:11px}
+
+/* 需求验证清单侧栏 */
+.req-fab{position:fixed;right:20px;bottom:84px;z-index:90;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.req-fab .fab{width:52px;height:52px;border-radius:50%;background:#059669;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:var(--shadow-lg);border:none;transition:var(--trans);cursor:pointer}
+.req-fab .fab:hover{transform:scale(1.06)}
+.req-panel{position:fixed;right:20px;bottom:148px;width:400px;max-width:calc(100vw - 40px);max-height:72vh;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--line);z-index:95;display:none;flex-direction:column;overflow:hidden}
+.req-panel.open{display:flex}
+.req-head{background:linear-gradient(135deg,#059669,#0D9488);color:#fff;padding:12px 16px}
+.req-head h4{font-size:14px}
+.req-head p{font-size:11px;opacity:.85;margin-top:2px}
+.req-progress{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--line);background:#F8FAFC}
+.req-progress .bar{flex:1;height:6px;border-radius:99px;background:#E2E8F0;overflow:hidden}
+.req-progress .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#059669,#0D9488);transition:width .3s}
+.req-progress .num{font-size:12px;color:var(--text-mute);white-space:nowrap;font-variant-numeric:tabular-nums}
+.req-body{flex:1;overflow-y:auto;padding:8px 10px}
+.req-item{display:flex;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent;border-bottom:1px dashed var(--line)}
+.req-item:hover{background:var(--bg-panel)}
+.req-item.hit{border-color:var(--color-primary);background:var(--color-primary-light)}
+.req-item .cb{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--line-strong);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;background:#fff}
+.req-item.done .cb{background:var(--color-success);border-color:var(--color-success)}
+.req-item .meta{flex:1;min-width:0}
+.req-item .meta b{display:block;font-size:12px;color:var(--text-strong);line-height:1.3}
+.req-item .meta .ptags{display:inline-block;margin:2px 0}
+.req-item .meta .pp{display:inline-block;font-size:10px;color:var(--color-primary);background:var(--color-primary-light);border-radius:4px;padding:0 4px;margin:0 4px 0 0}
+.req-item .meta .vp{display:block;font-size:11px;color:var(--text-mute);line-height:1.45}
+.req-item.done .meta{opacity:.55}
+
+/* 状态切换器（页面级） */
+.demo-state{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.demo-state .lbl{font-size:12px;color:var(--text-mute)}
+
+/* 空态 */
+.empty{padding:40px 20px;text-align:center;color:var(--text-faint);border:1px dashed var(--line-strong);border-radius:var(--radius)}
+.empty .e-ic{font-size:36px;margin-bottom:8px}
+.empty p{font-size:13px}
+
+/* 其他 */
+.pin{display:inline-block;background:var(--color-primary);color:#fff;font-size:10px;font-weight:700;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+.mute{color:var(--text-mute)} .small{font-size:12px} .faint{color:var(--text-faint)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1080px){.grid2{grid-template-columns:1fr}}
+.flex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mt2{margin-top:8px}.mt3{margin-top:12px}.mt4{margin-top:16px}.mb2{margin-bottom:8px}.mb3{margin-bottom:12px}.mb4{margin-bottom:16px}
+.divider{height:1px;background:var(--line);margin:14px 0}
+.steps-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px}
+.steps-line .stp{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;background:var(--bg-panel);color:var(--text-mute);border:1px solid var(--line)}
+.steps-line .stp.done{background:var(--color-success-light);color:var(--color-success);border-color:#A7F3D0}
+.steps-line .stp.now{background:var(--color-primary-light);color:var(--color-primary);border-color:var(--color-primary);font-weight:600}
+.steps-line .arr{color:var(--text-faint)}
+.wc{font-variant-numeric:tabular-nums}
+.badge-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.green{color:var(--color-success)}.red{color:var(--color-danger)}.orange{color:#B45309}.blue{color:var(--color-primary)}
+
+/* 登录页 */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#EEF2FF 0%,#F0F9FF 55%,#F8FAFC 100%);padding:20px;position:relative;overflow:hidden}
+.login-deco{position:absolute;width:560px;height:560px;border-radius:50%;filter:blur(90px);opacity:.25}
+.login-deco.a{background:#60A5FA;top:-160px;left:-120px}
+.login-deco.b{background:#22D3EE;bottom:-180px;right:-100px}
+.login-card{position:relative;width:420px;max-width:100%;background:#fff;border-radius:20px;box-shadow:var(--shadow-lg);padding:36px 36px 30px;z-index:2;border:1px solid #E0E7FF}
+.login-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#2563EB,#0891B2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:0 auto 14px}
+.login-card h1{text-align:center;font-size:19px;color:var(--text-strong);margin-bottom:4px}
+.login-card .sub{text-align:center;font-size:12px;color:var(--text-mute);margin-bottom:24px}
+.login-divider{display:flex;align-items:center;gap:10px;color:var(--text-faint);font-size:12px;margin:14px 0}
+.login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* 打印预览 */
+.print-sheet{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);max-width:520px;margin:0 auto;padding:22px}
+.print-sheet .ps-head{text-align:center;border-bottom:2px solid #0F172A;padding-bottom:8px;margin-bottom:10px}
+.print-sheet .ps-head h3{font-size:17px;color:var(--text-strong)}
+.print-sheet .ps-head p{font-size:11px;color:var(--text-mute)}
+</style>
+</head>
+<body>
+<!-- ================================================================ -->
+<!-- 走查脚本面板 -->
+<div class="walk-fab">
+  <div class="walk-panel" id="walkPanel">
+    <div class="walk-head"><h4>📋 V1.0 原型走查脚本</h4><p>按步骤序号引导，点击步骤直接跳转到对应页面演示</p></div>
+    <div class="walk-body">
+      <div class="walk-step" onclick="goStep('P01')"><div class="n">1</div><div class="txt"><b>管理员登录</b><span>默认账号登录，进入工作台（P01→P02）</span></div></div>
+      <div class="walk-step" onclick="goStep('P10')"><div class="n">2</div><div class="txt"><b>一键智能排课</b><span>加载态模拟 → 三类冲突 0 结果 → 发布链路（P10）</span></div></div>
+      <div class="walk-step" onclick="goStep('P13')"><div class="n">3</div><div class="txt"><b>五维课表视图</b><span>班级/教师/全校/场地/任课 视角切换（P13）</span></div></div>
+      <div class="walk-step" onclick="goStep('P14')"><div class="n">4</div><div class="txt"><b>拖拽调课</b><span>选中课程→落位→冲突拦截/撤销重做→保存二次确认（P14）</span></div></div>
+      <div class="walk-step" onclick="goStep('P15')"><div class="n">5</div><div class="txt"><b>空闲时段查询</b><span>对象→周次→空闲槽位高亮（P15）</span></div></div>
+      <div class="walk-step" onclick="goStep('P19')"><div class="n">6</div><div class="txt"><b>冲突校验中心</b><span>三类冲突明细 + 未排课时定位（P19）</span></div></div>
+      <div class="walk-step" onclick="goStep('P16')"><div class="n">7</div><div class="txt"><b>工作量统计</b><span>常规/连堂/合班/加班四类口径（P16）</span></div></div>
+      <div class="walk-step" onclick="goStep('P17')"><div class="n">8</div><div class="txt"><b>Excel 导出 / 模板打印</b><span>全维度导出 + 打印预览（P17→P18）</span></div></div>
+      <div class="walk-step" onclick="goStep('P12')"><div class="n">9</div><div class="txt"><b>复杂场景</b><span>单双周/走班/跨年级配置（P12）</span></div></div>
+      <div class="walk-step" onclick="goStep('P20')"><div class="n">10</div><div class="txt"><b>日志与学期存档</b><span>关键操作留痕 + 多学期存档只读（P20）</span></div></div>
+      <div class="walk-step" onclick="goStep('P21')"><div class="n">11</div><div class="txt"><b>用户与角色</b><span>Admin/Teacher 角色分配（P21）</span></div></div>
+      <div class="walk-step" onclick="teacherLogin()"><div class="n">12</div><div class="txt"><b>切换教师视角</b><span>菜单收窄，仅本人课表/空闲时段（角色权限演示）</span></div></div>
+    </div>
+  </div>
+  <button class="fab" onclick="toggleWalk()" title="走查脚本">🧭</button>
+</div>
+
+<!-- ================================================================ -->
+<!-- 需求验证清单侧栏 -->
+<div class="req-fab">
+  <div class="req-panel open" id="reqPanel">
+    <div class="req-head"><h4>✅ V1.0 需求验证清单</h4><p>逐条对照勾选验证需求；随页面导航自动高亮当前页关联条目，点击条目跳转对应页面</p></div>
+    <div class="req-progress"><span class="num" id="reqNum">已验证 0/20</span><div class="bar"><i id="reqBar" style="width:0%"></i></div></div>
+    <div class="req-body" id="reqBody"></div>
+  </div>
+  <button class="fab" onclick="toggleReqPanel()" title="需求验证清单">✅</button>
+</div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ================================================================ -->
+<div class="layout" id="appLayout">
+  <!-- 左侧菜单 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo">排</div>
+      <div class="txt"><b>智能排课系统</b><span>V1.0 · 核心排课闭环</span></div>
+    </div>
+    <div class="sid-scroll" id="navMenu">
+      <div class="sid-sep">工作台</div>
+      <div class="sid-item" data-nav="P02" onclick="nav('P02','intent-showMenu-1')"><span class="ic">🏠</span><span class="lbl">系统概览与学期切换</span><span class="dot" id="dotPlan"></span></div>
+      <div class="sid-sep">基础数据 M1</div>
+      <div class="sid-item" data-nav="P03" onclick="nav('P03','intent-showMenu-2')"><span class="ic">🗓</span><span class="lbl">学期管理</span></div>
+      <div class="sid-item" data-nav="P04" onclick="nav('P04','intent-showMenu-3')"><span class="ic">⏰</span><span class="lbl">作息模板</span></div>
+      <div class="sid-item" data-nav="P05" onclick="nav('P05','intent-showMenu-4')"><span class="ic">🏫</span><span class="lbl">班级·年级</span></div>
+      <div class="sid-item" data-nav="P06" onclick="nav('P06','intent-showMenu-5')"><span class="ic">📚</span><span class="lbl">科目与课时规则</span></div>
+      <div class="sid-item" data-nav="P07" onclick="nav('P07','intent-showMenu-6')"><span class="ic">👩‍🏫</span><span class="lbl">教师与任课约束</span></div>
+      <div class="sid-item" data-nav="P08" onclick="nav('P08','intent-showMenu-7')"><span class="ic">🏟</span><span class="lbl">场地·功能室</span></div>
+      <div class="sid-item" data-nav="P09" onclick="nav('P09','intent-showMenu-8')"><span class="ic">👥</span><span class="lbl">合班课配置</span></div>
+      <div class="sid-sep">智能排课 M2</div>
+      <div class="sid-item" data-nav="P10" onclick="nav('P10','intent-showMenu-9')"><span class="ic">🎯</span><span class="lbl">一键智能排课</span></div>
+      <div class="sid-item" data-nav="P11" onclick="nav('P11','intent-showMenu-10')"><span class="ic">🔒</span><span class="lbl">预排·锁定</span></div>
+      <div class="sid-item" data-nav="P12" onclick="nav('P12','intent-showMenu-11')"><span class="ic">🧩</span><span class="lbl">复杂场景适配</span></div>
+      <div class="sid-sep">课表与调课 M3</div>
+      <div class="sid-item" data-nav="P13" onclick="nav('P13','intent-showMenu-12')"><span class="ic">📅</span><span class="lbl">多维度课表视图</span></div>
+      <div class="sid-item teacher-only-holder" id="navP13T" onclick="nav('P13','mine')"><span class="ic">🧑‍🏫</span><span class="lbl">我的课表</span></div>
+      <div class="sid-item" data-nav="P14" onclick="nav('P14','intent-showMenu-13')"><span class="ic">✋</span><span class="lbl">拖拽调课</span></div>
+      <div class="sid-item" data-nav="P15" onclick="nav('P15','intent-showMenu-14')"><span class="ic">⏳</span><span class="lbl">空闲时段查询</span></div>
+      <div class="sid-sep">教务统计 M4</div>
+      <div class="sid-item" data-nav="P16" onclick="nav('P16','intent-showMenu-15')"><span class="ic">🧮</span><span class="lbl">工作量统计</span></div>
+      <div class="sid-sep">导出打印 M5</div>
+      <div class="sid-item" data-nav="P17" onclick="nav('P17','intent-showMenu-16')"><span class="ic">📤</span><span class="lbl">Excel 导出</span></div>
+      <div class="sid-item" data-nav="P18" onclick="nav('P18','intent-showMenu-17')"><span class="ic">🖨</span><span class="lbl">自定义模板打印</span></div>
+      <div class="sid-sep">基础支撑</div>
+      <div class="sid-item" data-nav="P19" onclick="nav('P19','conflicts')"><span class="ic">🚨</span><span class="lbl">冲突校验中心</span></div>
+      <div class="sid-item" data-nav="P20" onclick="nav('P20','logs')"><span class="ic">📜</span><span class="lbl">操作日志·存档</span></div>
+      <div class="sid-item" data-nav="P21" onclick="nav('P21','users')"><span class="ic">👤</span><span class="lbl">用户与角色</span></div>
+    </div>
+  </aside>
+
+  <!-- 主区域 -->
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn" onclick="toggleSidebar()" title="折叠菜单">☰</button>
+      <div class="crumb"><span id="crumbText">系统概览</span> <b id="crumbMain"></b></div>
+      <span class="role-tag" id="roleTag">👤 Admin</span>
+      <div class="sem-switch" id="semWrap">
+        <div class="sem-box" onclick="toggleSemMenu()">📅 <span id="semCurrent">2026 秋季</span> <span class="tag tag-green" id="semStatus">进行中</span> ▾</div>
+        <div class="sem-menu" id="semMenu">
+          <div class="sem-opt cur" onclick="pickSem(0)"><div><div class="t">2026-2027 学年 · 秋季学期</div><div class="d">2026-09-01 ~ 2027-01-31 · 作息模板 v2</div></div><span class="tag tag-green st">进行中</span></div>
+          <div class="sem-opt" onclick="pickSem(1)"><div><div class="t">2026-2027 学年 · 春季学期</div><div class="d">2027-02-18 ~ 2027-07-10 · 作息模板 v3</div></div><span class="tag tag-gray st">未开始</span></div>
+          <div class="sem-opt" onclick="pickSem(2)"><div><div class="t">2025-2026 学年 · 秋季学期</div><div class="d">2025-09-01 ~ 2026-01-31 · 作息模板 v1</div></div><span class="tag tag-blue st">已存档</span></div>
+        </div>
+      </div>
+      <div class="user-plate" onclick="roleSwitch()" title="点击切换 管理员/教师 视角（演示角色权限）">
+        <div class="avatar" id="avatar">管</div>
+        <span id="userName">教务管理员</span>
+      </div>
+    </header>
+
+    <div class="content" id="content">
+      <!-- ================================================== P01 登录页 -->
+      <div class="page" id="P01"><!-- Page: P01 ｜ R: REQ-AU-001 -->
+        <div class="login-wrap">
+          <div class="login-deco a"></div><div class="login-deco b"></div>
+          <div class="login-card">
+            <div class="login-logo">排</div>
+            <h1>智能排课系统</h1>
+            <p class="sub">本地账号登录 · 教务管理员 / 普通教师双角色</p>
+            <div class="field"><label>账号</label><input id="loginAcc" value="admin" placeholder="请输入账号"></div>
+            <div class="field mt3"><label>密码</label><input id="loginPwd" type="password" value="123456" placeholder="请输入密码"></div>
+            <div class="sec-note mt3">📌 V1.0 本地账号体系，无外部对接（D5）；系统内置默认管理员初始化（D11）。</div>
+            <button class="btn btn-primary btn-block mt4" onclick="loginAs('admin')">🔐 管理员登录</button>
+            <div class="login-divider">或演示身份</div>
+            <div class="flex" style="justify-content:center">
+              <button class="btn btn-ghost" onclick="loginAs('teacher')">👨‍🏫 教师登录（仅本人课表）</button>
+            </div>
+            <div class="mt4 small faint" style="text-align:center">Acid Design · 需求可测性审查门禁已通过 · 20 条 REQ 已确认</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P02 系统概览 -->
+      <div class="page" id="P02"><!-- Page: P02 ｜ R: REQ-AP-001 / REQ-BD-001 / REQ-LG-001 / REQ-AT-001 -->
+        <div class="card slim">
+          <div class="spread">
+            <div>
+              <div class="card-title" style="margin:0">🏠 系统概览 <span id="semTitleNow" class="tag tag-green" style="margin-left:6px">进行中</span></div>
+              <div class="card-sub">当前学期：2026-2027 学年 · 秋季学期（2026-09-01 ~ 2027-01-31）· 引用作息模板 v2</div>
+            </div>
+            <div class="steps-line">
+              <span class="stp done">① 方案草稿</span><span class="arr">→</span>
+              <span class="stp now" id="stpPublish">② 发布正式课表</span><span class="arr">→</span>
+              <span class="stp" id="stpArchive">③ 学期存档</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card"><span class="ico stat-icon-blue">📚</span><div class="v">48</div><div class="l">每周课堂次（本学期合计）</div></div>
+          <div class="stat-card"><span class="ico stat-icon-blue">🏫</span><div class="v">16</div><div class="l">班级数（4 个年级）</div></div>
+          <div class="stat-card"><span class="ico stat-icon-blue">👩‍🏫</span><div class="v">42</div><div class="l">任课教师数</div></div>
+          <div class="stat-card"><span class="ico stat-icon-green">🏟</span><div class="v">18</div><div class="l">场地 / 功能室</div></div>
+          <div class="stat-card" id="statConflict"><span class="ico stat-icon-orange">🚨</span><div class="v" id="conflictNum">0</div><div class="l">三类核心冲突</div></div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">🎯 一键智能排课</div><span class="tag tag-blue">P0</span></div>
+            <p class="small mute">基于基础数据与约束规则，自动生成全校课表，<b class="blue">三类核心冲突 = 0</b>；方案可预览 / 微调 / 另存 / 发布。</p>
+            <div class="flex mt3">
+              <button class="btn btn-primary" onclick="nav('P10','ready')">⚡ 进入一键排课</button>
+              <button class="btn btn-ghost" onclick="nav('P13','class')">👁 预览课表</button>
+            </div>
+            <div class="sec-note mt3">📌 排课上下文 = 学期 + 引用作息模板（REQ-BD-001 强制绑定，D8）；发布为正式课表前可反复微调（D12/D13）。非功能：50 班 ≤5 秒（D3）。</div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📅 学期状态与存档</div><span class="tag tag-blue">REQ-BD-001 / LG-001</span></div>
+            <p class="small mute">学期状态枚举：<b>未开始 / 进行中 / 已结束 / 已存档</b>；存档由管理员手动触发，且先决为<span class="red">已发布正式课表</span>（D12）。</p>
+            <div class="flex mt3">
+              <button class="btn btn-success" onclick="openModal('mArchive')">📦 学期存档（手动触发）</button>
+              <button class="btn btn-ghost" onclick="openModal('mPublish')">📣 发布正式课表</button>
+            </div>
+            <div class="mt3 small">
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)"><span>方案草稿</span><span class="tag tag-orange" id="draftTag">1 份未发布</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)"><span>正式课表</span><span class="tag tag-green" id="publishTag">已发布 · 2026-09-16 10:35:00</span></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0"><span>存档记录</span><span class="tag tag-gray" id="archiveTag">尚未存档</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📜 最近操作日志</div><a onclick="nav('P20','logs')">查看全部 →</a></div>
+            <table class="tbl" style="min-width:0">
+              <tbody>
+                <tr><td><span class="tag tag-green">发布</span></td><td>2026-09-16 10:35:00</td><td class="mute">发布 2026 秋季正式课表（冲突数 0）</td></tr>
+                <tr><td><span class="tag tag-blue">排课</span></td><td>2026-09-16 10:32:00</td><td class="mute">一键排课生成方案「2026秋-v3」（冲突数 0）</td></tr>
+                <tr><td><span class="tag tag-orange">导入</span></td><td>2026-09-16 10:20:00</td><td class="mute">批量导入教师任课 42 行（异常 1 行已提示）</td></tr>
+                <tr><td><span class="tag tag-gray">配置</span></td><td>2026-09-16 09:58:00</td><td class="mute">作息模板 v3 基于 v2 复制生成</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">🔎 快捷入口</div></div>
+            <div class="grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+              <button class="btn btn-soft" onclick="nav('P13','class')">📅 班级课表</button>
+              <button class="btn btn-soft" onclick="nav('P13','teacher')">🧑‍🏫 教师课表</button>
+              <button class="btn btn-soft" onclick="nav('P17','export')">📤 全维度导出</button>
+              <button class="btn btn-soft" onclick="nav('P19','conflicts')">🚨 冲突中心</button>
+              <button class="btn btn-soft" onclick="nav('P16','stats')">🧮 工作量统计</button>
+              <button class="btn btn-soft" onclick="nav('P21','users')">👤 用户与角色</button>
+            </div>
+            <div class="sec-note mt3">✅ 角色权限：Admin 可见全部视图；<b>Teacher 仅本人课表 / 本人关联班级课表 / 本人空闲时段</b>（REQ-AU-001 贯穿 AT-001 / AT-003）。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P03 学期管理 -->
+      <div class="page" id="P03"><!-- Page: P03 ｜ R: REQ-BD-001 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">🗓 学期管理</div><div class="card-sub">每个学期仅引用一个作息模板（D4）；未绑定模板不可进入一键排课（D8）</div></div>
+            <div class="flex"><button class="btn btn-primary" onclick="openModal('mSemNew')">＋ 新增学期</button><button class="btn btn-ghost" onclick="simImport('学期')">⬆️ 批量导入</button></div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>学年</th><th>学期</th><th>起止日期</th><th>引用作息模板</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>2026-2027</td><td>秋季学期</td><td class="wc">2026-09-01 ~ 2027-01-31</td><td><span class="tag tag-accent">作息模板 v2</span></td><td><span class="tag tag-green">进行中</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="toast('已切换学期','blue')">切换</button></td></tr>
+                <tr><td>2026-2027</td><td>春季学期</td><td class="wc">2027-02-18 ~ 2027-07-10</td><td><span class="tag tag-accent">作息模板 v3</span></td><td><span class="tag tag-gray">未开始</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="toast('已切换学期','blue')">切换</button></td></tr>
+                <tr><td>2025-2026</td><td>秋季学期</td><td class="wc">2025-09-01 ~ 2026-01-31</td><td><span class="tag tag-accent">作息模板 v1</span></td><td><span class="tag tag-blue">已存档</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="nav('P17','export')">📤 导出</button><button class="btn btn-sm btn-danger" onclick="toast('已存档学期不可删除，仅可查看/导出','err')">删除</button></td></tr>
+                <tr><td>2025-2026</td><td>春季学期</td><td class="wc">2026-02-18 ~ 2026-07-10</td><td><span class="tag tag-accent">作息模板 v1</span></td><td><span class="tag tag-orange">已结束</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mArchive')">📦 存档</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card slim">
+          <div class="small mute">⚠️ 学期状态流转一次仅一态：未开始 → 进行中 → 已结束 → 已存档；<b class="red">存档需先发布正式课表，未发布提示先发布</b>（D12）；已存档学期只读、不可编辑、可导出。跨学期数据独立存档、互不串扰。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P04 作息模板 -->
+      <div class="page" id="P04"><!-- Page: P04 ｜ R: REQ-BD-002 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">⏰ 作息模板 <span class="tag tag-accent">独立主数据 · 多版本</span></div><div class="card-sub">与学期解耦（D4）：任一模版可复用到任意学期；保存即生成新版本；模板改版不影响历史学期</div></div>
+            <button class="btn btn-primary" onclick="openModal('mTplNew')">＋ 新建模板</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>模板名称</th><th>版本</th><th>开放排课星期</th><th>节次</th><th>被引用学期</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>常规作息</td><td><span class="tag tag-blue">v2 · 最新</span></td><td>周一 ~ 周五</td><td>第 1-8 节（含晚自习 2 节）</td><td>2026 秋季（进行中）</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTplEdit')">编辑</button></td></tr>
+                <tr><td>常规作息</td><td><span class="tag tag-gray">v1</span></td><td>周一 ~ 周六</td><td>第 1-7 节</td><td>2025 秋季（已存档）</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTplEdit')">编辑</button></td></tr>
+                <tr><td>早晚自习制</td><td><span class="tag tag-blue">v1 · 最新</span></td><td>周一 ~ 周五</td><td>第 1-9 节（含早读、晚自习）</td><td>2026 春季（未开始）</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTplEdit')">编辑</button><button class="btn btn-sm btn-danger" onclick="delProtected('作息模板 v1（早晚自习制）正被 2026 春季学期引用，禁止删除')">删除</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">节次时间表（作息模板 v2）</div><button class="btn btn-sm btn-ghost" onclick="toast('保存后即生成新版本 v3（不会回改历史学期课表）','ok')">💾 保存为新版本</button></div>
+          <div class="form-grid" style="grid-template-columns:repeat(4,1fr)">
+            <div class="field"><label>第 1 节</label><input value="08:00 - 08:45"></div>
+            <div class="field"><label>第 2 节</label><input value="08:55 - 09:40"></div>
+            <div class="field"><label>第 3 节</label><input value="09:55 - 10:40"></div>
+            <div class="field"><label>第 4 节</label><input value="10:50 - 11:35"></div>
+            <div class="field"><label>第 5 节</label><input value="14:00 - 14:45"></div>
+            <div class="field"><label>第 6 节</label><input value="14:55 - 15:40"></div>
+            <div class="field"><label>第 7 节</label><input value="15:50 - 16:35"></div>
+            <div class="field"><label>第 8 节（晚自习）</label><input value="19:00 - 19:45"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P05 班级·年级 -->
+      <div class="page" id="P05"><!-- Page: P05 ｜ R: REQ-BD-003 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">🏫 班级 · 年级管理 <span class="tag tag-blue">年级独立受控管理（D20）</span></div><div class="card-sub">系统自行维护，无外部对接（D5）；班级人数作为排课与场地容量校验输入（D19：人数 &gt; 容量 = 硬约束禁排）</div></div>
+            <div class="flex"><button class="btn btn-primary" onclick="openGradeNew()">＋ 新增年级</button><button class="btn btn-primary" onclick="openClassNew()">＋ 新增班级</button><button class="btn btn-ghost" onclick="simImport('班级')">⬆️ 批量导入</button></div>
+          </div>
+          <div class="card slim">
+            <div class="card-header" style="margin-bottom:10px">
+              <div class="card-title">🏷 年级管理（受控名称列表）</div>
+              <button class="btn btn-sm btn-ghost" onclick="openGradeNew()">＋ 新增年级</button>
+            </div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr><th>年级名称</th><th>班级数</th><th>操作</th></tr></thead>
+                <tbody id="gradeRows"></tbody>
+              </table>
+            </div>
+            <div class="sec-note mt3">📌 <b>年级为独立可管理实体</b>（D20）：可新增 / 编辑 / 删除，班级归属年级；名称从受控规范列表新增后纳入列表（如 高一/高二/高三 或 七年级…九年级），禁止自由文本。删除仍被班级引用的年级受引用保护提示（D16）。</div>
+          </div>
+          <div class="tabs" id="gradeTabs">
+            <div class="tab active" onclick="setGrade(0,this)">高一</div>
+            <div class="tab" onclick="setGrade(1,this)">高二</div>
+            <div class="tab" onclick="setGrade(2,this)">高三</div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>班级</th><th>年级</th><th>班主任</th><th>人数</th><th>操作</th></tr></thead>
+              <tbody id="classRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P06 科目与课时规则 -->
+      <div class="page" id="P06"><!-- Page: P06 ｜ R: REQ-BD-004 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">📚 科目与每周课时规则</div><div class="card-sub">规则冲突时给明确提示，<b>不静默忽略</b>（REQ-BD-004 验收口径）</div></div>
+            <button class="btn btn-primary" onclick="toast('科目新增表单（略）','blue')">＋ 新增科目</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>科目</th><th>每周课时</th><th>连堂偏好</th><th>禁排时段</th><th>时段优先</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>语文</td><td class="num">5</td><td>—</td><td>—</td><td>上午优先</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mSubjEdit')">编辑</button></td></tr>
+                <tr><td>数学</td><td class="num">5</td><td>—</td><td>—</td><td>上午优先</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mSubjEdit')">编辑</button></td></tr>
+                <tr><td>理化生</td><td class="num">4</td><td><span class="tag tag-orange">强制 2 连课</span></td><td>—</td><td>上午优先</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mSubjEdit')">编辑</button></td></tr>
+                <tr><td>体育</td><td class="num">2</td><td>—</td><td><span class="tag tag-red">不排第 1 / 最后 1 节</span></td><td>下午优先</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mSubjEdit')">编辑</button></td></tr>
+                <tr><td>艺术</td><td class="num">1</td><td>—</td><td><span class="tag tag-red">不排第 1 / 最后 1 节</span></td><td>下午优先</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mSubjEdit')">编辑</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">🎚 均衡类可配约束项 <span class="tag tag-blue">V1.0 纳入 · 默认关闭软约束（D17）</span></div><div class="card-sub">课时均衡 / 上下午均衡 / 固定时段强制空课或指定课程——启用即作为软约束参与排课</div></div>
+          <div class="chips">
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>课时均衡（教师单日课时上限）</div>
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>上下午均衡</div>
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>固定时段强制空课/指定课程</div>
+          </div>
+          <div class="sec-note mt3">📌 软约束默认关闭，启用后在约束无法满足时给出提示并被标记为未满足项（记录进日志），核心冲突（教师/班级/场地）始终零容忍。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P07 教师与任课 -->
+      <div class="page" id="P07"><!-- Page: P07 ｜ R: REQ-BD-005 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">🧑‍🏫 教师信息与任课约束</div><div class="card-sub">任课约束 = 基础数据（非排课结果）；免排（主动配置）与禁排（业务规则）语义区分</div></div>
+            <div class="flex"><button class="btn btn-primary" onclick="openTeacherNew()">＋ 新增教师</button><button class="btn btn-primary" onclick="openModal('mTeachNew')">＋ 配置任课</button><button class="btn btn-ghost" onclick="simImport('教师主数据 / 教师任课')">⬆️ 批量导入</button></div>
+          </div>
+          <div class="card slim">
+            <div class="card-header" style="margin-bottom:10px">
+              <div class="card-title">🧑‍🏫 教师主数据（可增删改查 · D20）</div>
+              <button class="btn btn-sm btn-ghost" onclick="openTeacherNew()">＋ 新增教师</button>
+            </div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr><th>工号</th><th>姓名</th><th>性别</th><th>手机号</th><th>状态</th><th>登录账号</th><th>操作</th></tr></thead>
+                <tbody id="teacherRows"></tbody>
+              </table>
+            </div>
+            <div class="sec-note mt3">📌 <b>教师主数据 CRUD</b>（D20）：工号受控（T+数字）且唯一；进退校状态区分（退校保留主数据）；一键开通 Teacher 账号联动 REQ-AU-001；有任课记录删除受 D16 引用保护。</div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>教师</th><th>科目</th><th>班级</th><th>场地</th><th>每周课时</th><th>免排时段</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>王建国</td><td>数学</td><td>高一（1）/（3）班</td><td>A101</td><td class="num">10</td><td><span class="tag tag-orange">周二第 5-6 节</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTeachNew')">编辑</button></td></tr>
+                <tr><td>李慧</td><td>语文</td><td>高一（1）班</td><td>A102</td><td class="num">8</td><td>—</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTeachNew')">编辑</button></td></tr>
+                <tr><td>张伟</td><td>英语</td><td>高一（2）班</td><td>B201</td><td class="num">8</td><td>—</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTeachNew')">编辑</button></td></tr>
+                <tr><td>陈静</td><td>物理</td><td>高一（1）班</td><td>实验室1（功能室）</td><td class="num">6</td><td>—</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTeachNew')">编辑</button></td></tr>
+                <tr><td>刘洋</td><td>体育</td><td>高一（1）（2）（3）（4）班</td><td>操场（功能室）</td><td class="num">8</td><td>周三下午</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mTeachNew')">编辑</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card slim small mute">⚠️ 教师本人空闲时段查询仅限本人（角色权限边界）；课时均衡类软约束联动 REQ-BD-004（D17）；有任课记录的教师禁止直接删除（D16 引用保护）；退校教师保留主数据不物理删除（D20）。</div>
+      </div>
+
+      <!-- ================================================== P08 场地·功能室 -->
+      <div class="page" id="P08"><!-- Page: P08 ｜ R: REQ-BD-006 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">🏟 场地 / 功能室管理 <span class="tag tag-blue">D6</span></div><div class="card-sub">合并为同一主数据，以「类型」字段区分（教室 / 功能室）；功能室参与全校共享占用校验，普通教室按班级固定</div></div>
+            <button class="btn btn-primary" onclick="openModal('mVenueNew')">＋ 新增场地</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>场地名称</th><th>类型</th><th>容量</th><th>可用状态</th><th>排课说明</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>A101 教室</td><td><span class="tag tag-gray">教室</span></td><td class="num">50</td><td><span class="tag tag-green">可用</span></td><td class="mute">高一（1）班固定</td><td class="actions"><button class="btn btn-sm btn-ghost">编辑</button><button class="btn btn-sm btn-danger" onclick="delProtected('场地被排课占用，存在引用时禁止删除（D16）')">删除</button></td></tr>
+                <tr><td>实验室1</td><td><span class="tag tag-accent">功能室</span></td><td class="num">48</td><td><span class="tag tag-green">可用</span></td><td class="mute">全校共享占用校验（理化生）</td><td class="actions"><button class="btn btn-sm btn-ghost">编辑</button></td></tr>
+                <tr><td>音乐教室</td><td><span class="tag tag-accent">功能室</span></td><td class="num">60</td><td><span class="tag tag-green">可用</span></td><td class="mute">全校共享占用校验（艺术）</td><td class="actions"><button class="btn btn-sm btn-ghost">编辑</button></td></tr>
+                <tr><td>操场</td><td><span class="tag tag-accent">功能室</span></td><td class="num">200</td><td><span class="tag tag-orange">检修中</span></td><td class="mute">全校共享占用校验（体育）</td><td class="actions"><button class="btn btn-sm btn-ghost">编辑</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">🚨 <b>容量校验（D19）</b>：班级人数 &gt; 场地容量 = <b class="red">硬约束</b>，禁止排入并提示更换场地；不静默降级。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P09 合班课 -->
+      <div class="page" id="P09"><!-- Page: P09 ｜ R: REQ-BD-007 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">👥 合班课配置 <span class="tag tag-orange">P1</span></div><div class="card-sub">静态合并（区别于走班）；不限科目（D10）；作为排课单元占用同一节次时间槽</div></div>
+            <button class="btn btn-primary" onclick="openModal('mComboNew')">＋ 配置合班课</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>合班课名称</th><th>参与班级</th><th>教师</th><th>场地</th><th>节次约束</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>体育大课（高一）</td><td>高一（1）（2）（3）（4）班</td><td>刘洋</td><td>操场</td><td>周三第 7-8 节</td><td class="actions"><button class="btn btn-sm btn-ghost">编辑</button></td></tr>
+                <tr><td>化学合班实验</td><td>高一（1）（2）班</td><td>赵敏</td><td>实验室1</td><td>—</td><td class="actions"><button class="btn btn-sm btn-ghost">编辑</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">📌 合班课在排课中作为一个排课单元占用时间与场地；合班内班级<b>不产生班级同节多课冲突</b>。配置时校验 班级 / 教师 / 场地 / 节次（D10）。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P10 一键排课 -->
+      <div class="page" id="P10"><!-- Page: P10 ｜ R: REQ-AP-001 / REQ-CE-001 -->
+        <div class="card">
+          <div class="spread">
+            <div>
+              <div class="card-title" style="margin:0">🎯 一键智能排课</div>
+              <div class="card-sub">上下文：2026 秋季学期 + 作息模板 v2（已绑定，D8）· 排课单元：全部班级 / 教师 / 科目 / 场地与任课约束</div>
+            </div>
+            <div class="flex">
+              <button class="btn btn-ghost" onclick="simNoSolution()">⚠️ 模拟「硬约束不足」场景</button>
+              <button class="btn btn-ghost" onclick="nav('P11','lockView')">🔒 预排锁定</button>
+              <button class="btn btn-primary" id="btnRun" onclick="runAutoSchedule()">⚡ 一键排课</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="schLoading" class="card" style="display:none">
+          <div class="loading-mask"><span class="spin"></span> 模拟排课计算中…（真实演示：50 班规模 ≤5 秒，D3 验收边界）</div>
+          <div class="progress mt3"><i id="schProg" style="width:12%"></i></div>
+        </div>
+
+        <div class="stat-grid" id="schResult" style="display:none">
+          <div class="stat-card" id="conflictCard"><span class="ico stat-icon-green" id="conflictIco">✅</span><div class="v" id="schConflictV">0</div><div class="l">三类核心冲突（教师/班级/场地）</div></div>
+          <div class="stat-card"><span class="ico stat-icon-blue">⚡</span><div class="v" id="schTimeV">1.8</div><div class="l">完成时长（秒）</div></div>
+          <div class="stat-card"><span class="ico stat-icon-blue">📦</span><div class="v" id="schClassV">16</div><div class="l">排入课时数</div></div>
+          <div class="stat-card" id="unsatCard" style="display:flex;align-items:center;justify-content:center"><div><div class="v" id="schUnsatV" style="color:var(--color-success)">0</div><div class="l">未满足约束 / 未排课时</div></div></div>
+        </div>
+
+        <div class="card" id="schPlanCard" style="display:none">
+          <div class="card-header"><div class="card-title">📋 排课方案列表（每学期仅一份正式课表，D12）</div><span class="tag tag-green" id="planStatusTag">草稿</span></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>方案名</th><th>生成时间</th><th>冲突数</th><th>未排课时</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>2026秋-v4（最新）</td><td class="wc" id="planTimeCell">2026-09-16 10:42:00</td>
+                  <td><span class="num" id="planConflictCell">0</span></td><td><span class="num" id="planUnsatCell">0</span></td>
+                  <td><span class="tag tag-orange" id="planStateCell">草稿 · 未发布</span></td>
+                  <td class="actions">
+                    <button class="btn btn-sm btn-ghost" onclick="nav('P13','class')">👁 预览</button>
+                    <button class="btn btn-sm btn-ghost" onclick="nav('P14','design')">✋ 微调（复用拖拽调课）</button>
+                    <button class="btn btn-sm btn-ghost" onclick="toast('已另存方案副本','ok')">📁 另存</button>
+                    <button class="btn btn-sm btn-success" onclick="openModal('mPublish')">📣 发布</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">📌 状态机（D12）：<b>方案(草稿) → 发布为正式课表 → 学期存档</b>；发布为关键操作需二次确认（D16）；发布后正式课表仍可拖拽调课（AT-002 作用对象）。</div>
+          <div class="card slim mt3" style="margin-bottom:0;background:var(--bg-panel);border-style:dashed">
+            <div class="small"><b>🧪 引擎最小确定性验收样例（D15，公共断言基准）</b><br>
+            输入：2 班 + 2 教师 + 2 科目 + 1 功能室，赋予 <span class="tag tag-orange" style="margin:0 2px">连堂</span><span class="tag tag-red" style="margin:0 2px">禁排</span><span class="tag tag-gray" style="margin:0 2px">免排</span> 约束；<br>
+            期望：输出课表逐项满足约束 且 三类核心冲突 = 0。→ 由 CE-001 断言函数自动校验，供原型演示与回归复用。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P11 预排锁定 -->
+      <div class="page" id="P11"><!-- Page: P11 ｜ R: REQ-AP-002 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">🔒 课程预排与锁定 <span class="tag tag-orange">P1</span></div><div class="card-sub">排课前手工预设固定课程，引擎保留不覆盖（F008）；锁定后不可被自动调整</div></div>
+          </div>
+          <div class="chips mb3">
+            <div class="chip" onclick="chipToggle(this,t)"><span class="sw"></span>启用锁定保护</div>
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>显示已锁定课程</div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>课次</th><th>教师</th><th>班级</th><th>节次</th><th>锁定</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>数学（1）</td><td>王建国</td><td>高一（1）班</td><td>周一 第 1 节</td><td><span class="tag tag-orange">🔒 锁定</span></td><td class="actions"><button class="btn btn-sm btn-ghost">解锁</button></td></tr>
+                <tr><td>体育大课</td><td>刘洋</td><td>高一（1）（2）（3）（4）班</td><td>周三 第 7-8 节</td><td><span class="tag tag-orange">🔒 锁定</span></td><td class="actions"><button class="btn btn-sm btn-ghost">解锁</button></td></tr>
+                <tr><td>物理（1）</td><td>陈静</td><td>高一（1）班</td><td>周五 第 3-4 节</td><td><span class="tag tag-gray">未锁定</span></td><td class="actions"><button class="btn btn-sm btn-ghost">锁定</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">🔒 <b>锁定保护（D13）</b>：微调与拖拽调课中，锁定课程均<b class="red">不可移动</b>；一键排课对锁定课程不覆盖（优先级高于自动分配）。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P12 复杂场景 -->
+      <div class="page" id="P12"><!-- Page: P12 ｜ R: REQ-AP-003 -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">🧩 复杂场景适配排课 <span class="tag tag-orange">P1</span></div><div class="card-sub">单双周 / 走班教学 / 跨年级授课 三类复杂场景（F009，D9 全进 V1.0，走班按基线实现）</div></div></div>
+          <div class="grid2">
+            <div class="card" style="box-shadow:none">
+              <div class="card-title" style="margin-bottom:10px">🔄 单双周轮换</div>
+              <div class="chips"><div class="chip" onclick="chipToggle(this)"><span class="sw"></span>启用单双周</div></div>
+              <div class="small mute mt3">• 学期第 1 周按<b>单周</b>启动，按周序号奇偶轮换（整周课表结构轮换）<br>
+              • 遇节假日停课周<b>不顺延</b>周次（D18）<br>
+              • 生成<b>单周 / 双周</b>两套课表并正确轮换（视图联动的周次差异见 P13 单双周切换）</div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <div class="card-title" style="margin-bottom:10px">🚶 走班教学（基线）</div>
+              <div class="field"><label>走班科目与目标场地</label><input value="化学走班 → 实验室1；生物走班 → 实验室2"></div>
+              <div class="small mute mt3">走班为按所选科目跨班级到指定场地上课（场地 + 教师双重分配）；深化留 V2.0。</div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <div class="card-title" style="margin-bottom:10px">🧮 跨年级授课</div>
+              <div class="chips"><div class="chip" onclick="chipToggle(this)"><span class="sw"></span>放开教师年级限制</div></div>
+              <div class="small mute mt3">跨年级任课的教师课时统计纳入工作量（AS-001）且年级维度放开。</div>
+            </div>
+            <div class="card" style="box-shadow:none">
+              <div class="card-title" style="margin-bottom:10px">👁 单双周课表预览</div>
+              <div class="form-grid" style="grid-template-columns:1fr 2fr">
+                <div class="field"><label>视角</label><select id="oddevenSel" onchange="oddevenChange()"><option>单周</option><option>双周</option></select></div>
+                <div class="small mute" style="align-self:center">单/双周切换将改变课表结构（示例见 P13）</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P13 课表视图 -->
+      <div class="page" id="P13"><!-- Page: P13 ｜ R: REQ-AT-001 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">📅 多维度课表视图 <span class="tag tag-blue">P0</span></div><div class="card-sub">班级 / 教师 / 全校 / 场地 / 任课 五视图 · 按角色限权（REQ-AU-001）</div></div>
+            <div class="flex">
+              <div class="chips"><div class="chip" id="oddevenChip1" onclick="oddevenChip(this)"><span class="sw"></span>单 / 双周切换</div></div>
+            </div>
+          </div>
+          <div class="tabs" id="viewTabs">
+            <div class="tab active" onclick="viewTab(0,this)">🏫 班级</div>
+            <div class="tab" onclick="viewTab(1,this)">🧑‍🏫 教师</div>
+            <div class="tab" onclick="viewTab(2,this)">🏟 全校</div>
+            <div class="tab" onclick="viewTab(3,this)">🏢 场地</div>
+            <div class="tab" onclick="viewTab(4,this)">📎 任课</div>
+          </div>
+          <div class="flex mb3">
+            <select id="viewTarget" style="width:auto">
+              <option>高一（1）班</option><option>高一（2）班</option><option>高一（3）班</option><option>高一（4）班</option><option>高二（1）班</option><option>高三（1）班</option>
+            </select>
+            <span class="small mute" id="viewHint">维度：班级 · 周次：第 3 周（单周）</span>
+          </div>
+          <div class="legend mb3">
+            <span class="it"><span class="tag tag-blue" style="width:14px;height:14px;padding:0;border-radius:3px"></span>普通课程</span>
+            <span class="it"><span class="tag tag-orange" style="width:14px;height:14px;padding:0;border-radius:3px"></span>已锁定课程（不可移动）</span>
+            <span class="it"><span class="tag tag-red" style="width:14px;height:14px;padding:0;border-radius:3px"></span>冲突槽位（实时校验拦截）</span>
+          </div>
+          <div id="timetableBox">
+            <div class="tt-head"><div></div><div class="th">周一</div><div class="th">周二</div><div class="th">周三</div><div class="th">周四</div><div class="th">周五</div></div>
+            <div id="ttGrid"></div>
+          </div>
+        </div>
+        <div class="card slim small mute">📌 普通教师仅可见<b>本人课表 / 本人关联班级课表</b>；全校总课表为管理员视角。切换为教师视角后菜单自动收窄（AT-001 / AT-003 角色权限边界）。</div>
+      </div>
+
+      <!-- ================================================== P14 拖拽调课 -->
+      <div class="page" id="P14"><!-- Page: P14 ｜ R: REQ-AT-002 / REQ-CM-001 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">✋ 拖拽可视化调课 <span class="tag tag-blue">P0</span></div><div class="card-sub">实时冲突校验 · 撤销 / 重做 · 关键调课保存二次确认（D16）· 未发布方案的「微调」复用本能力（D13）；冲突拦截时展示明细 + 修改建议，涉排课限制可「只本次忽略 / 去修改配置」（D21）</div></div>
+            <div class="flex">
+              <button class="btn btn-ghost" id="btnUndo" onclick="undoAct()">↩️ 撤销</button>
+              <button class="btn btn-ghost" onclick="redoAct()">↪️ 重做</button>
+              <button class="btn btn-success" onclick="openModal('mMoveSave')">💾 调课保存</button>
+            </div>
+          </div>
+          <div class="demo-state">
+            <span class="lbl">操作指引：</span>
+            <span class="small mute">① 点击任一蓝色课程块选中 → ② 目标槽位出现虚线高亮 → ③ 点击目标槽位落位。若目标槽位红色高亮则为<b class="red">冲突</b>，将被拦截。</span>
+          </div>
+          <div class="grid2" style="grid-template-columns:1.6fr 1fr">
+            <div id="ttGrid2"></div>
+            <div class="card" style="box-shadow:none;border-style:dashed">
+              <div class="card-title" style="margin-bottom:10px">🚦 实时冲突校验（REQ-CE-001）</div>
+              <div id="ceLog" class="small">
+                <div class="mute" style="padding:6px 0">等待操作…</div>
+              </div>
+              <div class="divider"></div>
+              <div class="small mute"><b>三类核心冲突：</b><br>👤 教师时间冲突<br>🏫 班级同节多课<br>🏟 场地占用冲突<br><br><b class="blue">零容忍</b>：任一触发即拦截、槽位红色高亮 + Toast 提示。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P15 空闲时段 -->
+      <div class="page" id="P15"><!-- Page: P15 ｜ R: REQ-AT-003 / REQ-AU-001 -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">⏳ 空闲时段查询</div><div class="card-sub">用于调课决策；普通教师<label style="color:var(--color-danger);font-weight:700">仅可查询本人</label>空闲时段（角色权限边界）；管理员可查询任意教师 / 班级</div></div></div>
+          <div class="form-grid mb3" style="grid-template-columns:1fr 1fr 1fr 1fr">
+            <div class="field"><label>查询对象类型</label><select id="freeObjType" onchange="freeObjChange()"><option>教师</option><option>班级</option></select></div>
+            <div class="field"><label>对象</label><select id="freeTarget"><option>王建国（数学）</option><option>李慧（语文）</option><option>张伟（英语）</option></select></div>
+            <div class="field"><label>周次</label><select><option>第 3 周（单周）</option><option>第 4 周（双周）</option></select></div>
+            <div class="field"><label>&nbsp;</label><button class="btn btn-primary btn-block" onclick="runFreeQuery()">🔎 查询空闲</button></div>
+          </div>
+          <div id="freeGrid"></div>
+          <div class="sec-note mt3" id="freeNote" style="display:none">⏳ 绿色高亮 = 空闲槽位（与当前课表一致）。教师登录后此页面对象锁定为本人姓名，不可切换他人（演示见教师视角）。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P16 工作量统计 -->
+      <div class="page" id="P16"><!-- Page: P16 ｜ R: REQ-AS-001 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">🧮 教师工作量统计</div><div class="card-sub">按周 / 学期口径 · 常规 / 连堂 / 合班 / 加班 四类（加计不重复）</div></div>
+            <div class="flex">
+              <div class="chips"><div class="chip" onclick="chipToggle(this)"><span class="sw"></span>学期口径</div></div>
+              <button class="btn btn-ghost" onclick="nav('P17','export')">📤 导出</button>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>教师</th><th>常规</th><th>连堂</th><th>合班</th><th>加班</th><th>周汇总</th><th>学期汇总</th></tr></thead>
+              <tbody>
+                <tr><td>王建国</td><td class="num">10</td><td class="num">0</td><td class="num">0</td><td class="mute">规则 V1.1 细化</td><td class="num">10</td><td class="num">140</td></tr>
+                <tr><td>李慧</td><td class="num">8</td><td class="num">4</td><td class="num">0</td><td class="mute">规则 V1.1 细化</td><td class="num">12</td><td class="num">168</td></tr>
+                <tr><td>陈静</td><td class="num">6</td><td class="num">4</td><td class="num">2</td><td class="mute">规则 V1.1 细化</td><td class="num">12</td><td class="num">168</td></tr>
+                <tr><td>刘洋</td><td class="num">8</td><td class="num">0</td><td class="num">4</td><td class="mute">规则 V1.1 细化</td><td class="num">12</td><td class="num">168</td></tr>
+                <tr><td>赵敏</td><td class="num">6</td><td class="num">4</td><td class="num">0</td><td class="mute">规则 V1.1 细化</td><td class="num">10</td><td class="num">140</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">💡 加班课时 `加班`列：V1.0 先展示字段与基础口径（占位说明），<b>判定细则 V1.1 落地（D7）</b>。连堂 / 合班 / 加班为加计类型，不与常规重复统计。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P17 Excel 导出 -->
+      <div class="page" id="P17"><!-- Page: P17 ｜ R: REQ-EX-001 -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">📤 全维度 Excel 导出</div><div class="card-sub">基础数据 / 课表 / 统计 · 字段口径与系统内部一致（Excel 互通）· 1000 条 ≤3 秒（D3）</div></div></div>
+          <div class="form-grid mb3" style="grid-template-columns:repeat(4,1fr)">
+            <div class="field"><label>导出维度</label><select id="expDim"><option>课表（班级）</option><option>课表（教师）</option><option>课表（全校）</option><option>基础数据 · 教师任课</option><option>基础数据 · 班级</option><option>统计 · 工作量</option></select></div>
+            <div class="field"><label>学期</label><select><option>2026 秋季（进行中）</option><option>2025 秋季（已存档）</option></select></div>
+            <div class="field"><label>文件命名</label><input value="2026秋-高一（1）班课表.xlsx"></div>
+            <div class="field"><label>&nbsp;</label><button class="btn btn-primary btn-block" onclick="runExport()">📤 导出</button></div>
+          </div>
+          <div id="expLoading" style="display:none" class="demo-state"><span class="spin"></span> 正在生成文件…</div>
+          <div class="sec-note mt3">🚀 导出字段与系统内部逐字段一致；批量导出（≥1000 条）性能验收 ≤3 秒（D3）。导出文件按维度命名，含列头 / 学期 / 版次信息。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P18 模板打印 -->
+      <div class="page" id="P18"><!-- Page: P18 ｜ R: REQ-EX-002 -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">🖨 自定义模板打印</div><div class="card-sub">纸张 / 版式 / 校徽自定义 · 打印预览所见即所得（F017）</div></div>
+          <div class="flex"><button class="btn btn-ghost" onclick="toast('新建模板表单（略）','blue')">＋ 新建模板</button><button class="btn btn-primary" onclick="toast('已套用模板「标准课表 · 校徽版」','ok')">✅ 套用</button></div></div>
+          <div class="grid2">
+            <div>
+              <div class="chips mb3">
+                <div class="chip on" onclick="chipToggle(this)"><span class="sw"></span>标准课表 · 校徽版</div>
+                <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>紧凑版（A4 横）</div>
+                <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>教师手册版</div>
+              </div>
+              <div class="field"><label>校徽</label><input value="school_logo.png（自定义上传 · 原型演示）"></div>
+              <div class="field mt3"><label>标题文案</label><input value="智能排课系统生成 · 2026 秋季课表"></div>
+              <div class="field mt3"><label>默认主题色</label>
+                <div class="chips"><div class="chip on" style="background:#2563EB;color:#fff;border-color:#2563EB" onclick="toast('已切换主题色：深蓝','ok')">深蓝</div><div class="chip" style="background:#0F172A;color:#fff;border-color:#0F172A" onclick="toast('已切换主题色：墨黑','ok')">墨黑</div></div></div>
+            </div>
+            <div>
+              <div class="print-sheet">
+                <div class="ps-head"><h3>2026 秋季 · 高一（1）班课表</h3><p>智能排课系统生成 · 第 3 周（单周）</p></div>
+                <div style="font-size:11px;color:var(--text-mute);margin-bottom:6px">预览示意（打印输出版式）</div>
+                <div style="display:grid;grid-template-columns:52px repeat(5,1fr);gap:2px;font-size:10px;text-align:center">
+                  <div style="background:#F1F5F9;padding:4px"></div><div style="background:#F1F5F9;padding:4px">周一</div><div style="background:#F1F5F9;padding:4px">周二</div><div style="background:#F1F5F9;padding:4px">周三</div><div style="background:#F1F5F9;padding:4px">周四</div><div style="background:#F1F5F9;padding:4px">周五</div>
+                  <div style="padding:4px">1</div><div style="border:1px solid #E2E8F0;padding:4px;color:#2563EB;font-weight:600">数学</div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div>
+                  <div style="padding:4px">2</div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px;color:#2563EB;font-weight:600">英语</div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div>
+                  <div style="padding:4px">3</div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px;color:#2563EB;font-weight:600">理化生</div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div>
+                  <div style="padding:4px">4</div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px"></div><div style="border:1px solid #E2E8F0;padding:4px;color:#2563EB;font-weight:600">语文</div><div style="border:1px solid #E2E8F0;padding:4px"></div>
+                </div>
+              </div>
+              <div class="mt3" style="text-align:center"><button class="btn btn-primary" onclick="toast('已发送打印任务（浏览器打印对话框）','ok')">🖨 打印</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P19 冲突校验中心 -->
+      <div class="page" id="P19"><!-- Page: P19 ｜ R: REQ-CE-001 -->
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">🚨 冲突校验中心 <span class="tag tag-blue">P0 · 全局</span></div><div class="card-sub">教师 / 班级 / 场地 三维度全程实时校验，三类核心冲突零容忍（贯穿 M2 / M3）；冲突展示明细 + 修改建议，涉排课限制可「只本次忽略 / 去修改配置」（D21）</div></div>
+          <div class="chips">
+            <div class="chip on" onclick="chipToggle(this)"><span class="sw"></span>全部</div>
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>👤 教师时间冲突</div>
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>🏫 班级同节多课</div>
+            <div class="chip" onclick="chipToggle(this)"><span class="sw"></span>🏟 场地占用</div>
+          </div></div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>冲突类型</th><th>涉及对象</th><th>节次</th><th>修改建议</th><th>处置</th></tr></thead>
+              <tbody id="conflictRowsGRid">
+                <tr><td><span class="tag tag-red">👤 教师时间冲突</span></td><td>王建国（数学）</td><td class="num">周四 第 2 节</td><td class="small">建议：调至王老师周四第 1 节空闲槽，或改派郭老师（周四第 2 节空闲）</td><td><button class="btn btn-sm btn-ghost" onclick="ignoreOnce()">只本次忽略</button> <button class="btn btn-sm btn-ghost" onclick="toConfig('P07')">去修改配置 →</button></td></tr>
+                <tr><td><span class="tag tag-red">🏟 场地占用</span></td><td>实验室1（理化生）× 2</td><td class="num">周五 第 3 节</td><td class="small">建议：更换至同节空闲功能室（美术室）</td><td><button class="btn btn-sm btn-ghost" onclick="ignoreOnce()">只本次忽略</button> <button class="btn btn-sm btn-ghost" onclick="toConfig('P08')">去修改配置 →</button></td></tr>
+                <tr><td><span class="tag tag-green">✅ 班级同节多课</span></td><td>—</td><td>—</td><td>—</td><td><span class="tag tag-green">无</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">📌 冲突展示<b>冲突明细 + 修改建议</b>；涉排课限制（约束 / 配置）引发的冲突可<b>只本次忽略</b>（仅本次排课放行、不改系统配置、后续排课仍按系统设置的规则执行，豁免不落库、不计为静默冲突）或<b>去修改配置</b>（跳转对应配置维护入口修改后重新排课）（D21）；未排课时清单（D14）可从本中心一键定位跳到可调对象。「硬约束不足」方案下的冲突与未排课时在此统一呈现。</div>
+        </div>
+      </div>
+
+      <!-- ================================================== P20 日志与存档 -->
+      <div class="page" id="P20"><!-- Page: P20 ｜ R: REQ-LG-001 -->
+        <div class="grid2">
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">📜 操作日志</div><div class="card-sub">关键操作全量记录（操作人 / 时间 / 模块 / 内容）· 日志永久留存（D3）</div></div></div>
+            <div class="form-grid mb3" style="grid-template-columns:1fr 1fr 2fr">
+              <div class="field"><label>操作人</label><select><option>全部</option><option>教务管理员</option></select></div>
+              <div class="field"><label>时间</label><select><option>近 7 天</option><option>近 30 天</option><option>全部</option></select></div>
+              <div class="field"><label>&nbsp;</label><button class="btn btn-ghost btn-block" onclick="toast('筛选条件已应用','blue')">🔍 查询</button></div>
+            </div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr><th>操作人</th><th>时间</th><th>模块</th><th>内容</th></tr></thead>
+                <tbody>
+                  <tr><td>教务管理员</td><td class="wc">09-16 10:35:00</td><td>发布</td><td class="mute">发布 2026 秋季正式课表</td></tr>
+                  <tr><td>教务管理员</td><td class="wc">09-16 10:32:00</td><td>排课</td><td class="mute">一键排课生成方案「2026秋-v3」</td></tr>
+                  <tr><td>教务管理员</td><td class="wc">09-16 10:20:00</td><td>导入</td><td class="mute">批量导入教师任课 42 行（异常 1 行）</td></tr>
+                  <tr><td>教务管理员</td><td class="wc">09-16 09:58:00</td><td>模板</td><td class="mute">作息模板 v3 基于 v2 复制生成</td></tr>
+                  <tr><td>教务管理员</td><td class="wc">09-16 09:40:00</td><td>学期</td><td class="mute">切换当前学期 → 2026 秋季</td></tr>
+                  <tr><td>教务管理员</td><td class="wc">09-15 17:20:00</td><td>存档</td><td class="mute">学期存档：2025 春季（只读生效）</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">📦 多学期存档</div><div class="card-sub">存档后只读可导出 · 一键切换学期 · 互不串扰</div></div></div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr><th>学期</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>2026 秋季</td><td><span class="tag tag-green">进行中</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mArchive')">存档</button></td></tr>
+                  <tr><td>2026 春季</td><td><span class="tag tag-gray">未开始</span></td><td class="actions">—</td></tr>
+                  <tr><td>2025 秋季</td><td><span class="tag tag-blue">已存档 · 只读</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="toast('已导出 2025 秋季课表','ok')">导出</button><button class="btn btn-sm btn-ghost" onclick="toast('已切换学期并冻结编辑','blue')">切换</button></td></tr>
+                  <tr><td>2025 春季</td><td><span class="tag tag-blue">已存档 · 只读</span></td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="toast('已导出 2025 春季课表','ok')">导出</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="sec-note mt3">🔒 已存档学期不可编辑，仅可查看 / 导出 / 切换；跨学期数据独立存档，不互相串扰（LG-001）。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================== P21 用户与角色 -->
+      <div class="page" id="P21"><!-- Page: P21 ｜ R: REQ-AU-001 -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">👤 用户与角色管理 <span class="tag tag-blue">P0 · 基础支撑</span></div><div class="card-sub">本地账号体系（无外部对接·D5）· Admin/Teacher 双角色 · 默认管理员初始化（D11）· 权限判定贯穿 AT/AP/CM</div></div>
+            <div class="flex"><button class="btn btn-primary" onclick="openModal('mUserNew')">＋ 新增用户</button><button class="btn btn-ghost" onclick="simImport('用户')">⬆️ 批量导入</button></div>
+          </div>
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead><tr><th>账号</th><th>姓名</th><th>角色</th><th>状态</th><th>权限范围</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>admin</td><td>教务管理员</td><td><span class="tag tag-blue">Admin</span></td><td><span class="tag tag-green">启用</span></td><td class="mute">系统全部配置 / 排课 / 调课 / 统计 / 导出打印 / 全校课表</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mRole')">分配角色</button></td></tr>
+                <tr><td>wangjg</td><td>王建国</td><td><span class="tag tag-green">Teacher</span></td><td><span class="tag tag-green">启用</span></td><td class="mute">本人课表 / 本人关联班级课表 / 本人空闲时段查询</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mRole')">分配角色</button></td></tr>
+                <tr><td>lihui</td><td>李慧</td><td><span class="tag tag-green">Teacher</span></td><td><span class="tag tag-green">启用</span></td><td class="mute">本人课表 / 本人关联班级课表 / 本人空闲时段查询</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mRole')">分配角色</button></td></tr>
+                <tr><td>zhangwei</td><td>张伟</td><td><span class="tag tag-green">Teacher</span></td><td><span class="tag tag-orange">停用</span></td><td class="mute">—（停用账号无法登录）</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="openModal('mRole')">分配角色</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="sec-note mt3">🔐 系统内置<b>默认管理员</b>（admin）初始化；教师登录后不可见非本人视图与管理入口；无权限访问被拒绝并提示；<b>角色分配变更即时生效</b>（REQ-AU-001 验收口径）。</div>
+        </div>
+      </div>
+      <!-- END PAGES -->
+    </div>
+  </div>
+</div>
+
+<!-- ================= 模式框区 ================= -->
+<div class="overlay" id="mArchive"><div class="modal">
+  <div class="modal-head"><h3>📦 学期存档确认</h3><button class="icon-btn" onclick="closeModal('mArchive')">✕</button></div>
+  <div class="modal-body">
+    <div class="warn-box">⚠️ 存档先决条件：该学期须<b>已发布正式课表</b>。当前 2026 秋季已发布，符合条件。</div>
+    <p class="small">存档后，本学期课表将进入<b>只读冻结</b>状态，仅可查看 / 导出，不可编辑与排课调整。</p>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mArchive')">取消</button><button class="btn btn-success" onclick="doArchive()">确认存档</button></div>
+</div></div>
+
+<div class="overlay" id="mPublish"><div class="modal">
+  <div class="modal-head"><h3>📣 发布正式课表</h3><button class="icon-btn" onclick="closeModal('mPublish')">✕</button></div>
+  <div class="modal-body">
+    <div class="warn-box">⚠️ 每学期仅一份正式课表。<b>发布将覆盖现有正式课表</b>，且该操作计入关键操作（需二次确认，D16）。</div>
+    <p class="small">发布对象：方案「2026秋-v4」（冲突数 0）→ 成为 2026 秋季正式课表。发布后仍可在课表视图中拖拽调课。</p>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mPublish')">取消</button><button class="btn btn-success" onclick="doPublish()">确认发布</button></div>
+</div></div>
+
+<div class="overlay" id="mMoveSave"><div class="modal">
+  <div class="modal-head"><h3>💾 调课保存</h3><button class="icon-btn" onclick="closeModal('mMoveSave')">✕</button></div>
+  <div class="modal-body">
+    <div class="warn-box">⚠️ 调课保存为<b>关键操作</b>，保存后课表立即更新并记录操作日志（D16）。</div>
+    <p class="small" id="moveSaveDesc">当前待保存的调课：—</p>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mMoveSave')">取消</button><button class="btn btn-success" onclick="saveMove()">确认保存</button></div>
+</div></div>
+
+<div class="overlay" id="mIgnoreOnce"><div class="modal">
+  <div class="modal-head"><h3>⚠️ 只本次忽略冲突</h3><button class="icon-btn" onclick="closeModal('mIgnoreOnce')">✕</button></div>
+  <div class="modal-body">
+    <div class="warn-box">⚠️ 仅对<b>本次排课</b>放行通过，<b>不修改系统配置</b>；后续排课仍按系统设置的规则执行（豁免不落库为全局规则、不计为静默冲突）。</div>
+    <p class="small">若该冲突由前面的排课限制（约束 / 配置）引发，更适合永久规避，请取消后选择「去修改配置」跳转对应配置维护入口。</p>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mIgnoreOnce')">取消</button><button class="btn btn-success" onclick="doIgnoreOnce()">确认只本次忽略</button></div>
+</div></div>
+
+<div class="overlay" id="mIgnoreOnce"><div class="modal">
+  <div class="modal-head"><h3>⚠️ 只本次忽略冲突（D21）</h3><button class="icon-btn" onclick="closeModal('mIgnoreOnce')">✕</button></div>
+  <div class="modal-body">
+    <div class="warn-box">仅对<b>本次排课</b>放行通过，<b>不修改系统配置</b>；后续排课仍按系统设置的规则执行（豁免不落库为全局规则、不计为静默冲突）。</div>
+    <p class="small">若该冲突由前面的排课限制（约束 / 配置）引发，仍希望后续排课默认规避，请选择「去修改配置」跳转到对应配置维护入口调整后重新排课。</p>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mIgnoreOnce')">取消</button><button class="btn btn-success" onclick="doIgnoreOnce()">确认只本次忽略</button></div>
+</div></div>
+
+<div class="overlay" id="mSemNew"><div class="modal">
+  <div class="modal-head"><h3>＋ 新增学期</h3><button class="icon-btn" onclick="closeModal('mSemNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>学年</label><input value="2026-2027"></div>
+      <div class="field"><label>学期</label><select><option>秋季学期</option><option>春季学期</option></select></div>
+      <div class="field"><label>起止日期</label><input value="2026-09-01 ~ 2027-01-31"></div>
+      <div class="field"><label>引用作息模板（必选 · D8）</label><select id="semTplReq"><option>— 请选择模板 —</option><option>作息模板 v2</option><option>作息模板 v3</option></select></div>
+    </div>
+    <div class="sec-note mt3">📌 未绑定作息模板的学期<b>不可触发一键排课</b>；此处模板为必选字段（校验拦截）。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mSemNew')">取消</button><button class="btn btn-primary" onclick="toast('学期已新增并绑定作息模板','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mTplNew"><div class="modal">
+  <div class="modal-head"><h3>＋ 新建作息模板</h3><button class="icon-btn" onclick="closeModal('mTplNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>模板名称</label><input value="早晚自习制"></div>
+      <div class="field"><label>基于版本复制</label><select><option>作息模板 v2</option><option>作息模板 v1</option></select></div>
+      <div class="field"><label>开放排课星期</label><select><option>周一 ~ 周五</option><option>周一 ~ 周六</option></select></div>
+    </div>
+    <div class="sec-note mt3">📌 任一模板可被多个学期同时引用，与学期解耦（D4）；保存即生成新版本，不会回改历史学期课表。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mTplNew')">取消</button><button class="btn btn-primary" onclick="toast('作息模板新版本已生成（版本快照生效）','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mTplEdit"><div class="modal">
+  <div class="modal-head"><h3>编辑作息模板</h3><button class="icon-btn" onclick="closeModal('mTplEdit')">✕</button></div>
+  <div class="modal-body">
+    <div class="warn-box">ℹ️ 正在编辑 <b>作息模板 v2</b>（被 2026 秋季引用）。修改后保存将生成新版本 <b>v3</b>，历史学期课表不受影响（D4 版本快照）。</div>
+    <div class="field"><label>开放排课星期</label><select><option>周一 ~ 周五</option><option>周一 ~ 周六</option></select></div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mTplEdit')">取消</button><button class="btn btn-primary" onclick="toast('已保存为作息模板新版本 v3','ok')">保存为新版本</button></div>
+</div></div>
+
+<div class="overlay" id="mClassNew"><div class="modal">
+  <div class="modal-head"><h3><span id="mClassTitle">＋ 新增班级</span></h3><button class="icon-btn" onclick="closeModal('mClassNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>所属年级</label><select id="mClassGrade" onchange="clsPreview()"></select></div>
+      <div class="field"><label>班级序号（受控 1-99）</label><input id="mClassSeq" type="number" min="1" max="99" inputmode="numeric" oninput="clsPreview()" placeholder="如 5"></div>
+      <div class="field"><label>班主任</label><input id="mClassHead" placeholder="如 赵敏"></div>
+      <div class="field"><label>人数</label><input id="mClassNum" type="number" min="1" placeholder="如 46"></div>
+    </div>
+    <div class="warn-box">将生成班级名称：<b id="mClassPreview"></b> ‒ 系统按「年级（序号）班」自动生成，<b>禁止自由文本输入</b>（D20）</div>
+    <div class="sec-note mt3">📌 序号仅接受 1-99 整数（受控录入），超范围 / 非数字拒绝保存并提示；班级人数作为排课与场地容量校验输入（D19）；新增后进入批量导入 / 任课配置链路。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mClassNew')">取消</button><button class="btn btn-primary" onclick="saveClass()">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mGradeNew"><div class="modal">
+  <div class="modal-head"><h3><span id="mGradeTitle">＋ 新增年级</span></h3><button class="icon-btn" onclick="closeModal('mGradeNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>年级名称（受控录入）</label><input id="mGradeName" list="gradeCtlList" placeholder="从受控列表选择或按规范输入"></div>
+    </div>
+    <datalist id="gradeCtlList">
+      <option value="高一"></option><option value="高二"></option><option value="高三"></option>
+      <option value="初一"></option><option value="初二"></option><option value="初三"></option>
+      <option value="七年级"></option><option value="八年级"></option><option value="九年级"></option>
+      <option value="中职一年级"></option><option value="中职二年级"></option><option value="中职三年级"></option>
+    </datalist>
+    <div class="warn-box">年级为<b>独立可管理实体</b>（D20）：名称仅接受受控规范名称（如 高一/高二/高三、初一/初二/初三、七年级…九年级、中职一年级…三年级），<b>禁止自由文本</b>；新增后纳入受控列表供班级归属选择。</div>
+    <div class="sec-note mt3">📌 重名年级拒绝保存并提示；删除仍被班级引用的年级受<b>引用保护</b>提示（D16）。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mGradeNew')">取消</button><button class="btn btn-primary" onclick="saveGrade()">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mTeacherNew"><div class="modal">
+  <div class="modal-head"><h3><span id="mTeachTitle">＋ 新增教师</span></h3><button class="icon-btn" onclick="closeModal('mTeacherNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>工号（受控 T+数字）</label><input id="mTeachNo" placeholder="如 T006"></div>
+      <div class="field"><label>姓名</label><input id="mTeachName" placeholder="如 王敏"></div>
+      <div class="field"><label>性别</label><select id="mTeachGender"><option>男</option><option>女</option></select></div>
+      <div class="field"><label>手机号</label><input id="mTeachPhone" placeholder="如 13800006006"></div>
+      <div class="field"><label>进退校状态</label><select id="mTeachStatus"><option>在职</option><option>退校</option></select></div>
+      <div class="field"><label>一键开通登录账号</label><select id="mTeachAccount"><option>开通（工号小写作账号）</option><option>不开通</option></select></div>
+    </div>
+    <div class="warn-box"><b>教师为主数据实体</b>（D20）：工号格式受控（<b>T+数字</b>）且唯一；退校教师保留主数据不物理删除；开通账号联动 REQ-AU-001（Teacher 角色）。</div>
+    <div class="sec-note mt3">📌 工号重复或格式不合规拒绝保存并提示；删除有任课记录的教师受<b>引用保护</b>提示（D16）。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mTeacherNew')">取消</button><button class="btn btn-primary" onclick="saveTeacher()">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mSubjEdit"><div class="modal">
+  <div class="modal-head"><h3>编辑课时规则</h3><button class="icon-btn" onclick="closeModal('mSubjEdit')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>每周课时</label><input value="5"></div>
+      <div class="field"><label>连堂偏好</label><select><option>无</option><option>强制 2 连课</option><option>偏好 2 连课</option></select></div>
+      <div class="field"><label>禁排时段</label><select><option>无</option><option>不排第 1 / 最后 1 节</option><option>不排最后 1 节</option></select></div>
+      <div class="field"><label>时段优先</label><select><option>上午优先</option><option>下午优先</option></select></div>
+    </div>
+    <div class="sec-note mt3">📌 规则是排课引擎约束输入；约束冲突时给<b>明确提示而非静默忽略</b>（REQ-BD-004 验收口径）。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mSubjEdit')">取消</button><button class="btn btn-primary" onclick="toast('课时规则已更新','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mTeachNew"><div class="modal">
+  <div class="modal-head"><h3>＋ 配置任课</h3><button class="icon-btn" onclick="closeModal('mTeachNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>教师</label><select><option>王建国</option><option>李慧</option><option>张伟</option></select></div>
+      <div class="field"><label>科目</label><select><option>数学</option><option>语文</option><option>英语</option></select></div>
+      <div class="field"><label>班级</label><select><option>高一（1）班</option><option>高一（2）班</option></select></div>
+      <div class="field"><label>场地</label><select><option>A101</option><option>实验室1（功能室）</option></select></div>
+      <div class="field"><label>每周课时</label><input value="8"></div>
+      <div class="field"><label>免排时段</label><select><option>无</option><option>周二第 5-6 节</option></select></div>
+    </div>
+    <div class="sec-note mt3">📌 免排（主动配置）与禁排（业务规则限定）语义区分；任课约束为基础数据，非排课结果。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mTeachNew')">取消</button><button class="btn btn-primary" onclick="toast('任课约束已配置','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mVenueNew"><div class="modal">
+  <div class="modal-head"><h3>＋ 新增场地</h3><button class="icon-btn" onclick="closeModal('mVenueNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>场地名称</label><input value="实验室2"></div>
+      <div class="field"><label>类型</label><select><option>功能室</option><option>教室</option></select></div>
+      <div class="field"><label>容量</label><input value="48"></div>
+      <div class="field"><label>可用状态</label><select><option>可用</option><option>检修中</option></select></div>
+    </div>
+    <div class="sec-note mt3">📌 功能室全校共享占用校验；普通教室按班级固定（D6）。人数 &gt; 容量 = 硬约束禁排（D19）。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mVenueNew')">取消</button><button class="btn btn-primary" onclick="toast('场地已新增','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mComboNew"><div class="modal">
+  <div class="modal-head"><h3>＋ 配置合班课</h3><button class="icon-btn" onclick="closeModal('mComboNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>合班课名称</label><input value="物理实验合班"></div>
+      <div class="field"><label>科目（不限 · D10）</label><select><option>物理</option><option>化学</option><option>体育</option></select></div>
+      <div class="field"><label>参与班级（多选）</label><select><option>高一（1）（2）班</option><option>高一（1）（2）（3）班</option></select></div>
+      <div class="field"><label>场地</label><select><option>实验室1（功能室）</option><option>操场</option></select></div>
+      <div class="field"><label>教师</label><select><option>陈静</option><option>赵敏</option></select></div>
+      <div class="field"><label>节次约束</label><input value="周五 第 7-8 节"></div>
+    </div>
+    <div class="sec-note mt3">📌 配置时校验 班级/教师/场地/节次 四维（D10）；合班内班级不产生班级同节多课冲突。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mComboNew')">取消</button><button class="btn btn-primary" onclick="toast('合班课已配置','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mUserNew"><div class="modal">
+  <div class="modal-head"><h3>＋ 新增用户</h3><button class="icon-btn" onclick="closeModal('mUserNew')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>账号</label><input value="zhangsan"></div>
+      <div class="field"><label>姓名</label><input value="张三"></div>
+      <div class="field"><label>角色</label><select><option>Teacher</option><option>Admin</option></select></div>
+      <div class="field"><label>状态</label><select><option>启用</option><option>停用</option></select></div>
+    </div>
+    <div class="sec-note mt3">📌 本地账号体系（无外部对接 · D5）；角色分配变更即时生效；教师仅本人课表 / 本人关联班级课表 / 本人空闲时段查询。</div>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mUserNew')">取消</button><button class="btn btn-primary" onclick="toast('用户已新增','ok')">保存</button></div>
+</div></div>
+
+<div class="overlay" id="mRole"><div class="modal">
+  <div class="modal-head"><h3>分配角色</h3><button class="icon-btn" onclick="closeModal('mRole')">✕</button></div>
+  <div class="modal-body">
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>账号</label><input value="wangjg" disabled></div>
+      <div class="field"><label>角色</label><select><option>Teacher</option><option>Admin</option></select></div>
+    </div>
+    <p class="small mt3 mute">角色权限：Admin 系统全部权限；Teacher 仅本人课表 / 本人关联班级课表 / 本人空闲时段查询（AT-001 / AT-003 / AT-002 仅 Admin）。</p>
+  </div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('mRole')">取消</button><button class="btn btn-primary" onclick="toast('角色分配已变更，即时生效','ok')">保存</button></div>
+</div></div>
+
+<script>
+/* ================= 全局状态 ================= */
+var ROLE = 'admin';          // admin | teacher
+var SEM = 0;                 // 0 进行中 1 未开始 2 已存档
+var undoStack = [], redoStack = [];
+var pendingMoves = 0;        // 待保存调课计数
+var moveSource = null;       // 拖拽源课程块
+var currentTimetableId = 0;  // 0 班级 1 教师...
+var ttData = {};             // 数据由下面 buildTimetable 生成
+
+/* ================= 工具函数 ================= */
+function $(id){return document.getElementById(id)}
+function toast(msg,type){
+  var t=document.createElement('div');t.className='toast '+(type||'');
+  var ic=type==='ok'?'✅':type==='err'?'⛔':type==='warn'?'⚠️':'ℹ️';
+  t.innerHTML='<b>'+ic+'</b>&nbsp;'+esc(msg);
+  $('toastWrap').appendChild(t);
+  setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove()},260)},2600);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function openModal(id){$(id).classList.add('open')}
+function closeModal(id){$(id).classList.remove('open')}
+document.querySelectorAll('.overlay').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)o.classList.remove('open')})})
+
+function chipToggle(el){el.classList.toggle('on')}
+
+/* ================= 导航 ================= */
+var PAGEMETA={P01:'登录',P02:'系统概览与学期切换',P03:'学期管理',P04:'作息模板',P05:'班级·年级',P06:'科目与课时规则',P07:'教师与任课约束',P08:'场地·功能室',P09:'合班课配置',P10:'一键智能排课',P11:'预排与锁定',P12:'复杂场景适配',P13:'多维度课表视图',P14:'拖拽可视化调课',P15:'空闲时段查询',P16:'工作量统计',P17:'Excel 导出',P18:'模板打印',P19:'冲突校验中心',P20:'操作日志·存档',P21:'用户与角色'};
+
+function nav(id,pin,note){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  $(id).classList.add('active');
+  $('crumbText').textContent=PAGEMETA[id]||'';
+  document.querySelectorAll('.sid-item[data-nav]').forEach(function(i){i.classList.toggle('active',i.getAttribute('data-nav')===id)});
+  if(ROLE==='teacher'){$('#navP13T').classList.toggle('active','P13'===id)}
+  // 组织者
+  var pinEl=document.querySelector('.pin'); if(pinEl)pinEl.remove();
+  $('content').scrollTop=0;
+  // 需求验证清单联动：高亮当前页关联条目
+  if(typeof syncReqBar==='function')syncReqBar(id);
+}
+function goStep(id){nav(id)}
+function toggleWalk(){var p=$('walkPanel');p.classList.toggle('open')}
+
+/* ================= 需求验证清单侧栏（§3.11 强制）================= */
+var REQLIST=[
+  {id:'REQ-BD-001',name:'学期管理',pages:['P03','P02'],vp:'可新增/编辑学期并绑定作息模板；未绑定不可一键排课；切换学期不串扰；已存档学期只读可导出'},
+  {id:'REQ-BD-002',name:'作息模板',pages:['P04'],vp:'可配置节次/开放星期；同一模板可被多学期引用；改版不影响历史学期（版本快照）'},
+  {id:'REQ-BD-003',name:'班级/年级管理',pages:['P05'],vp:'年级独立实体可增删改查（D20）；班级名称受控录入（年级+序号1-99自动生成，禁自由文本）；批量导入按模板校验、异常行行号级提示'},
+  {id:'REQ-BD-004',name:'科目与课时规则',pages:['P06'],vp:'可配置每周课时/连堂/禁排/时段优先；规则冲突给出明确提示而非静默忽略'},
+  {id:'REQ-BD-005',name:'教师信息与任课约束',pages:['P07'],vp:'教师主数据可增删改查（工号T+数字受控唯一）；新增教师一键开通Teacher账号（联动AU-001）；可配置任课与多维约束；约束参与排课计算'},
+  {id:'REQ-BD-006',name:'场地/功能室管理',pages:['P08'],vp:'按类型区分教室/功能室；功能室不被两个班级同节占用；占用冲突实时拦截'},
+  {id:'REQ-BD-007',name:'合班课配置',pages:['P09'],vp:'可配置合班课；作为排课单元占用时间与场地；不产生班级/场地冲突'},
+  {id:'REQ-AP-001',name:'一键智能排课',pages:['P10','P02'],vp:'三类核心冲突为0；可预览/另存方案；最小确定性样例跑通（D15）；无解输出未排课时清单可跳转；50班≤5秒'},
+  {id:'REQ-AP-002',name:'课程预排与锁定',pages:['P11'],vp:'锁定课程不被自动排课覆盖；解锁后可自动调整；微调与拖拽调课中锁定课程不可移动'},
+  {id:'REQ-AP-003',name:'复杂场景适配排课',pages:['P12'],vp:'单双周两套课表正确轮换（第1周单周/奇偶轮换）；走班占用目标场地不冲突；跨年级任课课时统计正确'},
+  {id:'REQ-AT-001',name:'多维度课表视图',pages:['P13','P02'],vp:'班级/教师/全校/场地/任课五视图切换且内容一致；教师不可见非本人视图与管理入口'},
+  {id:'REQ-AT-002',name:'拖拽可视化调课',pages:['P14'],vp:'合法调课保存并更新视图；冲突调课被拦截并高亮；撤销/重做正确回退重放；关键调课二次确认'},
+  {id:'REQ-AT-003',name:'空闲时段查询',pages:['P15'],vp:'教师仅可查询本人空闲时段；空闲槽位高亮准确且与当前课表一致'},
+  {id:'REQ-AS-001',name:'教师工作量统计',pages:['P16'],vp:'统计与系统课表数据一致；常规/连堂/合班/加班四类加计不重复；周/学期汇总准确'},
+  {id:'REQ-EX-001',name:'全维度Excel导出',pages:['P17'],vp:'导出字段与系统逐字段一致；文件可打开且数值一致；1000条批量导出≤3秒'},
+  {id:'REQ-EX-002',name:'自定义模板打印',pages:['P18'],vp:'可按班级/教师课表以自定义模板打印；预览与打印结果一致'},
+  {id:'REQ-CE-001',name:'冲突校验引擎',pages:['P19','P10'],vp:'自动排课与手动调课全程三类核心冲突为0；冲突展示明细+修改建议；涉排课限制冲突可只本次忽略（不改配置、后续仍按系统设置）/去修改配置（D21）'},
+  {id:'REQ-CM-001',name:'数据通用规则引擎',pages:['P14'],vp:'关键操作二次确认（D16）；批量导入异常行级提示、上限5000行（D19）；撤销/重做符合预期；引用数据删除保护'},
+  {id:'REQ-LG-001',name:'操作日志与多学期存档',pages:['P20','P02'],vp:'关键操作100%留痕可追溯；存档学期只读可导出；日志可按操作人/时间筛选'},
+  {id:'REQ-AU-001',name:'用户与角色管理',pages:['P21','P15'],vp:'Admin/Teacher双账号登录；教师不可见非本人视图与管理入口；无权限被拒并提示；角色变更即时生效'}
+];
+var reqDone={},reqMap={};
+REQLIST.forEach(function(r){r.pages.forEach(function(p){(reqMap[p]=reqMap[p]||[]).push(r.id)})});
+function activePage(){var el=document.querySelector('.page.active');return el?el.id:''}
+function renderReqBar(){
+  var body=$('reqBody');if(!body)return;
+  var doneCnt=0,html='';
+  var cur=activePage();
+  REQLIST.forEach(function(r){
+    if(reqDone[r.id])doneCnt++;
+    var cls='req-item'+(reqDone[r.id]?' done':'')+(cur&&reqMap[cur]&&reqMap[cur].indexOf(r.id)>-1?' hit':'');
+    var pTag=r.pages.map(function(p){return '<span class="pp">'+esc(p)+'</span>'}).join('');
+    html+='<div class="'+cls+'" data-req="'+r.id+'" onclick="reqNav(\''+r.id+'\')">'
+      +'<span class="cb" data-cb="'+r.id+'">'+(reqDone[r.id]?'✓':'')+'</span>'
+      +'<span class="meta"><b>'+esc(r.id)+' · '+esc(r.name)+'</b>'+pTag+'<span class="vp">'+esc(r.vp)+'</span></span>'
+      +'</div>';
+  });
+  body.innerHTML=html;
+  $('reqNum').textContent='已验证 '+doneCnt+'/'+REQLIST.length;
+  $('reqBar').style.width=(REQLIST.length?(doneCnt/REQLIST.length*100).toFixed(0):0)+'%';
+}
+function toggleReqPanel(){$('reqPanel').classList.toggle('open')}
+function reqNav(id){
+  var r=null;
+  REQLIST.forEach(function(x){if(x.id===id)r=x});
+  if(r && $('reqPanel'))$('reqPanel').classList.remove('open');
+  if(r)nav(r.pages[0]);
+}
+function reqToggle(id){
+  reqDone[id]=!reqDone[id];
+  renderReqBar();
+  toast('【'+id+'】'+(reqDone[id]?' 已勾选验证通过':' 取消勾选，待验证'),(reqDone[id]?'ok':'warn'));
+}
+function syncReqBar(id){
+  var list=reqMap[id]||[];
+  var items=document.querySelectorAll('.req-item');
+  for(var i=0;i<items.length;i++){
+    var el=items[i];
+    el.classList.toggle('hit',list.indexOf(el.getAttribute('data-req'))>-1);
+  }
+}
+/* 事件委托（捕获阶段）：点勾选框只切换状态，不触发行跳转 */
+document.addEventListener('click',function(e){
+  var cb=e.target&&e.target.getAttribute?e.target.getAttribute('data-cb'):null;
+  if(cb){e.stopImmediatePropagation();e.preventDefault();reqToggle(cb)}
+},true);
+/* ================= 侧边栏折叠 ================= */
+function toggleSidebar(){$('sidebar').classList.toggle('mini')}
+
+/* ================= 角色切换 ================= */
+function loginAs(role){
+  ROLE=role;
+  $('roleTag').innerHTML= role==='teacher' ? '<span class="role-tag teacher" style="margin:0">👨‍🏫 Teacher</span>' : '<span class="role-tag" style="margin:0">👤 Admin</span>';
+  $('avatar').textContent= role==='teacher' ? '王' : '管';
+  $('userName').textContent= role==='teacher' ? '王建国（教师）' : '教务管理员';
+  applyRoleUI();
+  toast(role==='teacher' ? '已用教师身份登录：仅本人课表 / 本人空闲时段可见' : '已用管理员身份登录：全部功能可用','ok');
+  if(role==='teacher'){ nav('P13','mine'); freeObjLock('teacher'); }
+  else { nav('P02','welcome'); freeObjUnlock(); }
+}
+function roleSwitch(){
+  if(ROLE==='admin'){
+    // 仅演示，不真正切换
+    toast('演示：点击顶部用户区可在 管理员 / 教师 视角间切换（登录页亦可）','warn');
+  }
+}
+function applyRoleUI(){
+  document.querySelectorAll('.sid-item').forEach(function(i){
+    var l=i.querySelector('.lbl'); if(!l)return;
+    var isTeacherOnly = i.getAttribute('onclick') && i.getAttribute('onclick').indexOf("'mine'")>-1;
+    var dataNav=i.getAttribute('data-nav');
+    var adminSet={'P01':0,'P02':1,'P03':1,'P04':1,'P05':1,'P06':1,'P07':1,'P08':1,'P09':1,'P10':1,'P11':1,'P12':1,'P13':1,'P14':1,'P15':1,'P16':1,'P17':1,'P18':1,'P19':1,'P20':1,'P21':1};
+    if(ROLE==='teacher'){
+      // 教师只保留：我的课表 + 空闲时段查询
+      var keep = (dataNav==='P13' && isTeacherOnly) || dataNav==='P15';
+      i.style.display = keep ? 'flex' : 'none';
+    }else{
+      i.style.display='flex';
+    }
+  });
+}
+function freeObjLock(mode){
+  $('freeObjType').value='教师';
+  $('freeTarget').innerHTML='<option>王建国（数学）· 本人</option>';
+  $('freeTarget').disabled=true;
+  $('freeNote').style.display='block';
+}
+function freeObjUnlock(){
+  $('freeTarget').disabled=false;
+  $('freeTarget').innerHTML='<option>王建国（数学）</option><option>李慧（语文）</option><option>张伟（英语）</option>';
+  $('freeNote').style.display='none';
+}
+
+/* ================= 学期切换 ================= */
+function toggleSemMenu(){$('semMenu').classList.toggle('open')}
+function pickSem(i){
+  SEM=i; $('semCurrent').textContent = i===0?'2026 秋季':(i===1?'2026 春季':'2025 秋季');
+  var st=i===0?'进行中':(i===1?'未开始':'已存档');
+  var cls = i===0?'tag-green':(i===1?'tag-gray':'tag-blue');
+  $('semStatus').className='tag st '+cls; $('semStatus').textContent=st;
+  $('semTitleNow').textContent=st; $('semTitleNow').className='tag '+cls+ (i===2?'':'');
+  $('semMenu').classList.remove('open');
+  toast(i===2?'已切换至存档学期：只读可导出，编辑与排课冻结':'已切换学期：'+st,'blue');
+}
+
+/* ================= P10 一键排课模拟 ================= */
+function runAutoSchedule(){
+  if(ROLE!=='admin'){toast('教师无排课权限','err');return}
+  $('btnRun').disabled=true; $('schLoading').style.display='block'; $('schResult').style.display='none'; $('schPlanCard').style.display='none';
+  var w=12;
+  var t=setInterval(function(){w=Math.min(100,w+Math.random()*22+8);$('schProg').style.width=w+'%';if(w>=100){clearInterval(t);
+    $('schLoading').style.display='none';
+    $('schResult').style.display='grid';
+    $('schConflictV').textContent='0'; $('schConflictV').style.color='var(--color-success)';
+    $('conflictIco').className='ico stat-icon-green'; $('conflictIco').textContent='✅';
+    $('conflictCard').style.borderColor='var(--color-success)';
+    $('schTimeV').textContent=(1.2+Math.random()*1.6).toFixed(1);
+    $('schUnsatV').textContent='0'; $('schUnsatV').style.color='var(--color-success)';
+    $('unsatCard').style.borderColor='var(--color-success)';
+    $('schPlanCard').style.display='block';
+    $('planTimeCell').textContent=fmtNow();
+    $('planConflictCell').textContent='0'; $('planUnsatCell').textContent='0';
+    $('planStateCell').className='tag tag-orange'; $('planStateCell').textContent='草稿 · 未发布';
+    $('planStatusTag').textContent='草稿'; $('planStatusTag').className='tag tag-orange';
+    $('dotPlan').style.background='var(--color-warning)';
+    $('conflictNum').textContent='0';
+    toast('排课完成：三类核心冲突 = 0（2026 秋季）','ok');
+  }},120);
+}
+function simNoSolution(){
+  if(ROLE!=='admin'){toast('教师无排课权限','err');return}
+  $('schLoading').style.display='none';
+  $('schResult').style.display='grid';
+  $('schConflictV').textContent='3'; $('schConflictV').style.color='var(--color-danger)';
+  $('conflictIco').className='ico stat-icon-red'; $('conflictIco').textContent='⚠️';
+  $('conflictCard').style.borderColor='var(--color-danger)';
+  $('schTimeV').textContent=(1.4+Math.random()*1.4).toFixed(1);
+  $('schUnsatV').textContent='6'; $('schUnsatV').style.color='var(--color-danger)';
+  $('unsatCard').style.borderColor='var(--color-danger)';
+  $('schPlanCard').style.display='block';
+  $('planTimeCell').textContent=fmtNow();
+  $('planConflictCell').textContent='3'; $('planUnsatCell').textContent='6';
+  $('planStateCell').className='tag tag-orange'; $('planStateCell').textContent='冲突 > 0 · 可保存继续手工调整';
+  $('planStatusTag').textContent='冲突方案'; $('planStatusTag').className='tag tag-red';
+  $('dotPlan').style.background='var(--color-danger)';
+  $('conflictNum').textContent='3';
+  toast('排课无解：3 个核心冲突 · 6 条未排课时 → 产出未排课时清单（可跳转定位，D14）','warn');
+  setTimeout(function(){nav('P19','conflicts')},400);
+}
+function fmtNow(){var d=new Date();function p(n){return n<10?'0'+n:n}return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())}
+
+/* ================= P12 单双周 ================= */
+function oddevenChange(){toast('已切换至'+ $('oddevenSel').value +'课表视图（整周结构轮换）','blue')}
+function oddevenChip(el){chipToggle(el);el.classList.contains('on')?toast('已开启单/双周课表切换','blue'):toast('已关闭单/双周，仅单周课表','blue')}
+
+/* ================= P13 课表视图 ================= */
+var DIM={
+ row1:{name:'语文',t:'李慧',cls:'高一（1）',venue:'A102'},
+ row0:{name:'数学',t:'王建国',cls:'高一（1）',venue:'A101'},
+ row2:{name:'理化生',t:'陈静',cls:'高一（1）',venue:'实验室1'},
+ row3:{name:'英语',t:'张伟',cls:'高一（1）',venue:'B201'}
+};
+function ttGen(id,opt){
+  var box=$(id); box.innerHTML='';
+  var times=['第1节','第2节','第3节','第4节','第5节','第6节','第7节','第8节'];
+  var slots={}; // slot key -> course
+  // 预置课程
+  slots['1,3']={'name':'数学','t':'王建国','cls':'高一（1）','venue':'A101','locked':true};
+  slots['2,2']={'name':'英语','t':'张伟','cls':'高一（1）','venue':'B201'};
+  slots['3,0']={'name':'理化生','t':'陈静','cls':'高一（1）','venue':'实验室1','locked':true};
+  slots['4,3']={'name':'语文','t':'李慧','cls':'高一（1）','venue':'A102'};
+  slots['5,1']={'name':'体育','t':'刘洋','cls':'高一（1）（合班）','venue':'操场'};
+  var i,len=times.length;
+  for(i=0;i<len;i++){
+    var row=document.createElement('div');row.className='tt-row';
+    var tm=document.createElement('div');tm.className='tt-time';tm.innerHTML=times[i];
+    row.appendChild(tm);
+    var d;
+    for(d=0;d<5;d++){
+      var cell=document.createElement('div');cell.className='drop-cell';cell.setAttribute('data-i',i);cell.setAttribute('data-d',d);
+      if(opt&&opt.conf) cell.classList.add('conflict');
+      var key=i+','+d;
+      if(slots[key]){ renderCourse(cell,slots[key]); }
+      row.appendChild(cell);
+    }
+    box.appendChild(row);
+    // 把预置数据副本存到全局（供亮点）
+    if(!ttData[id])ttData[id]={};
+    ttData[id]['r'+i]=slots;
+  }
+}
+function renderCourse(cell,course){
+  var el=document.createElement('div');el.className='course'+(course.locked?' locked':'');
+  el.innerHTML='<div class="t">'+(course.locked?'🔒 ':'')+esc(course.name)+'</div><div class="m">'+esc(course.t)+' · '+esc(course.cls)+'<br>'+esc(course.venue)+'</div>';
+  cell.appendChild(el);
+  return el;
+}
+function viewTab(idx,el){
+  document.querySelectorAll('#viewTabs .tab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  var hsl=idx===0?'班级视角 · 高一（1）班 · 2026 秋季':idx===1?'教师视角 · 王建国 · 2026 秋季':idx===2?'全校总课表（管理员专属）· 2026 秋季':idx===3?'场地视角 · 实验室1（功能室）· 2026 秋季':'任课视角 · 王建国 · 数学 · 2026 秋季';
+  $('viewHint').textContent=hsl+' · 周次：第 3 周（单周）';
+  rebuildTT(idx);
+}
+function rebuildTT(idx){
+  // 简化：以不同预置数据重建（此处只演示结构一致性，内容一致即可）
+  ttGen('ttGrid',null);
+}
+function teacherLoginForView(){loginAs('teacher')}
+
+/* ================= P14 拖拽调课 ================= */
+function initMove(){
+  ttGen('ttGrid2',null);
+  // 给所有课程块绑定选中，给槽位绑定落位
+  document.querySelectorAll('#ttGrid2 .course').forEach(function(c){
+    c.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(c.classList.contains('locked')){toast('该课程已锁定，微调/调课中不可移动（D13）','warn');return}
+      document.querySelectorAll('#ttGrid2 .course').forEach(function(x){x.classList.remove('selected')});
+      c.classList.add('selected');
+      moveSource=c;
+      armCells(c);
+      addCE('已选中课程：'+c.querySelector('.t').textContent.replace('🔒 ','')+' → 点击虚线槽位落位','blue');
+    });
+  });
+  document.querySelectorAll('#ttGrid2 .drop-cell').forEach(function(cell){
+    cell.addEventListener('click',function(){
+      if(!moveSource)return;
+      var name=moveSource.querySelector('.t').textContent.replace('🔒 ','');
+      var isConflict = name==='理化生' && cell.getAttribute('data-d')==='2'; // 演示：理化生拖到周三冲突
+      var isOccupied = cell.querySelector('.course');
+      if(isConflict){
+        cell.classList.add('conflict');
+        moveSource.classList.add('flash-conflict');
+        addCE('⛔ 教师时间冲突：'+name+' 在周三已有课程，禁止放置（CE-001 零容忍）','err');
+        toast('冲突拦截：教师时间冲突（周三该教师已有课程）','err');
+        setTimeout(function(){cell.classList.remove('conflict');moveSource.classList.remove('selected');moveSource.classList.remove('flash-conflict');moveSource=null;unarmCells()},500);
+        return;
+      }
+      if(isOccupied){
+        toast('目标槽位已有课程，请先移开该课程','warn');
+        return;
+      }
+      // 合法落位：移动课程块
+      var srcCell=moveSource.parentNode;
+      var sKey=srcCell.getAttribute('data-i')+'-'+srcCell.getAttribute('data-d');
+      var dKey=cell.getAttribute('data-i')+'-'+cell.getAttribute('data-d');
+      cell.appendChild(moveSource);
+      var t=moveSource.querySelector('.t');
+      moveSource.classList.remove('selected');
+      addCE('✅ 合法调课：'+t.textContent.replace('🔒 ','')+' → '+sKey+' 移至 '+dKey,'ok');
+      toast('调课已应用（未保存），点击「调课保存」提交','ok');
+      undoStack.push({src:sKey,dst:dKey});
+      redoStack=[];
+      pendingMoves++;
+      refreshMoveDirty();
+      moveSource=null; unarmCells();
+    });
+  });
+}
+function armCells(src){
+  document.querySelectorAll('#ttGrid2 .drop-cell').forEach(function(c){
+    if(!c.querySelector('.course') && c!==src.parentNode) c.classList.add('armed');
+  });
+}
+function unarmCells(){document.querySelectorAll('#ttGrid2 .drop-cell').forEach(function(c){c.classList.remove('armed')})}
+function addCE(msg,type){
+  var d=document.createElement('div');
+  d.innerHTML=(type==='err'?'<b class="red">⛔</b>':type==='ok'?'<b class="green">✅</b>':'<b class="blue">🔎</b>')+'&nbsp;'+esc(msg);
+  d.style.cssText='padding:6px 0;border-bottom:1px dashed var(--line)';
+  var box=$('ceLog');box.insertBefore(d,box.firstChild);
+  if(box.children.length>5)box.removeChild(box.lastChild);
+}
+function undoAct(){
+  if(!undoStack.length){toast('没有可撤销的调课','warn');return}
+  var mv=undoStack.pop(); redoStack.push(mv);
+  // 简化：重建网格（演示撤销语义）
+  rebuildMoveGrid();
+  toast('已撤销一次调课','blue'); addCE('↩️ 撤销调课（'+mv.src+' ← '+mv.dst+'）','blue');
+}
+function redoAct(){
+  if(!redoStack.length){toast('没有可重做的调课','warn');return}
+  var mv=redoStack.pop(); undoStack.push(mv);
+  rebuildMoveGrid();
+  toast('已重做一次调课','blue'); addCE('↪️ 重做调课（'+mv.dst+' →）','blue');
+}
+function rebuildMoveGrid(){ttGen('ttGrid2',null);initMove()}
+function refreshMoveDirty(){
+  $('moveSaveDesc').textContent='当前待保存调课 '+pendingMoves+' 笔（保存后写入操作日志，关键操作二次确认已就绪）';
+}
+function saveMove(){
+  if(!pendingMoves){toast('当前没有待保存的调课','warn');closeModal('mMoveSave');return}
+  if(ROLE!=='admin'){toast('调课仅 Admin 可执行（REQ-AU-001）','err');closeModal('mMoveSave');return}
+  toast('调课已保存并更新视图，操作日志已记录（关键操作留痕）','ok');
+  pendingMoves=0;refreshMoveDirty();closeModal('mMoveSave');
+  addCE('📝 调课保存完成：已写入操作日志（LG-001）','ok');
+}
+
+/* ================= P15 空闲查询 ================= */
+function freeObjChange(){}
+function runFreeQuery(){
+  var t=$('freeTarget').value||'王建国（数学）';
+  var box=$('freeGrid');box.innerHTML='';
+  var times=['第1节','第2节','第3节','第4节','第5节','第6节','第7节','第8节'];
+  // 空闲演示：第2、5节整周空闲，其余occupied
+  var head=document.createElement('div');head.className='tt-head';
+  head.innerHTML='<div></div><div class="th">周一</div><div class="th">周二</div><div class="th">周三</div><div class="th">周四</div><div class="th">周五</div>';
+  box.appendChild(head);
+  times.forEach(function(tm,ti){
+    var row=document.createElement('div');row.className='tt-row';
+    var l=document.createElement('div');l.className='tt-time';l.textContent=tm;row.appendChild(l);
+    for(var d=0;d<5;d++){
+      var c=document.createElement('div');
+      c.className = (ti===1||ti===4) ? 'drop-cell' : 'drop-cell';
+      c.style.background = (ti===1||ti===4)?'#ECFDF5':'#fff';
+      c.style.borderStyle='solid';
+      c.style.borderColor=(ti===1||ti===4)?'#A7F3D0':'var(--line)';
+      c.classList.add('tt-free');
+      if(ti===1||ti===4) c.style.boxShadow='0 0 0 2px rgba(5,150,105,.15)';
+      row.appendChild(c);
+    }
+    box.appendChild(row);
+  });
+  $('freeNote').style.display='block';
+  toast('已查询 '+t+' 空闲时段：共 '+ (8*2) +' 个空闲槽位高亮','ok');
+}
+
+/* ================= P17 导出 ================= */
+function runExport(){
+  var dim=$('expDim').value;
+  $('expLoading').style.display='flex';
+  setTimeout(function(){
+    $('expLoading').style.display='none';
+    toast('已导出：'+dim+'（文件演示生成，字段与系统内部一致）','ok');
+  },1200);
+}
+
+/* ================= P20 存档 ================= */
+function doArchive(){
+  if(pendingMoves){toast('请先保存待处理调课再存档','warn');closeModal('mArchive');return}
+  $('archiveTag').textContent='已存档 · 2026-09-16 '+fmtNow().slice(11); $('archiveTag').className='tag tag-blue';
+  $('stpArchive').classList.add('done'); $('stpPublish').classList.add('done');
+  $('semStatus').className='tag st tag-blue'; $('semStatus').textContent='已存档';
+  $('semTitleNow').textContent='已存档'; $('semTitleNow').className='tag tag-blue';
+  toast('学期已存档：只读冻结，可查看 / 导出 / 切换（LG-001）','ok');
+  closeModal('mArchive');
+}
+function doPublish(){
+  if(ROLE!=='admin'){toast('发布仅 Admin 可执行','err');return}
+  $('publishTag').textContent='已发布 · '+fmtNow(); $('publishTag').className='tag tag-green';
+  $('stpPublish').innerHTML='② 已发布正式课表';
+  $('planStateCell').className='tag tag-green'; $('planStateCell').textContent='正式课表（已发布）';
+  $('planStatusTag').textContent='正式课表'; $('planStatusTag').className='tag tag-green';
+  $('dotPlan').style.background='var(--color-success)';
+  closeModal('mPublish');
+  toast('正式课表已发布（关键操作已留痕，LG-001）','ok');
+}
+function delProtected(msg){openModal('mArchive'); /* 复用通用确认模态的展示，这里用 toast 更直接 */ closeModal('mArchive'); toast('禁止删除：'+msg,'err') }
+/* ===== D21 冲突处置双路径：只本次忽略 / 去修改配置（用户核对驱动 2026-09-17 10:14:00） ===== */
+function ignoreOnce(){openModal('mIgnoreOnce')}
+function doIgnoreOnce(){closeModal('mIgnoreOnce'); toast('已【只本次忽略】：本次排课放行通过，不修改系统配置，后续排课仍按系统设置的规则执行（豁免不落库、不计为静默冲突）','ok')}
+function toConfig(page){toast('【去修改配置】跳转对应配置维护入口，修改约束后重新排课','blue'); nav(page||'P06')}
+function simImport(kind){toast('批量导入（'+kind+'）：CSV 模板解析 · 上限 5000 行/文件（D19），超限拒绝并提示；异常行给出 行号级提示','warn')}
+
+/* ================= P05 班级/年级 + P07 教师主数据 动态渲染（D20） ================= */
+var GRADE_LIST=['高一','高二','高三'];
+var GRADE_CTL=/^(高一|高二|高三|初一|初二|初三|七年级|八年级|九年级|中职一年级|中职二年级|中职三年级)$/;
+var GRADE_CLASSES={
+  '高一':[['高一（1）班','高一','李慧',48],['高一（2）班','高一','张伟',46],['高一（3）班','高一','王建国',45],['高一（4）班','高一','陈静',47]],
+  '高二':[['高二（1）班','高二','赵明',45],['高二（2）班','高二','孙丽',44]],
+  '高三':[['高三（1）班','高三','周强',43]]
+};
+var curGrade='高一';
+var mClassEditIdx=null, mGradeEditIdx=null, mTeacherEdit=null;
+var TEACHERS=[
+  ['T001','王建国','男','13800001001','在职','开通','数学 · 高一（1）（3）班；A101'],
+  ['T002','李慧','女','13800002002','在职','开通','语文 · 高一（1）班；A102'],
+  ['T003','张伟','男','13800003003','在职','开通','英语 · 高一（2）班；B201'],
+  ['T004','陈静','女','13800004004','在职','开通','物理 · 高一（1）班；实验室1'],
+  ['T005','刘洋','男','13800005005','在职','开通','体育 · 高一（1）（2）（3）（4）班；操场']
+];
+function fillClassGrade(){
+  var sel=$('mClassGrade'); if(!sel) return;
+  var html='';
+  for(var i=0;i<GRADE_LIST.length;i++){ html+='<option value="'+GRADE_LIST[i]+'"'+((GRADE_LIST[i]===curGrade)?' selected':'')+'>'+GRADE_LIST[i]+'</option>'; }
+  sel.innerHTML=html;
+}
+function renderGradeRows(){
+  var tb=$('gradeRows'); if(!tb) return;
+  var html='';
+  for(var i=0;i<GRADE_LIST.length;i++){
+    var g=GRADE_LIST[i];
+    var cnt=(GRADE_CLASSES[g]?GRADE_CLASSES[g].length:0);
+    html+='<tr><td>'+g+'</td><td class="num">'+cnt+' 个班级</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="editGrade('+i+')">编辑</button><button class="btn btn-sm btn-danger" onclick="delGrade('+i+')">删除</button></td></tr>';
+  }
+  tb.innerHTML=html;
+}
+function renderGradeTabs(){
+  var tab=$('gradeTabs'); if(!tab) return;
+  var html='';
+  for(var i=0;i<GRADE_LIST.length;i++){
+    html+='<div class="tab'+((GRADE_LIST[i]===curGrade)?' active':'')+'" onclick="setGrade('+i+',this)">'+GRADE_LIST[i]+'</div>';
+  }
+  tab.innerHTML=html;
+}
+function setGrade(i,el){ curGrade=GRADE_LIST[i]; renderGradeTabs(); renderClassRows(); fillClassGrade(); }
+function renderClassRows(){
+  var tb=$('classRows'); if(!tb) return;
+  var arr=GRADE_CLASSES[curGrade]||[];
+  if(!arr.length){ tb.innerHTML='<tr><td colspan="5" class="mute" style="text-align:center">该年级暂无班级，点击「＋ 新增班级」创建</td></tr>'; return; }
+  var html='';
+  for(var i=0;i<arr.length;i++){
+    var c=arr[i];
+    html+='<tr><td>'+c[0]+'</td><td>'+c[1]+'</td><td>'+c[2]+'</td><td class="num">'+c[3]+'</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="editClass('+i+')">编辑</button><button class="btn btn-sm btn-danger" onclick="delClass('+i+')">删除</button></td></tr>';
+  }
+  tb.innerHTML=html;
+}
+function clsPreview(){
+  var seq=$('mClassSeq').value, grade=$('mClassGrade').value, pv=$('mClassPreview'); if(!pv) return;
+  if(!/^([1-9]|[1-9][0-9])$/.test(seq)){ pv.textContent='请填写班级序号（1-99 整数）'; pv.classList.add('red'); return; }
+  pv.classList.remove('red');
+  pv.textContent=grade+'（'+seq+'）班';
+}
+function openClassNew(){
+  mClassEditIdx=null; $('mClassTitle').textContent='＋ 新增班级';
+  $('mClassSeq').value=''; $('mClassHead').value=''; $('mClassNum').value='';
+  fillClassGrade(); clsPreview(); openModal('mClassNew');
+}
+function editClass(idx){
+  mClassEditIdx=idx; $('mClassTitle').textContent='编辑班级';
+  var c=GRADE_CLASSES[curGrade][idx];
+  $('mClassGrade').value=c[1]; $('mClassSeq').value=c[0].replace(c[1]+'（','').replace('）班','');
+  $('mClassHead').value=c[2]; $('mClassNum').value=c[3];
+  fillClassGrade(); $('mClassGrade').value=c[1]; clsPreview(); openModal('mClassNew');
+}
+function saveClass(){
+  var grade=$('mClassGrade').value, seq=$('mClassSeq').value, head=$('mClassHead').value, num=$('mClassNum').value;
+  if(!/^([1-9]|[1-9][0-9])$/.test(seq)){ toast('班级序号须为 1-99 整数（受控录入，禁自由文本·D20）','err'); return; }
+  var name=grade+'（'+seq+'）班';
+  var arr=GRADE_CLASSES[grade]||[];
+  for(var j=0;j<arr.length;j++){ if(j===mClassEditIdx) continue; if(arr[j][0]===name){ toast('班级「'+name+'」已存在（重名拒绝·D20）','err'); return; } }
+  var rec=[name,grade,head||'−',num||'−'];
+  if(mClassEditIdx!==null){ arr[mClassEditIdx]=rec; } else { arr.push(rec); }
+  GRADE_CLASSES[grade]=arr;
+  closeModal('mClassNew'); renderClassRows(); renderGradeRows();
+  toast('班级「'+name+'」已保存（受控命名·D20）','ok');
+}
+function delClass(idx){
+  var c=GRADE_CLASSES[curGrade][idx];
+  delProtected('班级「'+c[0]+'」有该班课表 / 任课关联记录，存在引用时禁止删除（D16）');
+}
+function openGradeNew(){
+  mGradeEditIdx=null; $('mGradeTitle').textContent='＋ 新增年级'; $('mGradeName').value=''; openModal('mGradeNew');
+}
+function editGrade(idx){
+  mGradeEditIdx=idx; $('mGradeTitle').textContent='编辑年级'; $('mGradeName').value=GRADE_LIST[idx]; openModal('mGradeNew');
+}
+function saveGrade(){
+  var name=$('mGradeName').value.trim();
+  if(!GRADE_CTL.test(name)){ toast('年级名称不在受控规范列表（高一/高二/高三、初一/初二/初三、七年级…九年级、中职一~三年级），已拒绝（D20）','err'); return; }
+  for(var i=0;i<GRADE_LIST.length;i++){ if(i===mGradeEditIdx) continue; if(GRADE_LIST[i]===name){ toast('年级「'+name+'」已存在（重名拒绝·D20）','err'); return; } }
+  if(mGradeEditIdx!==null){
+    var old=GRADE_LIST[mGradeEditIdx]; GRADE_LIST[mGradeEditIdx]=name;
+    if(GRADE_CLASSES[old]){ var arr=GRADE_CLASSES[old]; for(var j=0;j<arr.length;j++){ arr[j][0]=name+'（'+String(j+1)+'）班'; arr[j][1]=name; } GRADE_CLASSES[name]=arr; delete GRADE_CLASSES[old]; }
+    if(curGrade===old) curGrade=name;
+  } else {
+    if(!GRADE_CLASSES[name]) GRADE_CLASSES[name]=[];
+    GRADE_LIST.push(name);
+  }
+  closeModal('mGradeNew'); renderGradeRows(); renderGradeTabs(); renderClassRows();
+  toast('年级已保存并纳入受控列表（D20）','ok');
+}
+function delGrade(idx){
+  var g=GRADE_LIST[idx];
+  if(GRADE_CLASSES[g] && GRADE_CLASSES[g].length){ delProtected('年级「'+g+'」仍被 '+GRADE_CLASSES[g].length+' 个班级引用，禁止删除并提示引用关系（D16）'); return; }
+  GRADE_LIST.splice(idx,1);
+  if(GRADE_CLASSES[g]) delete GRADE_CLASSES[g];
+  if(GRADE_LIST.indexOf(curGrade)===-1) curGrade=GRADE_LIST[0]||'';
+  renderGradeRows(); renderGradeTabs(); renderClassRows();
+  toast('年级「'+g+'」已删除（无引用，操作已留痕·LG-001）','ok');
+}
+function renderTeacherRows(){
+  var tb=$('teacherRows'); if(!tb) return;
+  var html='';
+  for(var i=0;i<TEACHERS.length;i++){
+    var t=TEACHERS[i];
+    var acct=(t[5]==='开通')?'已开通 · '+t[0].toLowerCase():'未开通';
+    var st=(t[4]==='退校')?'<span class="tag tag-gray">退校</span>':'<span class="tag tag-green">在职</span>';
+    html+='<tr><td>'+t[0]+'</td><td>'+t[1]+'</td><td>'+t[2]+'</td><td>'+t[3]+'</td><td>'+st+'</td><td>'+acct+'</td><td class="actions"><button class="btn btn-sm btn-ghost" onclick="editTeacher('+i+')">编辑</button><button class="btn btn-sm btn-danger" onclick="delTeacher('+i+')">删除</button></td></tr>';
+  }
+  tb.innerHTML=html;
+}
+function openTeacherNew(){
+  mTeacherEdit=null; $('mTeachTitle').textContent='＋ 新增教师';
+  $('mTeachNo').value=''; $('mTeachNo').disabled=false; $('mTeachName').value=''; $('mTeachPhone').value='';
+  $('mTeachGender').value='男'; $('mTeachStatus').value='在职'; $('mTeachAccount').value='开通（工号小写作账号）';
+  openModal('mTeacherNew');
+}
+function editTeacher(i){
+  mTeacherEdit=i; $('mTeachTitle').textContent='编辑教师';
+  var t=TEACHERS[i];
+  $('mTeachNo').value=t[0]; $('mTeachNo').disabled=true; // 工号作为唯一标识，编辑时锁定不可改
+  $('mTeachName').value=t[1]; $('mTeachGender').value=t[2]; $('mTeachPhone').value=t[3];
+  $('mTeachStatus').value=t[4]; $('mTeachAccount').value=(t[5]==='开通')?'开通（工号小写作账号）':'不开通';
+  openModal('mTeacherNew');
+}
+function saveTeacher(){
+  var no=$('mTeachNo').value.trim(), upperNo=no.toUpperCase(), name=$('mTeachName').value.trim(), phone=$('mTeachPhone').value.trim();
+  var gender=$('mTeachGender').value, status=$('mTeachStatus').value, acctOpt=$('mTeachAccount').value;
+  if(!/^T\d+$/.test(upperNo)){ toast('工号格式受控：须为 T+数字（如 T006），已拒绝（D20）','err'); return; }
+  for(var i=0;i<TEACHERS.length;i++){ if(i===mTeacherEdit) continue; if(TEACHERS[i][0].toUpperCase()===upperNo){ toast('工号 '+upperNo+' 已存在（工号唯一，重复拒绝·D20）','err'); return; } }
+  var isOpen=(acctOpt==='开通（工号小写作账号）');
+  if(mTeacherEdit!==null){ TEACHERS[mTeacherEdit][0]=upperNo; TEACHERS[mTeacherEdit][1]=name; TEACHERS[mTeacherEdit][2]=gender; TEACHERS[mTeacherEdit][3]=phone; TEACHERS[mTeacherEdit][4]=status; TEACHERS[mTeacherEdit][5]=isOpen?'开通':'未开通'; }
+  else { TEACHERS.push([upperNo,name,gender,phone,status,isOpen?'开通':'未开通','未配置任课']); }
+  closeModal('mTeacherNew'); renderTeacherRows();
+  toast('教师「'+name+'」已保存'+(isOpen?'，并一键开通 Teacher 账号 '+upperNo.toLowerCase()+'（联动 AU-001）':'')+'（D20）','ok');
+}
+function delTeacher(i){
+  var t=TEACHERS[i];
+  if(t[6] && t[6].indexOf('未配置任课')===-1){ delProtected('教师「'+t[1]+'」有任课记录（'+t[6]+'），存在引用时禁止删除（D16）'); return; }
+  TEACHERS.splice(i,1); renderTeacherRows();
+  toast('教师「'+t[1]+'」已删除（无任课关联，操作已留痕·LG-001）','ok');
+}
+
+/* ================= 启动 ================= */
+function init(){
+  applyRoleUI();
+  renderReqBar(); // 需求验证清单：加载即渲染 20 条 REQ
+  renderGradeRows(); renderGradeTabs(); renderClassRows(); renderTeacherRows(); // D20 主数据动态渲染
+  // 默认进入登录页（展示角色入口）；为了直接演示也可一键进入工作台
+  nav('P01','');
+}
+/* 供 walkthrough 引用 */
+window.teacherLogin=function(){loginAs('teacher')};
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+[
+  {
+    "term": "学期",
+    "definition": "排课与数据归集的时间单元，每个学期仅引用一个作息模板，含未开始/进行中/已结束/已存档状态",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "作息模板",
+    "definition": "独立于学期的主数据，定义开放排课星期与节次时间表，支持版本快照",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "节次时间表",
+    "definition": "作息模板内每节次的编号与起止时间序列",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "年级",
+    "definition": "独立可管理的组织实体，名称从受控列表选择",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "班级",
+    "definition": "归属年级的学生组织单元，名称按「年级（序号）班」自动生成",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "科目",
+    "definition": "课程维度主数据，名称受控、禁止同义不同名并存",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "科目课时规则",
+    "definition": "科目的每周课时与连堂/禁排/时段优先等软约束配置",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "教师",
+    "definition": "教师主数据，工号「T+数字」唯一，删除与停用语义区分",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "任课约束",
+    "definition": "教师到科目/班级/场地/课时的基础约束，区别于排课结果",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "免排",
+    "definition": "教师主动配置的不排课时段",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "禁排",
+    "definition": "由业务规则限定的不可排课时段",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "场地",
+    "definition": "教室与功能室合并的主数据，以类型字段区分，含容量",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "功能室",
+    "definition": "场地的一种类型（如实验室/机房），参与占用校验",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "合班课",
+    "definition": "多班静态合并的授课单元，作为一个排课单元占用时间与场地",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "走班",
+    "definition": "按科目跨班排入目标场地的教学组织方式",
+    "bcId": "bc-timetable"
+  },
+  {
+    "term": "单双周",
+    "definition": "相邻两周整周课表结构按周序号奇偶轮换的排课方式",
+    "bcId": "bc-timetable"
+  },
+  {
+    "term": "排课方案",
+    "definition": "一键排课的产物，遵循草稿→发布→存档状态机，每学期仅一份正式课表",
+    "bcId": "bc-timetable"
+  },
+  {
+    "term": "课程课次",
+    "definition": "排课方案内的单节课程安排，可被锁定/解锁",
+    "bcId": "bc-timetable"
+  },
+  {
+    "term": "锁定",
+    "definition": "课程的人工既定安排标记，锁定课程不被自动排课覆盖或移动",
+    "bcId": "bc-timetable"
+  },
+  {
+    "term": "三类核心冲突",
+    "definition": "教师时间冲突、班级同节多课、场地占用三类硬约束冲突",
+    "bcId": "bc-timetable"
+  },
+  {
+    "term": "二次确认",
+    "definition": "对删除/发布/覆盖/切换学期等关键操作的前置确认",
+    "bcId": "bc-governance"
+  },
+  {
+    "term": "批量导入导出",
+    "definition": "按统一模板与校验的批量数据维护机制，导入上限5000行/文件",
+    "bcId": "bc-governance"
+  },
+  {
+    "term": "操作日志",
+    "definition": "关键操作的操作人/时间/模块/内容留痕记录，永久留存",
+    "bcId": "bc-governance"
+  },
+  {
+    "term": "学期存档",
+    "definition": "将已发布学期置为已存档状态，只读可导出不可修改",
+    "bcId": "bc-governance"
+  },
+  {
+    "term": "账号",
+    "definition": "本地账号体系下的登录账号，含角色（Admin/Teacher）",
+    "bcId": "bc-identity"
+  },
+  {
+    "term": "当前学期上下文",
+    "definition": "系统当前作用的学期标识，驱动视图与排课数据范围",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "学期状态",
+    "definition": "学期状态四值：未开始/进行中/已结束/已存档，前三者为日期派生态，已存档为命令驱动",
+    "bcId": "bc-registry"
+  },
+  {
+    "term": "教师状态",
+    "definition": "教师进退校状态，取值：在职/退校",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "场地状态",
+    "definition": "场地可用状态，取值：可用/停用",
+    "bcId": "bc-resource"
+  },
+  {
+    "term": "账号状态",
+    "definition": "账号启停状态，取值：启用/停用",
+    "bcId": "bc-identity"
+  },
+  {
+    "term": "排课方案状态",
+    "definition": "排课方案生命周期状态，取值：草稿/发布/存档",
+    "bcId": "bc-timetable"
+  }
+]

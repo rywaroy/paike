@@ -1,0 +1,247 @@
+[
+  {
+    "name": "SemesterCreated",
+    "raisedBy": "Semester",
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002"
+    ],
+    "triggerCondition": "新增学期成功并绑定作息模板"
+  },
+  {
+    "name": "SemesterUpdated",
+    "raisedBy": "Semester",
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002"
+    ],
+    "triggerCondition": "学期信息被编辑"
+  },
+  {
+    "name": "SemesterDeleted",
+    "raisedBy": "Semester",
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002",
+      "US-CM-001"
+    ],
+    "triggerCondition": "未被引用的学期被删除"
+  },
+  {
+    "name": "SemesterArchived",
+    "raisedBy": "Semester",
+    "sourceUserStoryIds": [
+      "US-LG-002"
+    ],
+    "triggerCondition": "已发布学期触发存档"
+  },
+  {
+    "name": "ScheduleTemplateCreated",
+    "raisedBy": "ScheduleTemplate",
+    "sourceUserStoryIds": [
+      "US-BD-003"
+    ],
+    "triggerCondition": "作息模板创建成功"
+  },
+  {
+    "name": "ScheduleTemplateVersioned",
+    "raisedBy": "ScheduleTemplate",
+    "sourceUserStoryIds": [
+      "US-BD-003"
+    ],
+    "triggerCondition": "编辑保存生成新版本"
+  },
+  {
+    "name": "GradeCreated",
+    "raisedBy": "Grade",
+    "sourceUserStoryIds": [
+      "US-BD-004"
+    ],
+    "triggerCondition": "年级创建成功"
+  },
+  {
+    "name": "GradeDeleted",
+    "raisedBy": "Grade",
+    "sourceUserStoryIds": [
+      "US-BD-004",
+      "US-CM-001"
+    ],
+    "triggerCondition": "未被引用的年级被删除"
+  },
+  {
+    "name": "ClassCreated",
+    "raisedBy": "Class",
+    "sourceUserStoryIds": [
+      "US-BD-005"
+    ],
+    "triggerCondition": "班级创建成功并生成规范名称"
+  },
+  {
+    "name": "ClassUpdated",
+    "raisedBy": "Class",
+    "sourceUserStoryIds": [
+      "US-BD-005"
+    ],
+    "triggerCondition": "班级信息被编辑"
+  },
+  {
+    "name": "SubjectCreated",
+    "raisedBy": "Subject",
+    "sourceUserStoryIds": [
+      "US-BD-006"
+    ],
+    "triggerCondition": "科目创建成功"
+  },
+  {
+    "name": "SubjectPeriodRuleConfigured",
+    "raisedBy": "Subject",
+    "sourceUserStoryIds": [
+      "US-BD-007"
+    ],
+    "triggerCondition": "科目课时规则保存"
+  },
+  {
+    "name": "TeacherCreated",
+    "raisedBy": "Teacher",
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "triggerCondition": "教师创建成功"
+  },
+  {
+    "name": "TeacherUpdated",
+    "raisedBy": "Teacher",
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "triggerCondition": "教师信息被编辑"
+  },
+  {
+    "name": "TeacherDeactivated",
+    "raisedBy": "Teacher",
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ],
+    "triggerCondition": "退校教师被停用"
+  },
+  {
+    "name": "TeacherDeleted",
+    "raisedBy": "Teacher",
+    "sourceUserStoryIds": [
+      "US-BD-008",
+      "US-CM-001"
+    ],
+    "triggerCondition": "无任课记录的教师被删除"
+  },
+  {
+    "name": "TeachingAssignmentConfigured",
+    "raisedBy": "TeachingAssignment",
+    "sourceUserStoryIds": [
+      "US-BD-010"
+    ],
+    "triggerCondition": "教师任课约束保存"
+  },
+  {
+    "name": "VenueCreated",
+    "raisedBy": "Venue",
+    "sourceUserStoryIds": [
+      "US-BD-011"
+    ],
+    "triggerCondition": "场地创建成功"
+  },
+  {
+    "name": "CombinedClassConfigured",
+    "raisedBy": "CombinedClass",
+    "sourceUserStoryIds": [
+      "US-BD-012"
+    ],
+    "triggerCondition": "合班课配置保存"
+  },
+  {
+    "name": "TimetablePlanGenerated",
+    "raisedBy": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-002",
+      "US-AP-004",
+      "US-AP-005",
+      "US-AP-006"
+    ],
+    "triggerCondition": "一键排课生成草稿方案"
+  },
+  {
+    "name": "TimetablePlanPublished",
+    "raisedBy": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-AP-003"
+    ],
+    "triggerCondition": "草稿方案发布为正式课表"
+  },
+  {
+    "name": "TimetablePlanArchived",
+    "raisedBy": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-LG-002"
+    ],
+    "triggerCondition": "正式课表随学期存档"
+  },
+  {
+    "name": "LessonLocked",
+    "raisedBy": "LessonOccurrence",
+    "sourceUserStoryIds": [
+      "US-AP-004"
+    ],
+    "triggerCondition": "课程被锁定"
+  },
+  {
+    "name": "LessonUnlocked",
+    "raisedBy": "LessonOccurrence",
+    "sourceUserStoryIds": [
+      "US-AP-004"
+    ],
+    "triggerCondition": "课程被解锁"
+  },
+  {
+    "name": "LessonMoved",
+    "raisedBy": "LessonOccurrence",
+    "sourceUserStoryIds": [
+      "US-AT-003",
+      "US-AP-003"
+    ],
+    "triggerCondition": "课程被拖拽调课到新位置"
+  },
+  {
+    "name": "OperationLogged",
+    "raisedBy": "OperationLog",
+    "sourceUserStoryIds": [
+      "US-LG-001"
+    ],
+    "triggerCondition": "关键操作被记录"
+  },
+  {
+    "name": "TeacherAccountProvisioned",
+    "raisedBy": "Account",
+    "sourceUserStoryIds": [
+      "US-BD-009"
+    ],
+    "triggerCondition": "教师账号一键开通"
+  },
+  {
+    "name": "RoleAssigned",
+    "raisedBy": "Account",
+    "sourceUserStoryIds": [
+      "US-AU-002",
+      "US-AU-003"
+    ],
+    "triggerCondition": "账号角色分配变更"
+  },
+  {
+    "name": "SubjectUpdated",
+    "raisedBy": "Subject",
+    "sourceUserStoryIds": [
+      "US-BD-006"
+    ],
+    "triggerCondition": "科目名称经同新增一致的受控校验后更新"
+  }
+]

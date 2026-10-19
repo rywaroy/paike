@@ -1,0 +1,121 @@
+[
+  {
+    "bcId": "bc-registry",
+    "nameZh": "教务主数据",
+    "nameEn": "Academic Registry",
+    "subdomainType": "Core",
+    "responsibility": "维护学期、作息模板、年级、班级、科目及其课时规则等基础主数据，提供受控命名与引用关系基线",
+    "stories": [
+      "US-BD-001",
+      "US-BD-002",
+      "US-LG-002",
+      "US-BD-003",
+      "US-BD-004",
+      "US-BD-005",
+      "US-BD-006",
+      "US-BD-007"
+    ],
+    "aggregates": [
+      "Semester",
+      "ScheduleTemplate",
+      "Grade",
+      "Class",
+      "Subject"
+    ],
+    "dependencies": [
+      "bc-timetable"
+    ]
+  },
+  {
+    "bcId": "bc-resource",
+    "nameZh": "资源与任课",
+    "nameEn": "Resources & Teaching",
+    "subdomainType": "Core",
+    "responsibility": "维护教师、场地、合班课与教师任课约束等资源主数据，支撑排课占用与个体限制",
+    "stories": [
+      "US-BD-008",
+      "US-BD-010",
+      "US-BD-011",
+      "US-BD-012"
+    ],
+    "aggregates": [
+      "Teacher",
+      "Venue",
+      "CombinedClass",
+      "TeachingAssignment"
+    ],
+    "dependencies": [
+      "bc-registry"
+    ]
+  },
+  {
+    "bcId": "bc-timetable",
+    "nameZh": "排课与调课",
+    "nameEn": "Timetabling",
+    "subdomainType": "Core",
+    "responsibility": "基于学期与作息模板生成/发布/存档排课方案，管理课程课次锁定与拖拽调课，执行三维冲突校验",
+    "stories": [
+      "US-AP-001",
+      "US-AP-002",
+      "US-AP-004",
+      "US-AP-005",
+      "US-AP-006",
+      "US-AT-001",
+      "US-AT-003",
+      "US-AT-004",
+      "US-AP-003",
+      "US-AT-005",
+      "US-AS-001",
+      "US-EX-001",
+      "US-EX-002",
+      "US-CE-001"
+    ],
+    "aggregates": [
+      "TimetablePlan"
+    ],
+    "dependencies": [
+      "bc-registry",
+      "bc-resource"
+    ]
+  },
+  {
+    "bcId": "bc-governance",
+    "nameZh": "治理与留痕",
+    "nameEn": "Governance & Audit",
+    "subdomainType": "Supporting",
+    "responsibility": "提供关键操作二次确认、引用删除保护、批量导入导出与操作日志全量留痕等横切治理能力",
+    "stories": [
+      "US-CM-001",
+      "US-CM-002",
+      "US-LG-001"
+    ],
+    "aggregates": [
+      "OperationLog"
+    ],
+    "dependencies": [
+      "bc-registry",
+      "bc-resource",
+      "bc-timetable",
+      "bc-identity"
+    ]
+  },
+  {
+    "bcId": "bc-identity",
+    "nameZh": "身份与权限",
+    "nameEn": "Identity & Access",
+    "subdomainType": "Generic",
+    "responsibility": "本地账号体系下的登录认证、角色权限判定与教师账号开通",
+    "stories": [
+      "US-AU-001",
+      "US-AU-002",
+      "US-AU-003",
+      "US-BD-009"
+    ],
+    "aggregates": [
+      "Account"
+    ],
+    "dependencies": [
+      "bc-resource"
+    ]
+  }
+]

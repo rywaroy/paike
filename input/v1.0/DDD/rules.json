@@ -1,0 +1,435 @@
+[
+  {
+    "id": "R-001",
+    "scope": "Invariant",
+    "description": "每个学期仅引用一个作息模板，新增学期必须绑定现有作息模板",
+    "constrains": "Semester",
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002"
+    ]
+  },
+  {
+    "id": "R-002",
+    "scope": "Validation",
+    "description": "学期状态枚举为未开始/进行中/已结束/已存档",
+    "constrains": "Semester.status",
+    "sourceUserStoryIds": [
+      "US-BD-001",
+      "US-BD-002"
+    ]
+  },
+  {
+    "id": "R-003",
+    "scope": "Invariant",
+    "description": "作息模板编辑生成新版本快照，历史版本保持原样，不回改历史课表",
+    "constrains": "ScheduleTemplate",
+    "sourceUserStoryIds": [
+      "US-BD-003"
+    ]
+  },
+  {
+    "id": "R-004",
+    "scope": "Validation",
+    "description": "年级名称从受控名称列表选择，禁止自由文本（受控列表为运行期可配置主数据，取值集由部署配置提供）",
+    "constrains": "Grade.name",
+    "sourceUserStoryIds": [
+      "US-BD-004"
+    ]
+  },
+  {
+    "id": "R-005",
+    "scope": "Guard",
+    "description": "被班级引用的年级删除受引用保护并提示引用关系",
+    "constrains": "Grade",
+    "sourceUserStoryIds": [
+      "US-BD-004"
+    ]
+  },
+  {
+    "id": "R-006",
+    "scope": "Validation",
+    "description": "班级名称格式受控为「年级（序号）班」，序号1-99整数",
+    "constrains": "Class.name",
+    "sourceUserStoryIds": [
+      "US-BD-005"
+    ]
+  },
+  {
+    "id": "R-007",
+    "scope": "Validation",
+    "description": "科目名称受控，禁止同义不同名并存（同义判定由运行期可配置同义词表提供）",
+    "constrains": "Subject.name",
+    "sourceUserStoryIds": [
+      "US-BD-006"
+    ]
+  },
+  {
+    "id": "R-008",
+    "scope": "Specification",
+    "description": "科目三类软约束默认关闭，启用后作为软约束参与排课",
+    "constrains": "Subject.SubjectPeriodRule",
+    "sourceUserStoryIds": [
+      "US-BD-007"
+    ]
+  },
+  {
+    "id": "R-009",
+    "scope": "Guard",
+    "description": "科目课时规则冲突时明确提示而非静默忽略",
+    "constrains": "Subject.SubjectPeriodRule",
+    "sourceUserStoryIds": [
+      "US-BD-007"
+    ]
+  },
+  {
+    "id": "R-010",
+    "scope": "Validation",
+    "description": "教师工号格式受控为「T+数字」且唯一",
+    "constrains": "Teacher.employeeNo",
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ]
+  },
+  {
+    "id": "R-011",
+    "scope": "Invariant",
+    "description": "教师删除与停用语义区分，退校教师保留主数据",
+    "constrains": "Teacher",
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ]
+  },
+  {
+    "id": "R-012",
+    "scope": "Guard",
+    "description": "删除有任课记录的教师受引用保护",
+    "constrains": "Teacher",
+    "sourceUserStoryIds": [
+      "US-BD-008"
+    ]
+  },
+  {
+    "id": "R-013",
+    "scope": "Specification",
+    "description": "任课约束为基础数据，免排与禁排语义区分",
+    "constrains": "TeachingAssignment",
+    "sourceUserStoryIds": [
+      "US-BD-010"
+    ]
+  },
+  {
+    "id": "R-014",
+    "scope": "Validation",
+    "description": "场地名称受控且唯一，违反格式或重名拒绝（名称受控格式由运行期可配置词表提供）",
+    "constrains": "Venue.name",
+    "sourceUserStoryIds": [
+      "US-BD-011"
+    ]
+  },
+  {
+    "id": "R-015",
+    "scope": "Guard",
+    "description": "班级人数大于场地容量时硬约束禁止排入",
+    "constrains": "Venue",
+    "sourceUserStoryIds": [
+      "US-BD-011"
+    ]
+  },
+  {
+    "id": "R-016",
+    "scope": "Invariant",
+    "description": "场地同节重复占用被占用校验拦截",
+    "constrains": "Venue",
+    "sourceUserStoryIds": [
+      "US-BD-011"
+    ]
+  },
+  {
+    "id": "R-017",
+    "scope": "Validation",
+    "description": "合班课配置字段受控校验，作为排课单元占用时间与场地",
+    "constrains": "CombinedClass",
+    "sourceUserStoryIds": [
+      "US-BD-012"
+    ]
+  },
+  {
+    "id": "R-018",
+    "scope": "Invariant",
+    "description": "三类核心冲突（教师时间/班级同节多课/场地占用）为零",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-001",
+      "US-CE-001"
+    ]
+  },
+  {
+    "id": "R-019",
+    "scope": "Invariant",
+    "description": "排课结果遵循草稿→发布→存档状态机，每学期仅一份正式课表",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-001"
+    ]
+  },
+  {
+    "id": "R-020",
+    "scope": "Specification",
+    "description": "50班规模排课≤5秒为验收边界",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-001"
+    ]
+  },
+  {
+    "id": "R-021",
+    "scope": "Invariant",
+    "description": "锁定课程优先级高于自动分配，不可移动不可覆盖",
+    "constrains": "TimetablePlan.LessonOccurrence",
+    "sourceUserStoryIds": [
+      "US-AP-004"
+    ]
+  },
+  {
+    "id": "R-022",
+    "scope": "Specification",
+    "description": "单双周按周序号奇偶轮换，第1周单周启动，节假日不顺延",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-005"
+    ]
+  },
+  {
+    "id": "R-023",
+    "scope": "Specification",
+    "description": "走班按科目跨班排入目标场地，场地+教师双重分配",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-006"
+    ],
+    "versionScope": "V1.0 走班基线；V2.0 动态走班编排"
+  },
+  {
+    "id": "R-024",
+    "scope": "Specification",
+    "description": "跨年级授课放开教师年级限制",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-006"
+    ]
+  },
+  {
+    "id": "R-025",
+    "scope": "Guard",
+    "description": "管理员可见全部视图，教师仅本人及本人关联班级课表",
+    "constrains": "ViewTimetable",
+    "sourceUserStoryIds": [
+      "US-AT-001",
+      "US-AU-002",
+      "US-AU-003"
+    ]
+  },
+  {
+    "id": "R-026",
+    "scope": "Invariant",
+    "description": "视图随学期切换，不发生跨学期数据串扰",
+    "constrains": "ViewTimetable",
+    "sourceUserStoryIds": [
+      "US-AT-001"
+    ]
+  },
+  {
+    "id": "R-027",
+    "scope": "Guard",
+    "description": "调课保存触发二次确认并记日志",
+    "constrains": "MoveLesson",
+    "sourceUserStoryIds": [
+      "US-AT-003"
+    ]
+  },
+  {
+    "id": "R-028",
+    "scope": "Specification",
+    "description": "调课支持撤销/重做，可成组批量",
+    "constrains": "MoveLesson",
+    "sourceUserStoryIds": [
+      "US-AT-004"
+    ]
+  },
+  {
+    "id": "R-029",
+    "scope": "Specification",
+    "description": "方案微调复用拖拽调课能力及实时冲突校验",
+    "constrains": "TimetablePlan",
+    "sourceUserStoryIds": [
+      "US-AP-003"
+    ]
+  },
+  {
+    "id": "R-030",
+    "scope": "Guard",
+    "description": "空闲时段查询：教师仅本人，管理员可查任意对象",
+    "constrains": "QueryIdleSlots",
+    "sourceUserStoryIds": [
+      "US-AT-005"
+    ]
+  },
+  {
+    "id": "R-031",
+    "scope": "Specification",
+    "description": "连堂按节次、合班按 1 节加计不重复；加班列 V1.0 仅占位展示",
+    "constrains": "WorkloadStatisticsService",
+    "sourceUserStoryIds": [
+      "US-AS-001"
+    ],
+    "versionScope": "V1.0 连堂/合班加计 + 加班占位；V1.1 加班加计口径"
+  },
+  {
+    "id": "R-032",
+    "scope": "Validation",
+    "description": "导出字段与系统内部字段逐字段一致",
+    "constrains": "ExportExcel",
+    "sourceUserStoryIds": [
+      "US-EX-001"
+    ]
+  },
+  {
+    "id": "R-033",
+    "scope": "Validation",
+    "description": "打印预览所见即所得",
+    "constrains": "PrintTimetable",
+    "sourceUserStoryIds": [
+      "US-EX-002"
+    ]
+  },
+  {
+    "id": "R-034",
+    "scope": "Specification",
+    "description": "「只本次忽略」仅本次排课生效、不改系统配置、不计静默冲突",
+    "constrains": "IgnoreConflictOnce",
+    "sourceUserStoryIds": [
+      "US-CE-001"
+    ]
+  },
+  {
+    "id": "R-035",
+    "scope": "Guard",
+    "description": "关键操作均需二次确认，枚举七项：删除类/发布/覆盖方案/切换学期/批量导入提交/学期存档/调课保存（D16）",
+    "constrains": "ConfirmCriticalOperation",
+    "sourceUserStoryIds": [
+      "US-CM-001"
+    ]
+  },
+  {
+    "id": "R-036",
+    "scope": "Guard",
+    "description": "被引用数据删除保护，禁止删除并提示引用关系",
+    "constrains": "DeleteSemester,DeleteGrade,DeleteTeacher",
+    "sourceUserStoryIds": [
+      "US-CM-001"
+    ]
+  },
+  {
+    "id": "R-037",
+    "scope": "Invariant",
+    "description": "学期/模板删除不影响历史存档",
+    "constrains": "TimetablePlan.status,Semester.status",
+    "sourceUserStoryIds": [
+      "US-CM-001",
+      "US-LG-002"
+    ]
+  },
+  {
+    "id": "R-038",
+    "scope": "Validation",
+    "description": "批量导入上限5000行/文件，超限拒绝",
+    "constrains": "BatchImport",
+    "sourceUserStoryIds": [
+      "US-CM-002"
+    ]
+  },
+  {
+    "id": "R-039",
+    "scope": "Invariant",
+    "description": "关键操作100%留痕，日志永久留存不被清理",
+    "constrains": "OperationLog",
+    "sourceUserStoryIds": [
+      "US-LG-001"
+    ]
+  },
+  {
+    "id": "R-040",
+    "scope": "Invariant",
+    "description": "发布/存档/切换学期等状态流转全量纳入留痕",
+    "constrains": "OperationLog",
+    "sourceUserStoryIds": [
+      "US-LG-001"
+    ]
+  },
+  {
+    "id": "R-041",
+    "scope": "Guard",
+    "description": "学期存档先决=已发布，存档后只读可导出不可修改",
+    "constrains": "Semester",
+    "sourceUserStoryIds": [
+      "US-LG-002"
+    ]
+  },
+  {
+    "id": "R-042",
+    "scope": "Specification",
+    "description": "本地账号体系，系统内置默认管理员初始化",
+    "constrains": "Account",
+    "sourceUserStoryIds": [
+      "US-AU-001"
+    ]
+  },
+  {
+    "id": "R-043",
+    "scope": "Guard",
+    "description": "Admin全部权限，Teacher仅本人课表/关联班级课表/本人空闲查询",
+    "constrains": "Account",
+    "sourceUserStoryIds": [
+      "US-AU-002",
+      "US-AU-003"
+    ]
+  },
+  {
+    "id": "R-044",
+    "scope": "Specification",
+    "description": "角色分配变更即时生效",
+    "constrains": "Account",
+    "sourceUserStoryIds": [
+      "US-AU-002",
+      "US-AU-003"
+    ]
+  },
+  {
+    "id": "R-045",
+    "scope": "Specification",
+    "description": "新增教师勾选一键开通生成对应Teacher账号",
+    "constrains": "Account",
+    "sourceUserStoryIds": [
+      "US-BD-009"
+    ]
+  },
+  {
+    "id": "R-046",
+    "scope": "Validation",
+    "constrains": "Semester.status",
+    "description": "学期状态四值：未开始/进行中/已结束由起止日期实时推导，已存档为命令驱动只读存储态",
+    "sourceUserStoryIds": [
+      "US-BD-001"
+    ]
+  },
+  {
+    "id": "R-047",
+    "scope": "Specification",
+    "constrains": "TimetablePlan",
+    "description": "并发调课/排课采用弱并发控制，课表最终一致；具体策略（提示刷新或行级锁）待业务确认（D19）",
+    "sourceUserStoryIds": [
+      "US-CM-002"
+    ]
+  }
+]

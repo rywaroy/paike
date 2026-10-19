@@ -1,0 +1,74 @@
+[
+  {
+    "name": "SemesterRepository",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Semester",
+    "responsibility": "存取学期聚合及其作息模板引用"
+  },
+  {
+    "name": "ScheduleTemplateRepository",
+    "bcId": "bc-registry",
+    "aggregateRoot": "ScheduleTemplate",
+    "responsibility": "存取作息模板聚合及版本快照"
+  },
+  {
+    "name": "GradeRepository",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Grade",
+    "responsibility": "存取年级聚合"
+  },
+  {
+    "name": "ClassRepository",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Class",
+    "responsibility": "存取班级聚合及其年级归属"
+  },
+  {
+    "name": "SubjectRepository",
+    "bcId": "bc-registry",
+    "aggregateRoot": "Subject",
+    "responsibility": "存取科目聚合及其课时规则"
+  },
+  {
+    "name": "TeacherRepository",
+    "bcId": "bc-resource",
+    "aggregateRoot": "Teacher",
+    "responsibility": "存取教师聚合及工号唯一校验"
+  },
+  {
+    "name": "VenueRepository",
+    "bcId": "bc-resource",
+    "aggregateRoot": "Venue",
+    "responsibility": "存取场地聚合及占用校验"
+  },
+  {
+    "name": "CombinedClassRepository",
+    "bcId": "bc-resource",
+    "aggregateRoot": "CombinedClass",
+    "responsibility": "存取合班课配置"
+  },
+  {
+    "name": "TeachingAssignmentRepository",
+    "bcId": "bc-resource",
+    "aggregateRoot": "TeachingAssignment",
+    "responsibility": "存取教师任课约束"
+  },
+  {
+    "name": "TimetablePlanRepository",
+    "bcId": "bc-timetable",
+    "aggregateRoot": "TimetablePlan",
+    "responsibility": "存取排课方案聚合及其课程课次"
+  },
+  {
+    "name": "OperationLogRepository",
+    "bcId": "bc-governance",
+    "aggregateRoot": "OperationLog",
+    "responsibility": "追加存取操作日志"
+  },
+  {
+    "name": "AccountRepository",
+    "bcId": "bc-identity",
+    "aggregateRoot": "Account",
+    "responsibility": "存取账号及角色权限"
+  }
+]
