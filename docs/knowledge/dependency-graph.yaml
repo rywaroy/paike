@@ -1,0 +1,344 @@
+# 依赖拓扑（dependency-graph.yaml）
+# 用途：卡片 blocked_by 的业务依据；跨域调用与事件收发的唯一拓扑说明。
+# 规则：调用方向必须与本文一致；禁止反向 import；跨域只经 query-service 或领域事件。
+
+version: 1
+project: paike
+round: v1
+generatedAt: 2026-10-19
+
+contexts:
+  registry:
+    name: 教务主数据
+    type: CORE
+    module: backend/src/modules/registry
+    frontend: frontend/src/views/registry
+    aggregates: [Semester, ScheduleTemplate, Grade, Class, Subject, CalendarException]
+    owns_tables:
+      - semester
+      - schedule_template
+      - schedule_template_version
+      - grade
+      - class
+      - subject
+      - subject_period_rule
+      - calendar_exception
+    query_services:
+      - SemesterQueryService
+      - TemplateQueryService
+      - ClassQueryService
+      - SubjectQueryService
+      - CalendarQueryService
+
+  resource:
+    name: 资源与任课
+    type: CORE
+    module: backend/src/modules/resource
+    frontend: frontend/src/views/resource
+    aggregates: [Teacher, Venue, CombinedClass, WalkingGroup, TeachingAssignment]
+    owns_tables:
+      - teacher
+      - venue
+      - combined_class
+      - combined_class_member
+      - walking_group
+      - walking_group_member
+      - teaching_assignment
+    query_services:
+      - TeacherQueryService
+      - VenueQueryService
+      - AssignmentQueryService
+      - SchedulingUnitQueryService
+
+  timetable:
+    name: 排课与调课
+    type: CORE
+    module: backend/src/modules/timetable
+    frontend: frontend/src/views/timetable
+    aggregates: [TimetablePlan]
+    owns_tables:
+      - timetable_plan
+      - lesson
+      - lesson_class
+      - unscheduled_lesson
+      - conflict_detail
+      - conflict_ignore
+      - adjustment_history
+    query_services:
+      - PlanQueryService
+      - TimetableViewQueryService
+      - ConflictQueryService
+      - IdleSlotQueryService
+      - WorkloadQueryService
+
+  governance:
+    name: 治理与留痕
+    type: SUPPORTING
+    module: backend/src/modules/governance
+    frontend: frontend/src/views/governance
+    aggregates: [OperationLog, SemesterArchive]
+    owns_tables:
+      - operation_log
+      - semester_archive
+    query_services:
+      - OperationLogQueryService
+      - ArchiveQueryService
+
+  identity:
+    name: 身份与权限
+    type: GENERIC
+    module: backend/src/modules/identity
+    frontend: frontend/src/views/identity
+    aggregates: [Account]
+    owns_tables: [sys_user]   # 共享表；由本上下文提供用例，Phase 0 建表
+    query_services:
+      - AccountQueryService
+
+  exchange:
+    name: 数据交换（应用模块，非限界上下文）
+    type: SUPPORTING
+    module: backend/src/modules/exchange
+    frontend: frontend/src/views/exchange
+    aggregates: []
+    owns_tables:
+      - import_batch
+      - print_template
+    query_services: []
+
+  statistics:
+    name: 教务统计（应用模块，非限界上下文）
+    type: SUPPORTING
+    module: backend/src/modules/statistics
+    frontend: frontend/src/views/statistics
+    aggregates: []
+    owns_tables: []
+    query_services: []
+
+  shared:
+    name: 共享内核
+    type: INFRA
+    module: backend/src/shared
+    aggregates: []
+
+edges:
+  # 调用边：from 依赖 to（from 调用 to 的 query-service）
+  - from: resource
+    to: registry
+    kind: query
+    via: ClassQueryService, SubjectQueryService
+    reason: 任课记录引用班级与科目；合班/走班引用班级
+    card: D03 / D04
+
+  - from: timetable
+    to: registry
+    kind: query
+    via: SemesterQueryService, TemplateQueryService, ClassQueryService, SubjectQueryService, CalendarQueryService
+    reason: 排课上下文与约束输入
+    card: D05
+
+  - from: timetable
+    to: resource
+    kind: query
+    via: TeacherQueryService, VenueQueryService, AssignmentQueryService, SchedulingUnitQueryService
+    reason: 教师/场地/任课/合班/走班作为排课单元输入
+    card: D05
+
+  - from: governance
+    to: registry
+    kind: query+command
+    via: SemesterQueryService, SemesterLifecycleService
+    reason: 学期存档/切换的状态校验与状态写入（应用服务，不直接写表）
+    card: D07
+
+  - from: governance
+    to: timetable
+    kind: query+command
+    via: PlanQueryService, PlanLifecycleService
+    reason: 存档前置校验与正式方案置为 ARCHIVED
+    card: D07
+
+  - from: identity
+    to: resource
+    kind: query
+    via: TeacherQueryService
+    reason: 一键开通账号时读取教师工号与姓名
+    card: D08
+
+  - from: exchange
+    to: registry
+    kind: query+command
+    via: 各聚合应用服务
+    reason: 导入学期/年级/班级/科目/场地；导出基础数据
+    card: D09 / D10
+
+  - from: exchange
+    to: resource
+    kind: query+command
+    via: 各聚合应用服务
+    reason: 导入教师/任课；导出教师任课
+    card: D09 / D10
+
+  - from: exchange
+    to: timetable
+    kind: query
+    via: TimetableViewQueryService, WorkloadQueryService
+    reason: 课表与统计导出、打印
+    card: D10
+
+  - from: statistics
+    to: timetable
+    kind: query
+    via: WorkloadQueryService
+    reason: 工作量统计
+    card: D11
+
+  - from: statistics
+    to: resource
+    kind: query
+    via: TeacherQueryService
+    reason: 教师姓名与状态
+    card: D11
+
+events:
+  # 生产者 → 消费者；事件名遵循 bc.<context>.<entity>.<past-tense>
+  - name: bc.registry.semester.created
+    producer: registry
+    consumers: [governance]
+    payload: { semesterId, name, scheduleTemplateVersionId, occurredAt, occurredBy }
+    card: D01
+
+  - name: bc.registry.semester.status-changed
+    producer: registry
+    consumers: [timetable, governance]
+    payload: { semesterId, fromStatus, toStatus, occurredAt, occurredBy }
+    card: D01
+
+  - name: bc.registry.schedule-template.version-created
+    producer: registry
+    consumers: [timetable]
+    payload: { templateId, versionId, versionNo, occurredAt, occurredBy }
+    card: D01
+
+  - name: bc.registry.class.created
+    producer: registry
+    consumers: [timetable]
+    payload: { classId, gradeId, name, occurredAt, occurredBy }
+    card: D02
+
+  - name: bc.resource.teacher.account-provisioned
+    producer: identity
+    consumers: [resource]
+    payload: { teacherId, userId, username, occurredAt, occurredBy }
+    card: D08
+
+  - name: bc.resource.teacher.deactivated
+    producer: resource
+    consumers: [identity, timetable]
+    payload: { teacherId, status, occurredAt, occurredBy }
+    card: D03
+
+  - name: bc.timetable.plan.generated
+    producer: timetable
+    consumers: [governance]
+    payload: { planId, semesterId, conflictCount, unscheduledCount, durationMs, occurredAt, occurredBy }
+    card: D05
+
+  - name: bc.timetable.plan.published
+    producer: timetable
+    consumers: [governance, registry]
+    payload: { planId, semesterId, supersededPlanId, occurredAt, occurredBy }
+    card: D05
+
+  - name: bc.timetable.plan.archived
+    producer: timetable
+    consumers: [governance, registry]
+    payload: { planId, semesterId, occurredAt, occurredBy }
+    card: D07
+
+  - name: bc.timetable.lesson.moved
+    producer: timetable
+    consumers: [governance]
+    payload: { planId, lessonId, from, to, transactionId, occurredAt, occurredBy }
+    card: D06
+
+  - name: bc.timetable.conflict.ignored-once
+    producer: timetable
+    consumers: [governance]
+    payload: { planId, conflictId, operatorId, reason, occurredAt }
+    card: D06
+
+  - name: bc.governance.operation.logged
+    producer: governance
+    consumers: []
+    payload: { logId, module, targetType, targetId, occurredAt, occurredBy }
+    card: D07
+
+forbidden_edges:
+  - from: registry
+    to: resource
+    reason: 主数据不得反向依赖资源域
+  - from: registry
+    to: timetable
+    reason: 主数据不得依赖排课结果
+  - from: resource
+    to: timetable
+    reason: 资源域不得依赖排课结果
+  - from: any
+    to: governance.repository
+    reason: 日志只经 audit 共享内核写入
+
+card_dependency_edges:
+  # 卡片层面的 BFS 边；issues.yaml 的 blocked_by 必须与此一致
+  - [P0-01, P0-02]
+  - [P0-01, P0-03]
+  - [P0-01, P0-05]
+  - [P0-02, P0-05]
+  - [P0-02, P0-08]
+  - [P0-04, P0-08]
+  - [P0-03, P0-04]
+  - [P0-01, P0-04]
+  - [P0-02, P0-04]
+  - [P0-03, P0-06]
+  - [P0-04, P0-06]
+  - [P0-03, P0-07]
+  - [P0-04, P0-07]
+  - [P0-05, P0-07]
+  - [P0-06, P0-07]
+  - [P0-01, P0-06]
+  - [P0-02, P0-06]
+  - [P0-03, P0-07]
+  - [P0-04, P0-07]
+  - [P0-06, D01]
+  - [P0-06, D02]
+  - [P0-06, D03]
+  - [P0-06, D04]
+  - [D01, D05]
+  - [D02, D05]
+  - [D03, D05]
+  - [D04, D05]
+  - [D05, D06]
+  - [D01, D07]
+  - [D05, D07]
+  - [P0-06, D08]
+  - [D03, D08]
+  - [D01, D09]
+  - [D02, D09]
+  - [D03, D09]
+  - [D04, D09]
+  - [D05, D10]
+  - [D06, D10]
+  - [D11, D10]
+  - [D05, D11]
+  - [D01, INT-01]
+  - [D02, INT-01]
+  - [D03, INT-01]
+  - [D04, INT-01]
+  - [D05, INT-01]
+  - [D06, INT-01]
+  - [D07, INT-01]
+  - [D08, INT-01]
+  - [D09, INT-01]
+  - [D10, INT-01]
+  - [D11, INT-01]
+  - [INT-01, INT-02]
+  - [INT-02, INT-03]

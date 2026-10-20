@@ -1,0 +1,373 @@
+# 共享内核文件清单（shared-kernel-manifest.yaml）
+# 用途：全部卡片 import 路径的唯一权威来源。卡片中出现本清单以外的共享路径即视为卡片缺陷。
+# 维护：P0-01 / P0-02 / P0-03 / P0-04 创建；INT-03 状态刷新时回写实际文件。
+
+version: 1
+project: paike
+round: v1
+generatedAt: 2026-10-19
+
+aliases:
+  backend:
+    "@/": "backend/src/"
+    "@modules/": "backend/src/modules/"
+  frontend:
+    "@/": "frontend/src/"
+    "@views/": "frontend/src/views/"
+
+ownershipRules:
+  - "shared/ 不得 import modules/ 下任何文件"
+  - "modules/ 之间不得直接 import 对方的 repository/domain"
+  - "跨域查询只经对方暴露的 *.query-service.ts"
+  - "frontend/src/views/<context>/ 只 import @/shared 与 @/api/<context>.api"
+
+entries:
+  # ---------------------------------------------------------------------------
+  # P0-01 数据库基础设施
+  # ---------------------------------------------------------------------------
+  - id: db.pool
+    side: backend
+    path: backend/src/shared/db/pool.ts
+    import: "@/shared/db/pool"
+    exports: [db, query, queryOne, queryMany, healthCheck, closePool]
+    ownerCard: P0-01
+
+  - id: db.transaction
+    side: backend
+    path: backend/src/shared/db/transaction.ts
+    import: "@/shared/db/transaction"
+    exports: [withTransaction, Tx]
+    ownerCard: P0-01
+
+  - id: db.migrate
+    side: backend
+    path: backend/src/shared/db/migrate.ts
+    import: "@/shared/db/migrate"
+    exports: [runMigrations, listAppliedMigrations]
+    ownerCard: P0-01
+
+  # ---------------------------------------------------------------------------
+  # P0-02 认证 / 会话 / 权限
+  # ---------------------------------------------------------------------------
+  - id: auth.session
+    side: backend
+    path: backend/src/shared/auth/session.ts
+    import: "@/shared/auth/session"
+    exports: [sessionMiddleware, createSession, destroySession, touchSession, assertSessionValid]
+    ownerCard: P0-02
+
+  - id: auth.password
+    side: backend
+    path: backend/src/shared/auth/password.ts
+    import: "@/shared/auth/password"
+    exports: [hashPassword, verifyPassword, validatePasswordPolicy, generateInitialPassword]
+    ownerCard: P0-02
+
+  - id: auth.rbac
+    side: backend
+    path: backend/src/shared/auth/rbac.ts
+    import: "@/shared/auth/rbac"
+    exports: [requireAuth, requireRole, requireAdmin, loadCurrentUser, canAccessTeacherResource]
+    ownerCard: P0-02
+
+  - id: auth.csrf
+    side: backend
+    path: backend/src/shared/auth/csrf.ts
+    import: "@/shared/auth/csrf"
+    exports: [csrfMiddleware, issueCsrfToken]
+    ownerCard: P0-02
+
+  - id: auth.lockout
+    side: backend
+    path: backend/src/shared/auth/lockout.ts
+    import: "@/shared/auth/lockout"
+    exports: [recordLoginAttempt, isLocked, lockRemainingSeconds, clearFailures]
+    ownerCard: P0-02
+
+  # ---------------------------------------------------------------------------
+  # P0-03 HTTP / 错误 / 校验 / 事件 / 审计
+  # ---------------------------------------------------------------------------
+  - id: http.envelope
+    side: backend
+    path: backend/src/shared/http/envelope.ts
+    import: "@/shared/http/envelope"
+    exports: [ok, created, noContent, paginated, fail]
+    ownerCard: P0-03
+
+  - id: http.async-handler
+    side: backend
+    path: backend/src/shared/http/async-handler.ts
+    import: "@/shared/http/async-handler"
+    exports: [asyncHandler]
+    ownerCard: P0-03
+
+  - id: http.request-id
+    side: backend
+    path: backend/src/shared/http/request-id.ts
+    import: "@/shared/http/request-id"
+    exports: [requestIdMiddleware]
+    ownerCard: P0-03
+
+  - id: errors.app-error
+    side: backend
+    path: backend/src/shared/errors/app-error.ts
+    import: "@/shared/errors/app-error"
+    exports: [AppError, ValidationError, NotFoundError, ForbiddenError, ConflictError, VersionConflictError]
+    ownerCard: P0-03
+
+  - id: errors.codes
+    side: backend
+    path: backend/src/shared/errors/codes.ts
+    import: "@/shared/errors/codes"
+    exports: [ErrorCode, ERROR_MESSAGES]
+    ownerCard: P0-03
+
+  - id: errors.handler
+    side: backend
+    path: backend/src/shared/errors/error-handler.ts
+    import: "@/shared/errors/error-handler"
+    exports: [errorHandler, notFoundHandler]
+    ownerCard: P0-03
+
+  - id: validation.common
+    side: backend
+    path: backend/src/shared/validation/common.ts
+    import: "@/shared/validation/common"
+    exports: [uuidSchema, paginationSchema, versionSchema, weekdaySchema, periodSchema, slotExpressionSchema, slotListSchema, parseBody]
+    ownerCard: P0-03
+
+  - id: events.outbox
+    side: backend
+    path: backend/src/shared/events/outbox.ts
+    import: "@/shared/events/outbox"
+    exports: [appendEvent, dispatchPendingEvents, registerEventHandler]
+    ownerCard: P0-03
+
+  - id: audit.operation-log
+    side: backend
+    path: backend/src/shared/audit/operation-log.ts
+    import: "@/shared/audit/operation-log"
+    exports: [writeOperationLog, OperationLogInput]
+    ownerCard: P0-03
+
+  - id: audit.security-audit
+    side: backend
+    path: backend/src/shared/audit/security-audit.ts
+    import: "@/shared/audit/security-audit"
+    exports: [writeSecurityAudit, SecurityAuditInput]
+    ownerCard: P0-03
+
+  # ---------------------------------------------------------------------------
+  # P0-03 时间与时段
+  # ---------------------------------------------------------------------------
+  - id: time.clock
+    side: backend
+    path: backend/src/shared/time/clock.ts
+    import: "@/shared/time/clock"
+    exports: [Clock, systemClock, fixedClock]
+    ownerCard: P0-03
+
+  - id: time.academic-week
+    side: backend
+    path: backend/src/shared/time/academic-week.ts
+    import: "@/shared/time/academic-week"
+    exports: [weekIndexForDate, parityForWeekIndex, weeksInSemester, resolveWeekParity]
+    ownerCard: P0-03
+
+  - id: time.slot-expression
+    side: backend
+    path: backend/src/shared/time/slot-expression.ts
+    import: "@/shared/time/slot-expression"
+    exports: [Slot, SlotExpression, parseSlotExpression, formatSlotExpression, overlaps, slotsOverlap]
+    ownerCard: P0-03
+
+  # ---------------------------------------------------------------------------
+  # 导入 / 导出 / 打印（D09 / D10 使用；P0-03 提供骨架）
+  # ---------------------------------------------------------------------------
+  - id: import.xlsx-reader
+    side: backend
+    path: backend/src/shared/import/xlsx-reader.ts
+    import: "@/shared/import/xlsx-reader"
+    exports: [readTabularFile, TabularRow, TabularFile]
+    ownerCard: P0-03
+
+  - id: import.runner
+    side: backend
+    path: backend/src/shared/import/import-runner.ts
+    import: "@/shared/import/import-runner"
+    exports: [runImport, ImportDefinition, ImportRowError, ImportResult]
+    ownerCard: P0-03
+
+  - id: import.error-report
+    side: backend
+    path: backend/src/shared/import/error-report.ts
+    import: "@/shared/import/error-report"
+    exports: [buildErrorCsv, ErrorReportRow]
+    ownerCard: P0-03
+
+  - id: export.xlsx-writer
+    side: backend
+    path: backend/src/shared/export/xlsx-writer.ts
+    import: "@/shared/export/xlsx-writer"
+    exports: [buildWorkbook, SheetDefinition]
+    ownerCard: P0-03
+
+  - id: export.column-dictionary
+    side: backend
+    path: backend/src/shared/export/column-dictionary.ts
+    import: "@/shared/export/column-dictionary"
+    exports: [COLUMN_DICTIONARY, columnsFor, ColumnDefinition]
+    ownerCard: P0-03
+
+  - id: pdf.renderer
+    side: backend
+    path: backend/src/shared/pdf/pdf-renderer.ts
+    import: "@/shared/pdf/pdf-renderer"
+    exports: [renderPdf, PdfRenderOptions]
+    ownerCard: P0-03
+
+  - id: upload.file-guard
+    side: backend
+    path: backend/src/shared/upload/file-guard.ts
+    import: "@/shared/upload/file-guard"
+    exports: [uploadSingle, assertFileLimits]
+    ownerCard: P0-03
+
+  # ---------------------------------------------------------------------------
+  # P0-04 前端骨架
+  # ---------------------------------------------------------------------------
+  - id: fe.http
+    side: frontend
+    path: frontend/src/shared/api/http.ts
+    import: "@/shared/api/http"
+    exports: [http, ApiError, onUnauthorized]
+    ownerCard: P0-04
+
+  - id: fe.query
+    side: frontend
+    path: frontend/src/shared/api/query.ts
+    import: "@/shared/api/query"
+    exports: [useQuery, useMutation]
+    ownerCard: P0-04
+
+  - id: fe.session-store
+    side: frontend
+    path: frontend/src/shared/stores/session.ts
+    import: "@/shared/stores/session"
+    exports: [useSessionStore]
+    ownerCard: P0-04
+
+  - id: fe.semester-store
+    side: frontend
+    path: frontend/src/shared/stores/semester.ts
+    import: "@/shared/stores/semester"
+    exports: [useSemesterStore, SEMESTER_CHANGED_EVENT]
+    ownerCard: P0-04
+
+  - id: fe.confirm
+    side: frontend
+    path: frontend/src/shared/composables/useConfirm.ts
+    import: "@/shared/composables/useConfirm"
+    exports: [useConfirm, ConfirmOptions]
+    ownerCard: P0-04
+
+  - id: fe.async-action
+    side: frontend
+    path: frontend/src/shared/composables/useAsyncAction.ts
+    import: "@/shared/composables/useAsyncAction"
+    exports: [useAsyncAction]
+    ownerCard: P0-04
+
+  - id: fe.messages
+    side: frontend
+    path: frontend/src/shared/text/messages.ts
+    import: "@/shared/text/messages"
+    exports: [MESSAGES, friendlyError]
+    ownerCard: P0-04
+
+  - id: fe.app-layout
+    side: frontend
+    path: frontend/src/shared/components/AppLayout.vue
+    import: "@/shared/components/AppLayout.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.confirm-dialog
+    side: frontend
+    path: frontend/src/shared/components/ConfirmDialog.vue
+    import: "@/shared/components/ConfirmDialog.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.empty-state
+    side: frontend
+    path: frontend/src/shared/components/EmptyState.vue
+    import: "@/shared/components/EmptyState.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.error-banner
+    side: frontend
+    path: frontend/src/shared/components/ErrorBanner.vue
+    import: "@/shared/components/ErrorBanner.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.page-header
+    side: frontend
+    path: frontend/src/shared/components/PageHeader.vue
+    import: "@/shared/components/PageHeader.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.status-tag
+    side: frontend
+    path: frontend/src/shared/components/StatusTag.vue
+    import: "@/shared/components/StatusTag.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.data-table
+    side: frontend
+    path: frontend/src/shared/components/DataTable.vue
+    import: "@/shared/components/DataTable.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.form-field
+    side: frontend
+    path: frontend/src/shared/components/FormField.vue
+    import: "@/shared/components/FormField.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.loading-block
+    side: frontend
+    path: frontend/src/shared/components/LoadingBlock.vue
+    import: "@/shared/components/LoadingBlock.vue"
+    exports: [default]
+    ownerCard: P0-04
+
+  - id: fe.toast-host
+    side: frontend
+    path: frontend/src/shared/components/ToastHost.vue
+    import: "@/shared/components/ToastHost.vue"
+    exports: [default, toast]
+    ownerCard: P0-04
+
+  # ---------------------------------------------------------------------------
+  # 契约冻结（仅类型，不产出运行时代码）
+  # ---------------------------------------------------------------------------
+  - id: contract.types
+    side: shared
+    path: contracts/openapi.yaml
+    import: "无运行时代码；前端类型由 npm run gen:api 生成到 frontend/src/api/generated.ts"
+    exports: [OpenAPI 3.1 文档]
+    ownerCard: P0-06
+
+  - id: contract.enums
+    side: shared
+    path: contracts/naming.yaml
+    import: "无运行时代码；枚举三处拼写以本文件为准"
+    exports: [枚举、命名、错误码]
+    ownerCard: P0-06
